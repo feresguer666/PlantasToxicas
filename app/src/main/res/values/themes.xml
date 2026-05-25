@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ToxicPlants"
+        parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/green_800</item>
+        <item name="colorPrimaryVariant">@color/green_900</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+</resources>

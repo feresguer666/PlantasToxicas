@@ -61,8 +61,8 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.google.android.gms:play-services-location:21.1.0")
 
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation("androidx.compose.runtime:runtime-livedata:1.7.0")
     debugImplementation(libs.androidx.ui.tooling)

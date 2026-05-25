@@ -7,8 +7,6 @@ plugins {
 }
 
 // Lee local.properties (no commiteado) para obtener la API key de Pl@ntNet.
-// Si el archivo no existe o la propiedad no está, queda como cadena vacía
-// y la UI mostrará un diálogo invitando a configurarla.
 val plantnetApiKey: String = run {
     val props = Properties()
     val file = rootProject.file("local.properties")
@@ -22,12 +20,12 @@ val plantnetApiKey: String = run {
 
 android {
     namespace = "com.toxicplants.database"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.toxicplants.database"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -51,7 +49,7 @@ android {
 
     buildFeatures {
         compose = true
-        buildConfig = true   // necesario desde AGP 8.0 para que se genere BuildConfig
+        buildConfig = true
     }
 
     packaging {
@@ -61,16 +59,13 @@ android {
     }
 }
 
-// Room: exporta el JSON de esquema para que MigrationTestHelper pueda usarlo.
-// Los archivos se generan en app/schemas/<package>.<DatabaseClass>/<version>.json
-// y DEBEN commitearse al repositorio.
+// Room: exporta el JSON de esquema para MigrationTestHelper.
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 androidComponents {
     onVariants { variant ->
-        // Hace que los esquemas de Room estén disponibles para los tests instrumentados.
         val schemaDir = layout.projectDirectory.dir("schemas")
         variant.sources.assets?.addStaticSourceDirectory(schemaDir.asFile.absolutePath)
     }
@@ -86,6 +81,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)   // ← Icons.*
     implementation(libs.material)
 
     implementation(libs.androidx.navigation.compose)

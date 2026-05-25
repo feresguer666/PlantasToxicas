@@ -1,7 +1,23 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+}
+
+// Lee local.properties (no commiteado) para obtener la API key de Pl@ntNet.
+// Si el archivo no existe o la propiedad no está, queda como cadena vacía
+// y la UI mostrará un diálogo invitando a configurarla.
+val plantnetApiKey: String = run {
+    val props = Properties()
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { props.load(it) }
+    }
+    (props.getProperty("PLANTNET_API_KEY")
+        ?: System.getenv("PLANTNET_API_KEY")
+        ?: "").trim()
 }
 
 android {
@@ -14,6 +30,11 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Inyecta la API key como BuildConfig.PLANTNET_API_KEY
+        buildConfigField("String", "PLANTNET_API_KEY", "\"$plantnetApiKey\"")
     }
 
     buildTypes {
@@ -28,16 +49,30 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // ❌ ELIMINA el bloque kotlinOptions completo
-
     buildFeatures {
         compose = true
+        buildConfig = true   // necesario desde AGP 8.0 para que se genere BuildConfig
     }
 
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+// Room: exporta el JSON de esquema para que MigrationTestHelper pueda usarlo.
+// Los archivos se generan en app/schemas/<package>.<DatabaseClass>/<version>.json
+// y DEBEN commitearse al repositorio.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+androidComponents {
+    onVariants { variant ->
+        // Hace que los esquemas de Room estén disponibles para los tests instrumentados.
+        val schemaDir = layout.projectDirectory.dir("schemas")
+        variant.sources.assets?.addStaticSourceDirectory(schemaDir.asFile.absolutePath)
     }
 }
 
@@ -51,7 +86,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.material)  // ✅ Cambiado
+    implementation(libs.material)
 
     implementation(libs.androidx.navigation.compose)
 
@@ -59,12 +94,24 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    implementation("io.coil-kt:coil-compose:2.5.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.coil.compose)
+    implementation(libs.okhttp)
+    implementation(libs.play.services.location)
 
-    implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.0")
+    implementation(libs.androidx.compose.runtime.livedata)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Tests unitarios
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // Tests instrumentados (Room in-memory + migración)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }

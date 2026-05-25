@@ -1,0 +1,134 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "95f82321bcfa375eb551f8f8239dcbad",
+    "entities": [
+      {
+        "tableName": "plants",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `commonName` TEXT NOT NULL, `scientificName` TEXT NOT NULL, `family` TEXT NOT NULL, `toxicityLevel` TEXT NOT NULL, `toxicParts` TEXT NOT NULL, `symptoms` TEXT NOT NULL, `description` TEXT NOT NULL, `habitat` TEXT NOT NULL, `geographicDistribution` TEXT NOT NULL, `firstAid` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `isFavorite` INTEGER NOT NULL, `category` TEXT NOT NULL, `latitude` REAL, `longitude` REAL, `locationName` TEXT, `foundDate` TEXT, `notes` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "commonName",
+            "columnName": "commonName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scientificName",
+            "columnName": "scientificName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "family",
+            "columnName": "family",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toxicityLevel",
+            "columnName": "toxicityLevel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toxicParts",
+            "columnName": "toxicParts",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "symptoms",
+            "columnName": "symptoms",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "habitat",
+            "columnName": "habitat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "geographicDistribution",
+            "columnName": "geographicDistribution",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstAid",
+            "columnName": "firstAid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "isFavorite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "locationName",
+            "columnName": "locationName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "foundDate",
+            "columnName": "foundDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '95f82321bcfa375eb551f8f8239dcbad')"
+    ]
+  }
+}

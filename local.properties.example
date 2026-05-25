@@ -1,0 +1,9 @@
+# Copia este archivo a `local.properties` y rellena con tus valores reales.
+# `local.properties` está en .gitignore: NUNCA lo subas al repositorio.
+#
+# Ruta al SDK de Android (Android Studio la rellena automáticamente):
+# sdk.dir=/home/usuario/Android/Sdk
+
+# API key gratuita de Pl@ntNet (https://my.plantnet.org/)
+# Necesaria para la pantalla "Identificar con foto".
+PLANTNET_API_KEY=tu_api_key_aqui

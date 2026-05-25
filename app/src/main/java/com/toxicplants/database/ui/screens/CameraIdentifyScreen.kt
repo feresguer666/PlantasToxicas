@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.toxicplants.database.BuildConfig
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import kotlinx.coroutines.Dispatchers
@@ -49,8 +50,9 @@ import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.TimeUnit
 
-// ✅ TU API KEY REAL DE PLANTNET
-private const val PLANTNET_API_KEY = "REVOKED_API_KEY"
+// API key inyectada desde local.properties via BuildConfig (ver app/build.gradle.kts).
+// Si está vacía, la app muestra un diálogo invitando a configurarla.
+private val PLANTNET_API_KEY: String = BuildConfig.PLANTNET_API_KEY
 private const val PLANTNET_URL = "https://my-api.plantnet.org/v2/identify/all"
 
 @OptIn(ExperimentalMaterial3Api::class)

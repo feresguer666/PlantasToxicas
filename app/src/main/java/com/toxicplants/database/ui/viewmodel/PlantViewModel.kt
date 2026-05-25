@@ -54,7 +54,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             isLoading.postValue(true)
             if (repository.getPlantCount() == 0) {
-                val plantsList = PlantDataSource.getAllPlants()
+                val plantsList = PlantDataSource.loadAll(application)
                 repository.insertAll(plantsList)
             }
             mortalPlants.value = repository.getPlantsByToxicitySync("Mortal")

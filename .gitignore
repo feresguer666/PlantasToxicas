@@ -1,6 +1,5 @@
 *.iml
 .gradle
-/local.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -12,4 +11,13 @@
 /captures
 .externalNativeBuild
 .cxx
+
+# Variables sensibles (incluye la API key de Pl@ntNet)
 local.properties
+**/local.properties
+
+# Backups de scripts
+*.bak
+
+# Reportes / artefactos temporales
+imagenes_pendientes.txt

@@ -30,14 +30,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.screens.*
-import com.toxicplants.database.ui.theme.PlantasToxicasTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.toxicplants.database.ui.theme.ToxicPlantsTheme
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PlantasToxicasTheme {
+            ToxicPlantsTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     MainApp()
                 }
@@ -49,8 +50,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
-    val context = LocalContext.current
-    val viewModel = remember { PlantViewModel(context.applicationContext as android.app.Application) }
+    val viewModel: PlantViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "home") {
 

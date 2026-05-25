@@ -32,6 +32,7 @@ import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.screens.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.toxicplants.database.ui.theme.ToxicPlantsTheme
+import com.toxicplants.database.ui.viewmodel.CompoundViewModel
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
 class MainActivity : ComponentActivity() {
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
 fun MainApp() {
     val navController = rememberNavController()
     val viewModel: PlantViewModel = viewModel()
+    val compoundViewModel: CompoundViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "home") {
 
@@ -65,6 +67,7 @@ fun MainApp() {
                 onNavigateToDownloadImages = { navController.navigate("download_images") },
                 onNavigateToNewPlant = { navController.navigate("new_plant") },
                 onNavigateToCamera = { navController.navigate("camera_identify") },
+                onNavigateToPhytochemistry = { navController.navigate("phytochemistry") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
@@ -219,6 +222,45 @@ fun MainApp() {
 
         composable("download_images") {
             DownloadImagesScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
+        }
+
+
+        // 🧪 FITOQUÍMICA
+        composable("phytochemistry") {
+            PhytochemistryScreen(
+                viewModel = compoundViewModel,
+                onCompoundClick = { c ->
+                    navController.navigate("compound_detail/${c.id}")
+                },
+                onGroupClick = { group ->
+                    navController.navigate("compound_group/$group")
+                },
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable("compound_group/{group}") { backStackEntry ->
+            val group = backStackEntry.arguments?.getString("group") ?: ""
+            CompoundGroupScreen(
+                viewModel = compoundViewModel,
+                groupName = group,
+                onCompoundClick = { c -> navController.navigate("compound_detail/${c.id}") },
+                onBack = { navController.popBackStack() },
+            )
+        }
+
+        composable("compound_detail/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
+            CompoundDetailScreen(
+                compoundId = id,
+                compoundViewModel = compoundViewModel,
+                plantViewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                },
+            )
         }
 
         composable("new_plant") {

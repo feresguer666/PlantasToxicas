@@ -229,9 +229,6 @@ fun MainApp() {
         composable("phytochemistry") {
             PhytochemistryScreen(
                 viewModel = compoundViewModel,
-                onCompoundClick = { c ->
-                    navController.navigate("compound_detail/${c.id}")
-                },
                 onGroupClick = { group ->
                     navController.navigate("compound_group/$group")
                 },

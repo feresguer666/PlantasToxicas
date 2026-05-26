@@ -4,22 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,9 +40,7 @@ fun HomeScreen(
     onPlantClick: (PlantEntity) -> Unit,
 ) {
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
-    val mortalPlants by viewModel.mortalPlantsData.collectAsState()
     val allFamilies by viewModel.allFamilies.observeAsState(emptyList())
-    var plantToDelete by remember { mutableStateOf<PlantEntity?>(null) }
 
     val mortalCount = allPlants.count { it.toxicityLevel == "Mortal" }
     val altoRiesgoCount = allPlants.count { it.toxicityLevel == "Alto" }
@@ -55,24 +49,25 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text("Plantas Tóxicas", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        Text(
-                            "Base de datos completa",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                        )
-                    }
+                    Text(
+                        "🌿 Plantas Tóxicas",
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 26.sp,
+                        color = Color.White
+                    )
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF0D3311)
+                ),
                 actions = {
                     IconButton(onClick = onNavigateToCamera) {
-                        Text("📷", fontSize = 22.sp)
+                        Text("📷", fontSize = 24.sp)
                     }
                     IconButton(onClick = onNavigateToDownloadImages) {
                         Icon(Icons.Filled.Search, contentDescription = "Descargar", modifier = Modifier.size(26.dp))
                     }
                     IconButton(onClick = onNavigateToNewPlant) {
-                        Text("+", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+                        Text("+", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 },
             )
@@ -81,18 +76,106 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF0D1F0F),
+                            Color(0xFF0A1A0C),
+                            Color(0xFF081608)
+                        )
+                    )
+                ),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            // 🆕 Fila con dos botones grandes: Emergencia + Fitoquímica
+            // Botones grandes uno debajo del otro
             item {
-                EmergencyAndPhytoRow(
-                    onEmergencyClick = onNavigateToEmergency,
-                    onPhytoClick = onNavigateToPhytochemistry,
-                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    // Emergencia
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .clickable { onNavigateToEmergency() },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFB71C1C)),
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 24.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Filled.Warning,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Spacer(Modifier.width(20.dp))
+                            Column {
+                                Text(
+                                    "EMERGENCIA",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp
+                                )
+                                Text(
+                                    "☎ 91 562 04 20",
+                                    color = Color.White.copy(alpha = 0.95f),
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+
+                    // Fitoquímica
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .clickable { onNavigateToPhytochemistry() },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF4A148C)),
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 24.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Filled.Science,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Spacer(Modifier.width(20.dp))
+                            Column {
+                                Text(
+                                    "FITOQUÍMICA",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 22.sp
+                                )
+                                Text(
+                                    "Alcaloides, glicósidos y más",
+                                    color = Color.White.copy(alpha = 0.95f),
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
             }
+
             item { StatsRow(allPlants.size, mortalCount, altoRiesgoCount, allFamilies.size) }
+
             item {
                 NavigationGrid(
                     onNavigateToList = onNavigateToList,
@@ -101,125 +184,6 @@ fun HomeScreen(
                     onNavigateToSearch = onNavigateToSearch,
                 )
             }
-            item {
-                Text(
-                    "Plantas Mortales",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFB71C1C),
-                    modifier = Modifier.padding(vertical = 8.dp),
-                )
-            }
-            items(mortalPlants.take(10)) { plant ->
-                PlantCard(
-                    plant = plant,
-                    onClick = { onPlantClick(plant) },
-                    onDeleteClick = { plantToDelete = plant },
-                )
-            }
-            if (mortalPlants.size > 10) {
-                item {
-                    TextButton(onClick = onNavigateToList, modifier = Modifier.fillMaxWidth()) {
-                        Text("Ver todas (${mortalPlants.size})")
-                    }
-                }
-            }
-        }
-    }
-
-    plantToDelete?.let { plant ->
-        AlertDialog(
-            onDismissRequest = { plantToDelete = null },
-            title = { Text("¿Eliminar planta?") },
-            text = { Text("¿Eliminar ${plant.commonName}?") },
-            confirmButton = {
-                TextButton(onClick = { viewModel.deletePlant(plant); plantToDelete = null }) {
-                    Text("Eliminar", color = Color.Red)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { plantToDelete = null }) { Text("Cancelar") }
-            },
-        )
-    }
-}
-
-/** Fila con dos botones grandes lado a lado: Emergencia (rojo) y Fitoquímica (morado). */
-@Composable
-fun EmergencyAndPhytoRow(
-    onEmergencyClick: () -> Unit,
-    onPhytoClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        // Emergencia (rojo)
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .height(110.dp)
-                .clickable { onEmergencyClick() },
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFB71C1C)),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(12.dp),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("⚠️", fontSize = 28.sp)
-                    Spacer(Modifier.width(6.dp))
-                    Text("EMERGENCIA", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                }
-                Spacer(Modifier.height(4.dp))
-                Text("Toxicología", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
-                Text("☎ 91 562 04 20", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            }
-        }
-
-        // Fitoquímica (morado)
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .height(110.dp)
-                .clickable { onPhytoClick() },
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF512DA8)),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(12.dp),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("🧪", fontSize = 26.sp)
-                    Spacer(Modifier.width(6.dp))
-                    Text("FITOQUÍMICA", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                }
-                Spacer(Modifier.height(4.dp))
-                Text("Alcaloides, glicósidos…", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp)
-                Text("Base de datos química", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            }
-        }
-    }
-}
-
-/** Banner viejo, mantenido por compatibilidad (no se usa por defecto). */
-@Composable
-fun EmergencyBanner(onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFB71C1C)),
-        shape = RoundedCornerShape(16.dp),
-    ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("⚠️", fontSize = 40.sp)
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text("EMERGENCIA TOXICOLÓGICA", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text("Toca aquí si hay intoxicación", color = Color.White.copy(alpha = 0.9f), fontSize = 13.sp)
-                Text("☎ Tox. España: 91 562 04 20", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            }
         }
     }
 }
@@ -227,27 +191,28 @@ fun EmergencyBanner(onClick: () -> Unit) {
 @Composable
 fun StatsRow(totalPlants: Int, mortalCount: Int, altoRiesgoCount: Int, familiesCount: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-        StatCard("🌿", totalPlants.toString(), "Plantas", Color(0xFF388E3C))
-        StatCard("☠️", mortalCount.toString(), "Mortales", Color(0xFFB71C1C))
-        StatCard("⚠️", altoRiesgoCount.toString(), "Alto riesgo", Color(0xFFF57C00))
-        StatCard("📚", familiesCount.toString(), "Familias", Color(0xFF1976D2))
+        StatCard("🌿", totalPlants.toString(), "Plantas", Color(0xFF4CAF50))
+        StatCard("☠️", mortalCount.toString(), "Mortales", Color(0xFFEF5350))
+        StatCard("⚠️", altoRiesgoCount.toString(), "Alto riesgo", Color(0xFFFFA726))
+        StatCard("📚", familiesCount.toString(), "Familias", Color(0xFF42A5F5))
     }
 }
 
 @Composable
 fun StatCard(emoji: String, value: String, label: String, color: Color) {
     Card(
-        modifier = Modifier.size(width = 80.dp, height = 80.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.1f)),
+        modifier = Modifier.size(width = 82.dp, height = 82.dp),
+        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.15f)),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(emoji, fontSize = 20.sp)
-            Text(value, fontWeight = FontWeight.Bold, color = color, fontSize = 16.sp)
-            Text(label, fontSize = 10.sp, color = Color.Gray)
+            Text(emoji, fontSize = 22.sp)
+            Text(value, fontWeight = FontWeight.Bold, color = color, fontSize = 18.sp)
+            Text(label, fontSize = 11.sp, color = Color.LightGray)
         }
     }
 }
@@ -259,96 +224,42 @@ fun NavigationGrid(
     onNavigateToOnlineDatabases: () -> Unit,
     onNavigateToSearch: () -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        NavButton(Modifier.weight(1f), "📋", "Todas", Color(0xFF388E3C), onNavigateToList)
-        NavButton(Modifier.weight(1f), "🗂", "Categorías", Color(0xFF1976D2), onNavigateToCategories)
-        NavButton(Modifier.weight(1f), "🔍", "Buscar", Color(0xFF7B1FA2), onNavigateToSearch)
-        NavButton(Modifier.weight(1f), "🌐", "Recursos", Color(0xFFB71C1C), onNavigateToOnlineDatabases)
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            NavButton(Modifier.weight(1f), "📋", "Todas las Plantas", Color(0xFF2E7D32), onNavigateToList)
+            NavButton(Modifier.weight(1f), "🗂", "Categorías", Color(0xFF1565C0), onNavigateToCategories)
+        }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            NavButton(Modifier.weight(1f), "🔍", "Buscar", Color(0xFF6A1B9A), onNavigateToSearch)
+            NavButton(Modifier.weight(1f), "🌐", "Recursos", Color(0xFFC62828), onNavigateToOnlineDatabases)
+        }
     }
 }
 
 @Composable
 fun NavButton(modifier: Modifier, icon: String, text: String, color: Color, onClick: () -> Unit) {
     Card(
-        modifier = modifier.height(80.dp).clickable { onClick() },
+        modifier = modifier.height(110.dp).clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = color),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text(icon, fontSize = 24.sp)
-            Text(text, color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Medium)
-        }
-    }
-}
-
-@Composable
-fun PlantCard(plant: PlantEntity, onClick: () -> Unit, onDeleteClick: () -> Unit) {
-    val toxicityColor = when (plant.toxicityLevel) {
-        "Mortal" -> Color(0xFFB71C1C)
-        "Alto" -> Color(0xFFE65100)
-        "Moderado" -> Color(0xFFF57C00)
-        "Bajo" -> Color(0xFF388E3C)
-        else -> Color.Gray
-    }
-
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-    ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(toxicityColor.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    when (plant.toxicityLevel) {
-                        "Mortal" -> "☠️"
-                        "Alto" -> "⚠️"
-                        "Moderado" -> "⚡"
-                        else -> "ℹ️"
-                    },
-                    fontSize = 24.sp,
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(plant.commonName, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(
-                    plant.scientificName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Surface(color = toxicityColor.copy(alpha = 0.15f), shape = RoundedCornerShape(4.dp)) {
-                        Text(
-                            plant.toxicityLevel,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 11.sp,
-                            color = toxicityColor,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                    Surface(color = Color.Gray.copy(alpha = 0.1f), shape = RoundedCornerShape(4.dp)) {
-                        Text(
-                            plant.category,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                            fontSize = 11.sp,
-                            color = Color.Gray,
-                        )
-                    }
-                }
-            }
-            IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red)
-            }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
+            Text(icon, fontSize = 32.sp)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text,
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2
+            )
         }
     }
 }

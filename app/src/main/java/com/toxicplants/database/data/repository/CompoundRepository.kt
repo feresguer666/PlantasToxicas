@@ -20,4 +20,8 @@ class CompoundRepository(private val dao: CompoundDao) {
     suspend fun count(): Int = withContext(Dispatchers.IO) { dao.count() }
     suspend fun toggleFavorite(id: Int, fav: Boolean) =
         withContext(Dispatchers.IO) { dao.setFavorite(id, fav) }
+
+    suspend fun insert(compound: CompoundEntity) = withContext(Dispatchers.IO) { dao.insert(compound) }
+    suspend fun update(compound: CompoundEntity) = withContext(Dispatchers.IO) { dao.update(compound) }
+    suspend fun delete(compound: CompoundEntity) = withContext(Dispatchers.IO) { dao.delete(compound) }
 }

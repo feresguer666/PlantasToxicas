@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Delete
 
 @Dao
 interface CompoundDao {
@@ -52,6 +53,9 @@ interface CompoundDao {
 
     @Update
     suspend fun update(item: CompoundEntity)
+
+    @Delete
+    suspend fun delete(item: CompoundEntity)
 
     @Query("UPDATE compounds SET isFavorite = :fav WHERE id = :id")
     suspend fun setFavorite(id: Int, fav: Boolean)

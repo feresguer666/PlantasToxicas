@@ -229,10 +229,10 @@ fun MainApp() {
         composable("phytochemistry") {
             PhytochemistryScreen(
                 viewModel = compoundViewModel,
-                onGroupClick = { group ->
-                    navController.navigate("compound_group/$group")
-                },
-                onBack = { navController.popBackStack() },
+                onGroupClick = { group -> navController.navigate("compound_group/$group") },
+                onAddCompoundClick = { navController.navigate("edit_compound/0") },
+                onCompoundClick = { c -> navController.navigate("compound_detail/${c.id}") },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -243,6 +243,7 @@ fun MainApp() {
                 groupName = group,
                 onCompoundClick = { c -> navController.navigate("compound_detail/${c.id}") },
                 onBack = { navController.popBackStack() },
+                onEditCompound = { c -> navController.navigate("edit_compound/${c.id}") }
             )
         }
 
@@ -257,6 +258,16 @@ fun MainApp() {
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
                 },
+            )
+        }
+
+        composable("edit_compound/{compoundId}") { backStackEntry ->
+            val compoundIdString = backStackEntry.arguments?.getString("compoundId") ?: "0"
+            val compoundId = compoundIdString.toIntOrNull()
+            EditCompoundScreen(
+                compoundId = compoundId,
+                viewModel = compoundViewModel,
+                onBack = { navController.popBackStack() }
             )
         }
 

@@ -47,4 +47,22 @@ class CompoundViewModel(application: Application) : AndroidViewModel(application
             repository.toggleFavorite(compound.id, !compound.isFavorite)
         }
     }
+
+    fun addCompound(compound: CompoundEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insert(compound)
+        }
+    }
+
+    fun updateCompound(compound: CompoundEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.update(compound)
+        }
+    }
+
+    fun deleteCompound(compound: CompoundEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.delete(compound)
+        }
+    }
 }

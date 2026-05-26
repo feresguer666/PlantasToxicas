@@ -4159,8 +4159,7 @@
    "groupColor": "#F9A825",
    "isFavorite": false
   },
- [
-  {
+ {
    "id": 141,
    "commonName": "Orellanina",
    "iupacName": "3,3',4,4'-Tetrahidroxi-2,2'-bipiridina 1,1'-dióxido",
@@ -5070,7 +5069,6 @@
    "groupColor": "#43A047",
    "isFavorite": false
   },
-  [
    {
     "id": 176,
     "commonName": "Licorina",
@@ -5721,7 +5719,6 @@
     "groupColor": "#D32F2F",
     "isFavorite": false
    },
-   [
     {
      "id": 201,
      "commonName": "Acido Oxálico",

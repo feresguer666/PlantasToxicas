@@ -58,7 +58,8 @@ fun PlantNavGraph(viewModel: PlantViewModel) {
                 onNavigateToDownloadImages = { navController.navigate(Screen.DownloadImages.route) },
                 onNavigateToNewPlant = { navController.navigate(Screen.NewPlant.route) },
                 onNavigateToCamera = { navController.navigate(Screen.CameraIdentify.route) },
-                onNavigateToPhytochemistry = { /* TODO: navegar a fitoquímica desde este NavGraph alternativo */ },
+                onNavigateToPhytochemistry = { /* TODO */ },
+                onNavigateToSettings = { /* TODO */ },
                 onPlantClick = { plant: PlantEntity ->
                     viewModel.selectPlant(plant)
                     navController.navigate(Screen.PlantDetail.createRoute(plant.id))

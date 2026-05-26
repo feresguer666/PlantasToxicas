@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +38,8 @@ fun HomeScreen(
     onNavigateToNewPlant: () -> Unit,
     onNavigateToCamera: () -> Unit,
     onNavigateToPhytochemistry: () -> Unit,
+
+    onNavigateToSettings: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
@@ -64,7 +67,20 @@ fun HomeScreen(
                         Text("📷", fontSize = 24.sp)
                     }
                     IconButton(onClick = onNavigateToDownloadImages) {
-                        Icon(Icons.Filled.Search, contentDescription = "Descargar", modifier = Modifier.size(26.dp))
+                        Icon(
+                            Icons.Filled.Search, 
+                            contentDescription = "Descargar", 
+                            modifier = Modifier.size(26.dp),
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            Icons.Filled.Settings, 
+                            contentDescription = "Ajustes", 
+                            modifier = Modifier.size(26.dp),
+                            tint = Color.White
+                        )
                     }
                     IconButton(onClick = onNavigateToNewPlant) {
                         Text("+", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)

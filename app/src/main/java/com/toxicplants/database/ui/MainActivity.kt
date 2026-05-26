@@ -68,6 +68,7 @@ fun MainApp() {
                 onNavigateToNewPlant = { navController.navigate("new_plant") },
                 onNavigateToCamera = { navController.navigate("camera_identify") },
                 onNavigateToPhytochemistry = { navController.navigate("phytochemistry") },
+                onNavigateToSettings = { navController.navigate("settings") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
@@ -269,6 +270,10 @@ fun MainApp() {
                 viewModel = compoundViewModel,
                 onBack = { navController.popBackStack() }
             )
+        }
+
+        composable("settings") {
+            SettingsScreen(onBack = { navController.popBackStack() })
         }
 
         composable("new_plant") {

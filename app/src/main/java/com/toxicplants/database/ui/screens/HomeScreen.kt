@@ -14,6 +14,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -38,7 +41,7 @@ fun HomeScreen(
     onNavigateToNewPlant: () -> Unit,
     onNavigateToCamera: () -> Unit,
     onNavigateToPhytochemistry: () -> Unit,
-
+    onNavigateToSearchBySymptoms: () -> Unit,
     onNavigateToSettings: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
@@ -48,39 +51,22 @@ fun HomeScreen(
     val mortalCount = allPlants.count { it.toxicityLevel == "Mortal" }
     val altoRiesgoCount = allPlants.count { it.toxicityLevel == "Alto" }
 
+    var showSearchDialog by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "🌿 Plantas Tóxicas",
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 26.sp,
-                        color = Color.White
-                    )
+                    Text("🌿 Plantas Tóxicas", fontWeight = FontWeight.ExtraBold, fontSize = 26.sp, color = Color.White)
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0D3311)
-                ),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0D3311)),
                 actions = {
-                    IconButton(onClick = onNavigateToCamera) {
-                        Text("📷", fontSize = 24.sp)
-                    }
+                    IconButton(onClick = onNavigateToCamera) { Text("📷", fontSize = 24.sp) }
                     IconButton(onClick = onNavigateToDownloadImages) {
-                        Icon(
-                            Icons.Filled.Search, 
-                            contentDescription = "Descargar", 
-                            modifier = Modifier.size(26.dp),
-                            tint = Color.White
-                        )
+                        Icon(Icons.Filled.Search, contentDescription = "Descargar", modifier = Modifier.size(26.dp), tint = Color.White)
                     }
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(
-                            Icons.Filled.Settings, 
-                            contentDescription = "Ajustes", 
-                            modifier = Modifier.size(26.dp),
-                            tint = Color.White
-                        )
+                        Icon(Icons.Filled.Settings, contentDescription = "Ajustes", modifier = Modifier.size(26.dp), tint = Color.White)
                     }
                     IconButton(onClick = onNavigateToNewPlant) {
                         Text("+", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
@@ -90,100 +76,42 @@ fun HomeScreen(
         }
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF0D1F0F),
-                            Color(0xFF0A1A0C),
-                            Color(0xFF081608)
-                        )
-                    )
-                ),
+            modifier = Modifier.fillMaxSize().padding(paddingValues).background(
+                Brush.verticalGradient(colors = listOf(Color(0xFF0D1F0F), Color(0xFF0A1A0C), Color(0xFF081608)))
+            ),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            // Botones grandes uno debajo del otro
             item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    // Emergencia
+                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .clickable { onNavigateToEmergency() },
+                        modifier = Modifier.fillMaxWidth().height(100.dp).clickable { onNavigateToEmergency() },
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFB71C1C)),
                         shape = RoundedCornerShape(20.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 24.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Filled.Warning,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(40.dp)
-                            )
+                        Row(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Filled.Warning, contentDescription = null, tint = Color.White, modifier = Modifier.size(40.dp))
                             Spacer(Modifier.width(20.dp))
                             Column {
-                                Text(
-                                    "EMERGENCIA",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 22.sp
-                                )
-                                Text(
-                                    "☎ 91 562 04 20",
-                                    color = Color.White.copy(alpha = 0.95f),
-                                    fontSize = 16.sp
-                                )
+                                Text("EMERGENCIA", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                                Text("☎ 91 562 04 20", color = Color.White.copy(alpha = 0.95f), fontSize = 16.sp)
                             }
                         }
                     }
 
-                    // Fitoquímica
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .clickable { onNavigateToPhytochemistry() },
+                        modifier = Modifier.fillMaxWidth().height(100.dp).clickable { onNavigateToPhytochemistry() },
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF4A148C)),
                         shape = RoundedCornerShape(20.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 24.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Filled.Science,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(40.dp)
-                            )
+                        Row(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Filled.Science, contentDescription = null, tint = Color.White, modifier = Modifier.size(40.dp))
                             Spacer(Modifier.width(20.dp))
                             Column {
-                                Text(
-                                    "FITOQUÍMICA",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 22.sp
-                                )
-                                Text(
-                                    "Alcaloides, glicósidos y más",
-                                    color = Color.White.copy(alpha = 0.95f),
-                                    fontSize = 16.sp
-                                )
+                                Text("FITOQUÍMICA", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                                Text("Alcaloides, glicósidos y más", color = Color.White.copy(alpha = 0.95f), fontSize = 16.sp)
                             }
                         }
                     }
@@ -197,11 +125,62 @@ fun HomeScreen(
                     onNavigateToList = onNavigateToList,
                     onNavigateToCategories = onNavigateToCategories,
                     onNavigateToOnlineDatabases = onNavigateToOnlineDatabases,
-                    onNavigateToSearch = onNavigateToSearch,
+                    onNavigateToSearch = { showSearchDialog = true },
                 )
             }
         }
     }
+
+    if (showSearchDialog) {
+        SearchTypeDialog(
+            onDismiss = { showSearchDialog = false },
+            onSearchByName = { showSearchDialog = false; onNavigateToSearch() },
+            onSearchBySymptoms = { showSearchDialog = false; onNavigateToSearchBySymptoms() }
+        )
+    }
+}
+
+@Composable
+fun SearchTypeDialog(onDismiss: () -> Unit, onSearchByName: () -> Unit, onSearchBySymptoms: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("🔍 ¿Cómo quieres buscar?", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { onSearchByName() },
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2E7D32)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("🔤", fontSize = 28.sp)
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text("Buscar por nombre", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("Nombre común o científico", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                        }
+                    }
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { onSearchBySymptoms() },
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF6A1B9A)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("🔬", fontSize = 28.sp)
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text("Buscar por síntomas", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text("Síntomas, toxicidad y categoría", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
+    )
 }
 
 @Composable
@@ -221,11 +200,7 @@ fun StatCard(emoji: String, value: String, label: String, color: Color) {
         colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.15f)),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
+        Column(modifier = Modifier.fillMaxSize().padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Text(emoji, fontSize = 22.sp)
             Text(value, fontWeight = FontWeight.Bold, color = color, fontSize = 18.sp)
             Text(label, fontSize = 11.sp, color = Color.LightGray)
@@ -234,12 +209,7 @@ fun StatCard(emoji: String, value: String, label: String, color: Color) {
 }
 
 @Composable
-fun NavigationGrid(
-    onNavigateToList: () -> Unit,
-    onNavigateToCategories: () -> Unit,
-    onNavigateToOnlineDatabases: () -> Unit,
-    onNavigateToSearch: () -> Unit,
-) {
+fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> Unit, onNavigateToOnlineDatabases: () -> Unit, onNavigateToSearch: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             NavButton(Modifier.weight(1f), "📋", "Todas las Plantas", Color(0xFF2E7D32), onNavigateToList)
@@ -260,22 +230,10 @@ fun NavButton(modifier: Modifier, icon: String, text: String, color: Color, onCl
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
+        Column(modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Text(icon, fontSize = 32.sp)
             Spacer(Modifier.height(8.dp))
-            Text(
-                text,
-                color = Color.White,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2
-            )
+            Text(text, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 2)
         }
     }
 }

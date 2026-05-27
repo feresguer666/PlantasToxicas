@@ -64,6 +64,7 @@ fun MainApp() {
                 onNavigateToEmergency = { navController.navigate("emergency") },
                 onNavigateToOnlineDatabases = { navController.navigate("online_databases") },
                 onNavigateToSearch = { navController.navigate("search") },
+                onNavigateToSearchBySymptoms = { navController.navigate("search_symptoms") },
                 onNavigateToDownloadImages = { navController.navigate("download_images") },
                 onNavigateToNewPlant = { navController.navigate("new_plant") },
                 onNavigateToCamera = { navController.navigate("camera_identify") },
@@ -117,6 +118,18 @@ fun MainApp() {
             )
         }
 
+        // 🔬 BUSCAR POR SÍNTOMAS
+        composable("search_symptoms") {
+            SearchBySymptomsScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
         composable("camera_identify") {
             CameraIdentifyScreen(
                 viewModel = viewModel,
@@ -159,7 +172,6 @@ fun MainApp() {
             }
         }
 
-        // ✅ PANTALLA DE UBICACIÓN
         composable("location/{plantId}") { backStackEntry ->
             val plantIdString = backStackEntry.arguments?.getString("plantId") ?: "0"
             val plantId = plantIdString.toIntOrNull() ?: 0
@@ -225,8 +237,6 @@ fun MainApp() {
             DownloadImagesScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
         }
 
-
-        // 🧪 FITOQUÍMICA
         composable("phytochemistry") {
             PhytochemistryScreen(
                 viewModel = compoundViewModel,
@@ -355,7 +365,6 @@ fun CategoryPlantCard(plant: PlantEntity, onClick: () -> Unit, onDeleteClick: ()
                     Text(plant.toxicityLevel, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), fontSize = 11.sp, color = toxicityColor, fontWeight = FontWeight.Bold)
                 }
             }
-            // ✅ ICONO DE UBICACIÓN SI EXISTE
             if (plant.latitude != null && plant.longitude != null) {
                 Icon(Icons.Default.LocationOn, contentDescription = "Tiene ubicación", tint = Color(0xFF1565C0), modifier = Modifier.size(20.dp))
             }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Settings
@@ -62,9 +61,8 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0D3311)),
                 actions = {
-                    IconButton(onClick = onNavigateToCamera) { Text("📷", fontSize = 24.sp) }
                     IconButton(onClick = onNavigateToDownloadImages) {
-                        Icon(Icons.Filled.Search, contentDescription = "Descargar", modifier = Modifier.size(26.dp), tint = Color.White)
+                        Icon(Icons.Filled.Settings, contentDescription = "Descargar", modifier = Modifier.size(26.dp), tint = Color.White)
                     }
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(Icons.Filled.Settings, contentDescription = "Ajustes", modifier = Modifier.size(26.dp), tint = Color.White)
@@ -127,7 +125,8 @@ fun HomeScreen(
                     onNavigateToCategories = onNavigateToCategories,
                     onNavigateToOnlineDatabases = onNavigateToOnlineDatabases,
                     onNavigateToSearch = { showSearchDialog = true },
-                    onNavigateToAR = onNavigateToAR
+                    onNavigateToAR = onNavigateToAR,
+                    onNavigateToCamera = onNavigateToCamera
                 )
             }
         }
@@ -211,7 +210,7 @@ fun StatCard(emoji: String, value: String, label: String, color: Color) {
 }
 
 @Composable
-fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> Unit, onNavigateToOnlineDatabases: () -> Unit, onNavigateToSearch: () -> Unit, onNavigateToAR: () -> Unit) {
+fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> Unit, onNavigateToOnlineDatabases: () -> Unit, onNavigateToSearch: () -> Unit, onNavigateToAR: () -> Unit, onNavigateToCamera: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             NavButton(Modifier.weight(1f), "📋", "Todas las Plantas", Color(0xFF2E7D32), onNavigateToList)
@@ -223,7 +222,7 @@ fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> U
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             NavButton(Modifier.weight(1f), "🎯", "AR Detección", Color(0xFF1A237E), onNavigateToAR)
-            NavButton(Modifier.weight(1f), "📷", "Identificar", Color(0xFF00695C), { /* placeholder */ })
+            NavButton(Modifier.weight(1f), "📷", "Identificar", Color(0xFF00695C), onNavigateToCamera)
         }
     }
 }

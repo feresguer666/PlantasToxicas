@@ -24,6 +24,7 @@ sealed class Screen(val route: String) {
     object EditPlant : Screen("edit_plant/{plantId}") { fun createRoute(plantId: Int) = "edit_plant/$plantId" }
     object CameraIdentify : Screen("camera_identify")
     object PlantNetResult : Screen("plantnet_result/{name}/{scientificName}") { fun createRoute(name: String, scientificName: String) = "plantnet_result/$name/$scientificName" }
+    object AR : Screen("ar")
 }
 
 @Composable
@@ -45,6 +46,7 @@ fun PlantNavGraph(viewModel: PlantViewModel) {
                 onNavigateToCamera = { navController.navigate(Screen.CameraIdentify.route) },
                 onNavigateToPhytochemistry = { },
                 onNavigateToSettings = { },
+                onNavigateToAR = { navController.navigate(Screen.AR.route) },
                 onPlantClick = { plant: PlantEntity ->
                     viewModel.selectPlant(plant)
                     navController.navigate(Screen.PlantDetail.createRoute(plant.id))
@@ -74,6 +76,7 @@ fun PlantNavGraph(viewModel: PlantViewModel) {
         composable(Screen.SearchBySymptoms.route) { SearchBySymptomsScreen(viewModel = viewModel, onPlantClick = { plant: PlantEntity -> viewModel.selectPlant(plant); navController.navigate(Screen.PlantDetail.createRoute(plant.id)) }, onBack = { navController.popBackStack() }) }
         composable(Screen.DownloadImages.route) { DownloadImagesScreen(viewModel = viewModel, onBack = { navController.popBackStack() }) }
         composable(Screen.NewPlant.route) { EditPlantScreen(plantId = null, viewModel = viewModel, onBack = { navController.popBackStack() }) }
+        composable(Screen.AR.route) { ARScreen(viewModel = viewModel, onPlantClick = { plant: PlantEntity -> viewModel.selectPlant(plant); navController.navigate(Screen.PlantDetail.createRoute(plant.id)) }, onBack = { navController.popBackStack() }) }
 
         composable(route = Screen.EditPlant.route, arguments = listOf(navArgument("plantId") { type = NavType.IntType })) { backStackEntry ->
             val plantId = backStackEntry.arguments?.getInt("plantId") ?: return@composable

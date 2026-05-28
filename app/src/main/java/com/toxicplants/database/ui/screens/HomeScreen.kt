@@ -42,6 +42,7 @@ fun HomeScreen(
     onNavigateToCamera: () -> Unit,
     onNavigateToPhytochemistry: () -> Unit,
     onNavigateToSearchBySymptoms: () -> Unit,
+    onNavigateToAR: () -> Unit,
     onNavigateToSettings: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
@@ -126,6 +127,7 @@ fun HomeScreen(
                     onNavigateToCategories = onNavigateToCategories,
                     onNavigateToOnlineDatabases = onNavigateToOnlineDatabases,
                     onNavigateToSearch = { showSearchDialog = true },
+                    onNavigateToAR = onNavigateToAR
                 )
             }
         }
@@ -209,7 +211,7 @@ fun StatCard(emoji: String, value: String, label: String, color: Color) {
 }
 
 @Composable
-fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> Unit, onNavigateToOnlineDatabases: () -> Unit, onNavigateToSearch: () -> Unit) {
+fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> Unit, onNavigateToOnlineDatabases: () -> Unit, onNavigateToSearch: () -> Unit, onNavigateToAR: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             NavButton(Modifier.weight(1f), "📋", "Todas las Plantas", Color(0xFF2E7D32), onNavigateToList)
@@ -218,6 +220,10 @@ fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> U
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             NavButton(Modifier.weight(1f), "🔍", "Buscar", Color(0xFF6A1B9A), onNavigateToSearch)
             NavButton(Modifier.weight(1f), "🌐", "Recursos", Color(0xFFC62828), onNavigateToOnlineDatabases)
+        }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            NavButton(Modifier.weight(1f), "🎯", "AR Detección", Color(0xFF1A237E), onNavigateToAR)
+            NavButton(Modifier.weight(1f), "📷", "Identificar", Color(0xFF00695C), { /* placeholder */ })
         }
     }
 }

@@ -70,6 +70,7 @@ fun MainApp() {
                 onNavigateToCamera = { navController.navigate("camera_identify") },
                 onNavigateToPhytochemistry = { navController.navigate("phytochemistry") },
                 onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToAR = { navController.navigate("ar") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
@@ -118,9 +119,19 @@ fun MainApp() {
             )
         }
 
-        // 🔬 BUSCAR POR SÍNTOMAS
         composable("search_symptoms") {
             SearchBySymptomsScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("ar") {
+            ARScreen(
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)

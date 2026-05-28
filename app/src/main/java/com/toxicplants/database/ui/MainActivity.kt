@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,7 +20,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,7 +39,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ToxicPlantsTheme {
+            val systemDark = isSystemInDarkTheme()
+            ToxicPlantsTheme(darkTheme = systemDark) {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     MainApp()
                 }
@@ -69,8 +70,8 @@ fun MainApp() {
                 onNavigateToNewPlant = { navController.navigate("new_plant") },
                 onNavigateToCamera = { navController.navigate("camera_identify") },
                 onNavigateToPhytochemistry = { navController.navigate("phytochemistry") },
-                onNavigateToSettings = { navController.navigate("settings") },
                 onNavigateToAR = { navController.navigate("ar") },
+                onNavigateToSettings = { navController.navigate("settings") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
@@ -248,6 +249,10 @@ fun MainApp() {
             DownloadImagesScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
         }
 
+        composable("settings") {
+            SettingsScreen(onBack = { navController.popBackStack() })
+        }
+
         composable("phytochemistry") {
             PhytochemistryScreen(
                 viewModel = compoundViewModel,
@@ -291,10 +296,6 @@ fun MainApp() {
                 viewModel = compoundViewModel,
                 onBack = { navController.popBackStack() }
             )
-        }
-
-        composable("settings") {
-            SettingsScreen(onBack = { navController.popBackStack() })
         }
 
         composable("new_plant") {

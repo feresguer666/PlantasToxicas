@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,12 +62,25 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0D3311)),
                 actions = {
+                    // Lupa para descargar imágenes (antes engranaje)
                     IconButton(onClick = onNavigateToDownloadImages) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Descargar", modifier = Modifier.size(26.dp), tint = Color.White)
+                        Icon(
+                            Icons.Filled.Download,
+                            contentDescription = "Descargar imágenes",
+                            modifier = Modifier.size(26.dp),
+                            tint = Color.White
+                        )
                     }
+                    // Engranaje para ajustes
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Ajustes", modifier = Modifier.size(26.dp), tint = Color.White)
+                        Icon(
+                            Icons.Filled.Settings,
+                            contentDescription = "Ajustes",
+                            modifier = Modifier.size(26.dp),
+                            tint = Color.White
+                        )
                     }
+                    // Botón + para nueva planta
                     IconButton(onClick = onNavigateToNewPlant) {
                         Text("+", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
@@ -83,6 +97,7 @@ fun HomeScreen(
         ) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    // Emergencia
                     Card(
                         modifier = Modifier.fillMaxWidth().height(100.dp).clickable { onNavigateToEmergency() },
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFB71C1C)),
@@ -99,6 +114,7 @@ fun HomeScreen(
                         }
                     }
 
+                    // Fitoquímica
                     Card(
                         modifier = Modifier.fillMaxWidth().height(100.dp).clickable { onNavigateToPhytochemistry() },
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF4A148C)),
@@ -117,8 +133,10 @@ fun HomeScreen(
                 }
             }
 
+            // Stats
             item { StatsRow(allPlants.size, mortalCount, altoRiesgoCount, allFamilies.size) }
 
+            // Navegación
             item {
                 NavigationGrid(
                     onNavigateToList = onNavigateToList,
@@ -132,6 +150,7 @@ fun HomeScreen(
         }
     }
 
+    // Diálogo de búsqueda
     if (showSearchDialog) {
         SearchTypeDialog(
             onDismiss = { showSearchDialog = false },

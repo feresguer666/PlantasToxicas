@@ -17,7 +17,11 @@
     <!-- Geolocalización (LocationScreen) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- AR -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.ar" android:required="false" />
 
+    <meta-data android:name="com.google.ar.core" android:value="required" />
     <!-- Marcador del teléfono de toxicología (usamos ACTION_DIAL, no se necesita CALL_PHONE) -->
     <!-- Si en algún momento usas ACTION_CALL, descomenta:
     <uses-permission android:name="android.permission.CALL_PHONE" />

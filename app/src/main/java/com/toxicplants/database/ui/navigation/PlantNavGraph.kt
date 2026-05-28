@@ -25,6 +25,7 @@ sealed class Screen(val route: String) {
     object CameraIdentify : Screen("camera_identify")
     object PlantNetResult : Screen("plantnet_result/{name}/{scientificName}") { fun createRoute(name: String, scientificName: String) = "plantnet_result/$name/$scientificName" }
     object AR : Screen("ar")
+    object BerriesGuide : Screen("berries_guide") // Nueva ruta para la Guía de Bayas
 }
 
 @Composable
@@ -47,10 +48,7 @@ fun PlantNavGraph(viewModel: PlantViewModel) {
                 onNavigateToPhytochemistry = { },
                 onNavigateToSettings = { },
                 onNavigateToAR = { navController.navigate(Screen.AR.route) },
-                onNavigateToBerries = {
-                    viewModel.setCategory("Bayas")
-                    navController.navigate(Screen.PlantList.route)
-                },
+                onNavigateToBerries = { navController.navigate(Screen.BerriesGuide.route) }, // Conexión al botón de bayas
                 onPlantClick = { plant: PlantEntity ->
                     viewModel.selectPlant(plant)
                     navController.navigate(Screen.PlantDetail.createRoute(plant.id))
@@ -59,20 +57,46 @@ fun PlantNavGraph(viewModel: PlantViewModel) {
         }
 
         composable(Screen.PlantList.route) {
-            PlantListScreen(viewModel = viewModel, onPlantClick = { plant: PlantEntity -> viewModel.selectPlant(plant); navController.navigate(Screen.PlantDetail.createRoute(plant.id)) }, onBack = { navController.popBackStack() })
+            PlantListScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant: PlantEntity ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate(Screen.PlantDetail.createRoute(plant.id))
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(route = Screen.PlantDetail.route, arguments = listOf(navArgument("plantId") { type = NavType.IntType })) { backStackEntry ->
             val plantId = backStackEntry.arguments?.getInt("plantId") ?: return@composable
-            PlantDetailScreen(plantId = plantId, viewModel = viewModel, onBack = { navController.popBackStack() }, onEdit = { id -> navController.navigate(Screen.EditPlant.createRoute(id)) })
+            PlantDetailScreen(
+                plantId = plantId,
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onEdit = { id -> navController.navigate(Screen.EditPlant.createRoute(id)) }
+            )
         }
 
         composable(Screen.Categories.route) {
-            CategoriesScreen(viewModel = viewModel, onCategoryClick = { category: String -> viewModel.setCategory(category); navController.navigate(Screen.PlantList.route) }, onBack = { navController.popBackStack() })
+            CategoriesScreen(
+                viewModel = viewModel,
+                onCategoryClick = { category: String ->
+                    viewModel.setCategory(category)
+                    navController.navigate(Screen.PlantList.route)
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.Emergency.route) {
-            EmergencyScreen(viewModel = viewModel, onPlantClick = { plant: PlantEntity -> viewModel.selectPlant(plant); navController.navigate(Screen.PlantDetail.createRoute(plant.id)) }, onBack = { navController.popBackStack() })
+            EmergencyScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant: PlantEntity ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate(Screen.PlantDetail.createRoute(plant.id))
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.OnlineDatabases.route) { OnlineDatabasesScreen(onNavigateBack = { navController.popBackStack() }) }
@@ -81,6 +105,14 @@ fun PlantNavGraph(viewModel: PlantViewModel) {
         composable(Screen.DownloadImages.route) { DownloadImagesScreen(viewModel = viewModel, onBack = { navController.popBackStack() }) }
         composable(Screen.NewPlant.route) { EditPlantScreen(plantId = null, viewModel = viewModel, onBack = { navController.popBackStack() }) }
         composable(Screen.AR.route) { ARScreen(viewModel = viewModel, onPlantClick = { plant: PlantEntity -> viewModel.selectPlant(plant); navController.navigate(Screen.PlantDetail.createRoute(plant.id)) }, onBack = { navController.popBackStack() }) }
+
+        // Nueva pantalla de la Guía de Bayas
+        composable(Screen.BerriesGuide.route) {
+            BerriesGuideScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
 
         composable(route = Screen.EditPlant.route, arguments = listOf(navArgument("plantId") { type = NavType.IntType })) { backStackEntry ->
             val plantId = backStackEntry.arguments?.getInt("plantId") ?: return@composable

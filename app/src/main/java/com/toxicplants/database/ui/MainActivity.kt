@@ -73,6 +73,7 @@ fun MainApp() {
                 onNavigateToAR = { navController.navigate("ar") },
                 onNavigateToSettings = { navController.navigate("settings") },
                 onNavigateToBerries = { navController.navigate("berries") },
+                onNavigateToNotes = { navController.navigate("notes") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
@@ -144,6 +145,10 @@ fun MainApp() {
         }
 
         composable("berries") {
+        }
+
+        composable("notes") {
+            NotesScreen(onBack = { navController.popBackStack() })
             BerriesScreen(onBack = { navController.popBackStack() })
         }
 

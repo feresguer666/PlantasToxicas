@@ -43,6 +43,7 @@ fun HomeScreen(
     onNavigateToPhytochemistry: () -> Unit,
     onNavigateToSearchBySymptoms: () -> Unit,
     onNavigateToAR: () -> Unit,
+    onNavigateToBerries: () -> Unit,
     onNavigateToSettings: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
@@ -62,25 +63,12 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0D3311)),
                 actions = {
-                    // Lupa para descargar imágenes (antes engranaje)
                     IconButton(onClick = onNavigateToDownloadImages) {
-                        Icon(
-                            Icons.Filled.Download,
-                            contentDescription = "Descargar imágenes",
-                            modifier = Modifier.size(26.dp),
-                            tint = Color.White
-                        )
+                        Icon(Icons.Filled.Download, contentDescription = "Descargar imágenes", modifier = Modifier.size(26.dp), tint = Color.White)
                     }
-                    // Engranaje para ajustes
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(
-                            Icons.Filled.Settings,
-                            contentDescription = "Ajustes",
-                            modifier = Modifier.size(26.dp),
-                            tint = Color.White
-                        )
+                        Icon(Icons.Filled.Settings, contentDescription = "Ajustes", modifier = Modifier.size(26.dp), tint = Color.White)
                     }
-                    // Botón + para nueva planta
                     IconButton(onClick = onNavigateToNewPlant) {
                         Text("+", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
@@ -97,7 +85,6 @@ fun HomeScreen(
         ) {
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    // Emergencia
                     Card(
                         modifier = Modifier.fillMaxWidth().height(100.dp).clickable { onNavigateToEmergency() },
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFB71C1C)),
@@ -114,7 +101,6 @@ fun HomeScreen(
                         }
                     }
 
-                    // Fitoquímica
                     Card(
                         modifier = Modifier.fillMaxWidth().height(100.dp).clickable { onNavigateToPhytochemistry() },
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF4A148C)),
@@ -133,10 +119,8 @@ fun HomeScreen(
                 }
             }
 
-            // Stats
             item { StatsRow(allPlants.size, mortalCount, altoRiesgoCount, allFamilies.size) }
 
-            // Navegación
             item {
                 NavigationGrid(
                     onNavigateToList = onNavigateToList,
@@ -144,13 +128,13 @@ fun HomeScreen(
                     onNavigateToOnlineDatabases = onNavigateToOnlineDatabases,
                     onNavigateToSearch = { showSearchDialog = true },
                     onNavigateToAR = onNavigateToAR,
-                    onNavigateToCamera = onNavigateToCamera
+                    onNavigateToCamera = onNavigateToCamera,
+                    onNavigateToBerries = onNavigateToBerries
                 )
             }
         }
     }
 
-    // Diálogo de búsqueda
     if (showSearchDialog) {
         SearchTypeDialog(
             onDismiss = { showSearchDialog = false },
@@ -167,11 +151,7 @@ fun SearchTypeDialog(onDismiss: () -> Unit, onSearchByName: () -> Unit, onSearch
         title = { Text("🔍 ¿Cómo quieres buscar?", fontWeight = FontWeight.Bold) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Card(
-                    modifier = Modifier.fillMaxWidth().clickable { onSearchByName() },
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2E7D32)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
+                Card(modifier = Modifier.fillMaxWidth().clickable { onSearchByName() }, colors = CardDefaults.cardColors(containerColor = Color(0xFF2E7D32)), shape = RoundedCornerShape(12.dp)) {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("🔤", fontSize = 28.sp)
                         Spacer(Modifier.width(16.dp))
@@ -182,11 +162,7 @@ fun SearchTypeDialog(onDismiss: () -> Unit, onSearchByName: () -> Unit, onSearch
                     }
                 }
 
-                Card(
-                    modifier = Modifier.fillMaxWidth().clickable { onSearchBySymptoms() },
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF6A1B9A)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
+                Card(modifier = Modifier.fillMaxWidth().clickable { onSearchBySymptoms() }, colors = CardDefaults.cardColors(containerColor = Color(0xFF6A1B9A)), shape = RoundedCornerShape(12.dp)) {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text("🔬", fontSize = 28.sp)
                         Spacer(Modifier.width(16.dp))
@@ -215,11 +191,7 @@ fun StatsRow(totalPlants: Int, mortalCount: Int, altoRiesgoCount: Int, familiesC
 
 @Composable
 fun StatCard(emoji: String, value: String, label: String, color: Color) {
-    Card(
-        modifier = Modifier.size(width = 82.dp, height = 82.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.15f)),
-        shape = RoundedCornerShape(16.dp)
-    ) {
+    Card(modifier = Modifier.size(width = 82.dp, height = 82.dp), colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.15f)), shape = RoundedCornerShape(16.dp)) {
         Column(modifier = Modifier.fillMaxSize().padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Text(emoji, fontSize = 22.sp)
             Text(value, fontWeight = FontWeight.Bold, color = color, fontSize = 18.sp)
@@ -229,7 +201,15 @@ fun StatCard(emoji: String, value: String, label: String, color: Color) {
 }
 
 @Composable
-fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> Unit, onNavigateToOnlineDatabases: () -> Unit, onNavigateToSearch: () -> Unit, onNavigateToAR: () -> Unit, onNavigateToCamera: () -> Unit) {
+fun NavigationGrid(
+    onNavigateToList: () -> Unit,
+    onNavigateToCategories: () -> Unit,
+    onNavigateToOnlineDatabases: () -> Unit,
+    onNavigateToSearch: () -> Unit,
+    onNavigateToAR: () -> Unit,
+    onNavigateToCamera: () -> Unit,
+    onNavigateToBerries: () -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             NavButton(Modifier.weight(1f), "📋", "Todas las Plantas", Color(0xFF2E7D32), onNavigateToList)
@@ -243,17 +223,16 @@ fun NavigationGrid(onNavigateToList: () -> Unit, onNavigateToCategories: () -> U
             NavButton(Modifier.weight(1f), "🎯", "AR Detección", Color(0xFF1A237E), onNavigateToAR)
             NavButton(Modifier.weight(1f), "📷", "Identificar", Color(0xFF00695C), onNavigateToCamera)
         }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            NavButton(Modifier.weight(1f), "🫐", "Bayas", Color(0xFF880E4F), onNavigateToBerries)
+            NavButton(Modifier.weight(1f), "🔬", "Síntomas", Color(0xFF4A148C), onNavigateToSearch)
+        }
     }
 }
 
 @Composable
 fun NavButton(modifier: Modifier, icon: String, text: String, color: Color, onClick: () -> Unit) {
-    Card(
-        modifier = modifier.height(110.dp).clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = color),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
+    Card(modifier = modifier.height(110.dp).clickable { onClick() }, colors = CardDefaults.cardColors(containerColor = color), shape = RoundedCornerShape(20.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
         Column(modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Text(icon, fontSize = 32.sp)
             Spacer(Modifier.height(8.dp))

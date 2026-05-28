@@ -72,6 +72,7 @@ fun MainApp() {
                 onNavigateToPhytochemistry = { navController.navigate("phytochemistry") },
                 onNavigateToAR = { navController.navigate("ar") },
                 onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToBerries = { navController.navigate("berries") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
@@ -140,6 +141,10 @@ fun MainApp() {
                 },
                 onBack = { navController.popBackStack() }
             )
+        }
+
+        composable("berries") {
+            BerriesScreen(onBack = { navController.popBackStack() })
         }
 
         composable("camera_identify") {
@@ -250,7 +255,10 @@ fun MainApp() {
         }
 
         composable("settings") {
-            SettingsScreen(onBack = { navController.popBackStack() })
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToDownloadImages = { navController.navigate("download_images") }
+            )
         }
 
         composable("phytochemistry") {

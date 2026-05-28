@@ -47,6 +47,10 @@ fun PlantNavGraph(viewModel: PlantViewModel) {
                 onNavigateToPhytochemistry = { },
                 onNavigateToSettings = { },
                 onNavigateToAR = { navController.navigate(Screen.AR.route) },
+                onNavigateToBerries = {
+                    viewModel.setCategory("Bayas")
+                    navController.navigate(Screen.PlantList.route)
+                },
                 onPlantClick = { plant: PlantEntity ->
                     viewModel.selectPlant(plant)
                     navController.navigate(Screen.PlantDetail.createRoute(plant.id))

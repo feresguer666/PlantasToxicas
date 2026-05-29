@@ -145,11 +145,11 @@ fun MainApp() {
         }
 
         composable("berries") {
+            BerriesScreen(onBack = { navController.popBackStack() })
         }
 
         composable("notes") {
             NotesScreen(onBack = { navController.popBackStack() })
-            BerriesScreen(onBack = { navController.popBackStack() })
         }
 
         composable("camera_identify") {

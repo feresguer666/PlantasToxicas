@@ -373,14 +373,14 @@ fun CategoryListScreen(
 @Composable
 fun CategoryPlantCard(plant: PlantEntity, onClick: () -> Unit, onDeleteClick: () -> Unit) {
     val toxicityColor = when (plant.toxicityLevel) {
-        "Mortal" -> Color(0xFFB71C1C); "Alto" -> Color(0xFFE65100); "Moderado" -> Color(0xFFF57C00); "Bajo" -> Color(0xFF388E3C)
+        "Mortal" -> Color(0xFFB71C1C); "Muy alto" -> Color(0xFFFF5722); "Alto" -> Color(0xFFE65100); "Moderado" -> Color(0xFFF57C00); "Bajo" -> Color(0xFF388E3C)
         else -> Color.Gray
     }
 
     Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.size(50.dp).background(toxicityColor.copy(alpha = 0.1f), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
-                Text(when (plant.toxicityLevel) { "Mortal" -> "☠️"; "Alto" -> "⚠️"; "Moderado" -> "⚡"; else -> "🌿" }, fontSize = 24.sp)
+                Text(when (plant.toxicityLevel) { "Mortal" -> "☠️"; "Muy alto" -> "💀"; "Alto" -> "⚠️"; "Moderado" -> "⚡"; "Bajo" -> "🟢"; else -> "🌿" }, fontSize = 24.sp)
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {

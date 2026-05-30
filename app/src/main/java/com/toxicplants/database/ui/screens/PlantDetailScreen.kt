@@ -347,6 +347,7 @@ fun InfoRow(label: String, value: String) {
 fun getToxicityColor(level: String): Color {
     return when (level) {
         "Mortal" -> Color(0xFFB71C1C)
+        "Muy alto" -> Color(0xFFFF5722)
         "Alto" -> Color(0xFFE65100)
         "Moderado" -> Color(0xFFF57C00)
         "Bajo" -> Color(0xFF388E3C)

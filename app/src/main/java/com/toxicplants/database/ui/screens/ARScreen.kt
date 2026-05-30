@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat
 import com.google.ar.core.ArCoreApk
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
+import com.toxicplants.database.BuildConfig
 import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
@@ -272,7 +273,14 @@ fun CameraPreviewWithCapture(
 private fun detectPlantFromBitmap(bitmap: Bitmap, allPlants: List<PlantEntity>, callback: (PlantEntity?, String) -> Unit) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
-            val apiKey = "2b10xAb3tJgmvhuWpj3DVvcFO"  // ⚠️ Cambia esto por tu API key de Pl@ntNet
+            val apiKey = BuildConfig.PLANTNET_API_KEY  // Inyectada desde local.properties vía BuildConfig
+
+            if (apiKey.isBlank()) {
+                withContext(Dispatchers.Main) {
+                    callback(null, "❌ API Key no configurada. Configúrala en Ajustes.")
+                }
+                return@launch
+            }
 
             val url = URL("https://my-api.plantnet.org/v2/identify/all?api-key=$apiKey")
             val connection = url.openConnection() as HttpURLConnection

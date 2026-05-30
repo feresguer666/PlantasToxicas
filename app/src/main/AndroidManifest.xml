@@ -5,9 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Cámara e identificación con Pl@ntNet -->
+    <!-- Cámara (Pl@ntNet + AR) -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.ar" android:required="false" />
 
     <!-- Acceso a fotos / galería -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -17,11 +18,7 @@
     <!-- Geolocalización (LocationScreen) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- AR -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera.ar" android:required="false" />
 
-    <meta-data android:name="com.google.ar.core" android:value="required" />
     <!-- Marcador del teléfono de toxicología (usamos ACTION_DIAL, no se necesita CALL_PHONE) -->
     <!-- Si en algún momento usas ACTION_CALL, descomenta:
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -38,6 +35,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToxicPlants"
         android:usesCleartextTraffic="true">
+
+        <!-- AR Core: debe ir DENTRO de <application> -->
+        <meta-data android:name="com.google.ar.core" android:value="optional" />
 
         <activity
             android:name=".ui.MainActivity"

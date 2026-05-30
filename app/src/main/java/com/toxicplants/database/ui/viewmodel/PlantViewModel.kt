@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.PlantDataSource
+import com.toxicplants.database.CompoundDataSource
 import com.toxicplants.database.data.repository.PlantRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +45,9 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     val plantsData: StateFlow<List<PlantEntity>> = plants
 
     init {
-        val plantDao = PlantDatabase.getDatabase(application).plantDao()
+        val db = PlantDatabase.getDatabase(application)
+        val plantDao = db.plantDao()
+        val compoundDao = db.compoundDao()
         repository = PlantRepository(plantDao)
         allPlants = repository.allPlants
         favoritePlants = repository.favoritePlants
@@ -53,9 +56,12 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch(Dispatchers.IO) {
             isLoading.postValue(true)
+            // Siembra inicial de datos (solo la primera vez que se crea la BD)
             if (repository.getPlantCount() == 0) {
-                val plantsList = PlantDataSource.loadAll(application)
-                repository.insertAll(plantsList)
+                repository.insertAll(PlantDataSource.loadAll(application))
+            }
+            if (compoundDao.count() == 0) {
+                compoundDao.insertAll(CompoundDataSource.loadAll(application))
             }
             mortalPlants.value = repository.getPlantsByToxicitySync("Mortal")
             plants.value = repository.getAllPlantsSync()

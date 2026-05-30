@@ -48,8 +48,8 @@ fun SearchScreen(
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { viewModel.setSearchQuery(it) },
-                        modifier = Modifier.weight(1f).height(50.dp),
-                        placeholder = { Text("Buscar plantas...", color = colors.onPrimary.copy(alpha = 0.6f)) },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("Buscar plantas...", color = colors.onPrimary.copy(alpha = 0.6f), maxLines = 1) },
                         singleLine = true,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = colors.onPrimary,
@@ -112,18 +112,43 @@ fun SearchScreen(
 @Composable
 fun ToxicityFilterChips(onFilterSelect: (String?) -> Unit) {
     val colors = MaterialTheme.colorScheme
-    val toxicityLevels = listOf("Mortal", "Alto", "Moderado", "Bajo")
+    val toxicityLevels = listOf("Todas", "Mortal", "Muy alto", "Alto", "Moderado", "Bajo", "Desconocido")
     var selectedLevel by remember { mutableStateOf<String?>(null) }
 
-    Row(modifier = Modifier.fillMaxWidth().background(colors.surface).padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth().background(colors.surface).padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         toxicityLevels.forEach { level ->
-            val isSelected = selectedLevel == level
-            val chipColor = when (level) { "Mortal" -> colors.error; "Alto" -> Color(0xFFE65100); "Moderado" -> Color(0xFFF57C00); else -> colors.primary }
+            val isSelected = selectedLevel == level || (level == "Todas" && selectedLevel == null)
+            val chipColor = when (level) {
+                "Todas" -> colors.primary
+                "Mortal" -> colors.error
+                "Muy alto" -> Color(0xFFFF5722)
+                "Alto" -> Color(0xFFE65100)
+                "Moderado" -> Color(0xFFF57C00)
+                "Bajo" -> Color(0xFF388E3C)
+                else -> Color.Gray
+            }
             FilterChip(
                 selected = isSelected,
-                onClick = { selectedLevel = if (selectedLevel == level) null else level; onFilterSelect(selectedLevel) },
-                label = { Text(level, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = chipColor, selectedLabelColor = Color.White, containerColor = chipColor.copy(alpha = 0.1f), labelColor = chipColor)
+                onClick = {
+                    if (level == "Todas") {
+                        selectedLevel = null
+                        onFilterSelect(null)
+                    } else {
+                        selectedLevel = if (selectedLevel == level) null else level
+                        onFilterSelect(selectedLevel)
+                    }
+                },
+                label = { Text(level, fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = chipColor,
+                    selectedLabelColor = Color.White,
+                    containerColor = chipColor.copy(alpha = 0.1f),
+                    labelColor = chipColor
+                )
             )
         }
     }

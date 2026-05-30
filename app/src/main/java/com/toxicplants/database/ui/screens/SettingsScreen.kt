@@ -1,6 +1,10 @@
 package com.toxicplants.database.ui.screens
 
+import android.app.Activity
+import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.DarkMode
@@ -15,6 +20,7 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.toxicplants.database.ui.viewmodel.BackupViewModel
+import com.toxicplants.database.ui.viewmodel.BackupStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,9 +39,47 @@ fun SettingsScreen(
     onNavigateToDownloadImages: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val backupViewModel: BackupViewModel = viewModel()
+
     var darkModeEnabled by remember { mutableStateOf(false) }
     var showExportDialog by remember { mutableStateOf(false) }
     var showImportDialog by remember { mutableStateOf(false) }
+
+    // Observar estado del backup
+    val backupStatus by backupViewModel.backupStatus.observeAsState(BackupStatus.Idle)
+
+    // Launcher para crear archivo de exportación
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri?.let {
+            backupViewModel.exportDatabase(it)
+        } ?: backupViewModel.resetStatus()
+    }
+
+    // Launcher para seleccionar archivo de importación
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            backupViewModel.importDatabase(it)
+        } ?: backupViewModel.resetStatus()
+    }
+
+    // Mostrar resultado de backup/import
+    LaunchedEffect(backupStatus) {
+        when (val status = backupStatus) {
+            is BackupStatus.Success -> {
+                Toast.makeText(context, "✅ ${status.message}", Toast.LENGTH_LONG).show()
+                backupViewModel.resetStatus()
+            }
+            is BackupStatus.Error -> {
+                Toast.makeText(context, "❌ ${status.message}", Toast.LENGTH_LONG).show()
+                backupViewModel.resetStatus()
+            }
+            else -> {}
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -132,7 +179,7 @@ fun SettingsScreen(
                             Text("Guardar imágenes de plantas en el dispositivo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
@@ -143,7 +190,7 @@ fun SettingsScreen(
 
             item {
                 SettingsCard(modifier = Modifier.clickable {
-                    showExportDialog = true
+                    exportLauncher.launch(backupViewModel.getSuggestedFileName())
                 }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -152,16 +199,16 @@ fun SettingsScreen(
                         Icon(
                             Icons.Default.CloudUpload,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = Color(0xFF2E7D32),
                             modifier = Modifier.size(28.dp)
                         )
                         Spacer(Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text("Respaldar Datos", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text("Exportar base de datos a archivo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("Exportar base de datos a archivo JSON", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
@@ -172,7 +219,7 @@ fun SettingsScreen(
 
             item {
                 SettingsCard(modifier = Modifier.clickable {
-                    showImportDialog = true
+                    importLauncher.launch(arrayOf("application/json", "*/*"))
                 }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -181,7 +228,7 @@ fun SettingsScreen(
                         Icon(
                             Icons.Default.CloudDownload,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = Color(0xFF1565C0),
                             modifier = Modifier.size(28.dp)
                         )
                         Spacer(Modifier.width(16.dp))
@@ -190,11 +237,34 @@ fun SettingsScreen(
                             Text("Restaurar desde archivo de respaldo", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
+                    }
+                }
+            }
+
+            // Indicador de progreso
+            if (backupStatus is BackupStatus.Loading) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(Modifier.width(16.dp))
+                            Text("Procesando...", fontWeight = FontWeight.Medium)
+                        }
                     }
                 }
             }
@@ -221,57 +291,11 @@ fun SettingsScreen(
                         Text("Plantas Tóxicas", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         Text("Versión 1.0.0", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(Modifier.height(4.dp))
-                        Text("7,656 plantas en el catálogo", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                        Text("Catálogo de plantas tóxicas", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
         }
-    }
-
-    if (showExportDialog) {
-        AlertDialog(
-            onDismissRequest = { showExportDialog = false },
-            title = { Text("📤 Respaldar Datos") },
-            text = {
-                Text("¿Quieres exportar todos los datos de plantas?\n\nSe creará un archivo JSON que podrás guardar.")
-            },
-            confirmButton = {
-                Button(onClick = {
-                    showExportDialog = false
-                    Toast.makeText(context, "Función de exportar en desarrollo", Toast.LENGTH_SHORT).show()
-                }) {
-                    Text("Exportar")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showExportDialog = false }) {
-                    Text("Cancelar")
-                }
-            }
-        )
-    }
-
-    if (showImportDialog) {
-        AlertDialog(
-            onDismissRequest = { showImportDialog = false },
-            title = { Text("📥 Importar Datos") },
-            text = {
-                Text("¿Quieres importar datos desde un archivo?\n\n⚠️ Esto puede sobrescribir datos existentes.")
-            },
-            confirmButton = {
-                Button(onClick = {
-                    showImportDialog = false
-                    Toast.makeText(context, "Función de importar en desarrollo", Toast.LENGTH_SHORT).show()
-                }) {
-                    Text("Importar")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showImportDialog = false }) {
-                    Text("Cancelar")
-                }
-            }
-        )
     }
 }
 

@@ -6,9 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Database(
     entities = [PlantEntity::class, CompoundEntity::class],
@@ -87,18 +84,6 @@ abstract class PlantDatabase : RoomDatabase() {
                     "plant_database"
                 )
                     .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
-                    .addCallback(object : Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            // Pre-carga plantas + compuestos en la primera ejecución.
-                            INSTANCE?.let { database ->
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    database.plantDao().insertAll(PlantDataSource.loadAll(appContext))
-                                    database.compoundDao().insertAll(CompoundDataSource.loadAll(appContext))
-                                }
-                            }
-                        }
-                    })
                     .build()
                 INSTANCE = instance
                 instance

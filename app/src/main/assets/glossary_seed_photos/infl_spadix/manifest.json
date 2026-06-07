@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Spadix_(botany)",
+    "attribution": "Encyclopædia Britannica (Public domain) · Commons",
+    "addedAt": 1780708651250
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Anthurium",
+    "attribution": "N. Perrault, auteur du guide complet du canotage (CC0) · Commons",
+    "addedAt": 1780708651250
+  }
+}

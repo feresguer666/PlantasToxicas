@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Petal",
+    "attribution": "Mariana Ruiz LadyofHats (Public domain) · Commons",
+    "addedAt": 1780741128876
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tulipa",
+    "attribution": "Dina L (CC0) · Commons",
+    "addedAt": 1780741128876
+  }
+}

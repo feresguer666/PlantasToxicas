@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Gynoecium",
+    "attribution": "original: Magnolia_Watsoni.JPG: WibblyWibby\nderivative work: (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780741125359
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Hibiscus",
+    "attribution": "Muhammad Mahdi Karim (GFDL 1.2) · Commons",
+    "addedAt": 1780741125359
+  }
+}

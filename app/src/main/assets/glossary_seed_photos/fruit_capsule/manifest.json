@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Capsule_(fruit)",
+    "attribution": "Pearson Scott Foresman (Public domain) · Commons",
+    "addedAt": 1780708661371
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Papaver_somniferum",
+    "attribution": "tanja niggendijker from apeldoorn, the netherlands (CC BY 2.0) · Commons",
+    "addedAt": 1780708661371
+  }
+}

@@ -1,0 +1,129 @@
+import java.util.Properties
+
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+}
+
+// Lee local.properties (no commiteado) para obtener las API keys.
+val localProps: Properties = run {
+    val props = Properties()
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { props.load(it) }
+    }
+    props
+}
+
+val plantnetApiKey: String = (localProps.getProperty("PLANTNET_API_KEY")
+    ?: System.getenv("PLANTNET_API_KEY")
+    ?: "").trim()
+
+val groqApiKey: String = (localProps.getProperty("GROQ_API_KEY")
+    ?: System.getenv("GROQ_API_KEY")
+    ?: "").trim()
+
+val geminiApiKey: String = (localProps.getProperty("GEMINI_API_KEY")
+    ?: System.getenv("GEMINI_API_KEY")
+    ?: "").trim()
+
+android {
+    namespace = "com.toxicplants.database"
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = "com.toxicplants.database"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Inyecta las API keys como BuildConfig
+        buildConfigField("String", "PLANTNET_API_KEY", "\"$plantnetApiKey\"")
+        buildConfigField("String", "GROQ_API_KEY", "\"$groqApiKey\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
+// Room: exporta el JSON de esquema para MigrationTestHelper.
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+androidComponents {
+    onVariants { variant ->
+        val schemaDir = layout.projectDirectory.dir("schemas")
+        variant.sources.assets?.addStaticSourceDirectory(schemaDir.asFile.absolutePath)
+    }
+}
+
+dependencies {
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation("com.google.ar:core:1.41.0")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)   // ← Icons.*
+    implementation(libs.material)
+    implementation("io.github.sceneview:arsceneview:2.0.3")
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.coil.compose)
+    implementation(libs.okhttp)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.compose.runtime.livedata)
+    // CameraX
+    implementation("androidx.camera:camera-core:1.3.1")
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("com.airbnb.android:lottie-compose:6.4.0")
+    implementation("androidx.camera:camera-view:1.3.1")
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+    // Tests unitarios
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // Tests instrumentados (Room in-memory + migración)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+}

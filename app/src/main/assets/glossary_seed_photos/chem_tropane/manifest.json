@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tropane_alkaloid",
+    "attribution": "User:Edgar181 (Public domain) · Commons",
+    "addedAt": 1780741138944
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Atropa_belladonna",
+    "attribution": "Joan Simon from Barcelona, España (CC BY-SA 2.0) · Commons",
+    "addedAt": 1780741138944
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Vine",
+    "attribution": "Thamizhpparithi Maari (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708617985
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Hedera_helix",
+    "attribution": "kallerna (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780708617985
+  }
+}

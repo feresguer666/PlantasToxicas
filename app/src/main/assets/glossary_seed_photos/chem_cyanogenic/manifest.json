@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cyanogenic_glycoside",
+    "attribution": "Harbin (Public domain) · Commons",
+    "addedAt": 1780741142744
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Prunus_amygdalus",
+    "attribution": "Ivar Leidus (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780741142744
+  }
+}

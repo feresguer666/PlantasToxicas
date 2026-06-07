@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Pseudanthium",
+    "attribution": "Alvesgaspar cropped by Davefoc (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708649456
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Helianthus_annuus",
+    "attribution": "Fir0002 (GFDL 1.2) · Commons",
+    "addedAt": 1780708649456
+  }
+}

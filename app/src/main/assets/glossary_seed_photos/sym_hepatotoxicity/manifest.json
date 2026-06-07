@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Hepatotoxicity",
+    "attribution": "Nephron (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780741174717
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Liver",
+    "attribution": "Tvanbr (Public domain) · Commons",
+    "addedAt": 1780741174717
+  }
+}

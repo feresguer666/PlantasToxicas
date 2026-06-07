@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cardiac_glycoside",
+    "attribution": "PrasannR (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780741141255
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Digitalis_purpurea",
+    "attribution": "Jörg Hempel (CC BY-SA 3.0 de) · Commons",
+    "addedAt": 1780741141255
+  }
+}

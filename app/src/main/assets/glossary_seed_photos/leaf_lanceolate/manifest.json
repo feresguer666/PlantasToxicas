@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Nerium",
+    "attribution": "Alvesgaspar (CC BY 2.5) · Commons",
+    "addedAt": 1780708619710
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Salix_alba",
+    "attribution": "MPF (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708619710
+  }
+}

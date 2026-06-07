@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Leaf_shape",
+    "attribution": "derivative work: McSush (talk)\nLeaf_morphology_no_title.png: (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708621418
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Syringa_vulgaris",
+    "attribution": "Jjron (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708621418
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Castanea_sativa",
+    "attribution": "Fir0002 (GFDL 1.2) · Commons",
+    "addedAt": 1780708633646
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Urtica_dioica",
+    "attribution": "Evelyn Simak (CC BY-SA 2.0) · Commons",
+    "addedAt": 1780708633646
+  }
+}

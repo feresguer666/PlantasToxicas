@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Red -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Cámara (Pl@ntNet + AR) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.ar" android:required="false" />
+
+    <!-- Acceso a fotos / galería -->
+    <!-- En Android 13+ (API 33+) la app utiliza el Selector de Fotos del Sistema (Photo Picker),
+         el cual NO requiere declarar ni solicitar ningún permiso de lectura de medios.
+         Para Android 12 y anteriores (API 32 o menor), se solicita READ_EXTERNAL_STORAGE limitado por maxSdkVersion. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
+
+    <!-- Geolocalización (LocationScreen) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Marcador del teléfono de toxicología (usamos ACTION_DIAL, no se necesita CALL_PHONE) -->
+    <!-- Si en algún momento usas ACTION_CALL, descomenta:
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    -->
+
+    <application
+        android:name=".PlantApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ToxicPlants"
+        android:usesCleartextTraffic="true"
+        android:largeHeap="true">
+
+        <!-- AR Core: debe ir DENTRO de <application> -->
+        <meta-data android:name="com.google.ar.core" android:value="optional" />
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+    <!-- Android 11+ requiere declarar a qué apps externas vamos a hablar.
+         Esto permite que Intent.ACTION_VIEW abra URLs http/https en el navegador. -->
+    <queries>
+        <!-- Navegador para enlaces web (Recursos online) -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+        <!-- Marcador para llamadas de emergencia toxicológica -->
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+    </queries>
+
+</manifest>
+

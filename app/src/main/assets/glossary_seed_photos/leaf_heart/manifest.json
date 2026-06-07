@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cercis_siliquastrum",
+    "attribution": "אורנה לוטן (CC BY 2.5) · Commons",
+    "addedAt": 1780708623424
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tilia",
+    "attribution": "Holger.Ellgaard (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708623424
+  }
+}

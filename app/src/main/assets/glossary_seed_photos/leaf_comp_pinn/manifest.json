@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Pinnation",
+    "attribution": "(CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708629916
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Fraxinus_excelsior",
+    "attribution": "No machine-readable author provided. MPF assumed (based on c (CC BY 2.5) · Commons",
+    "addedAt": 1780708629916
+  }
+}

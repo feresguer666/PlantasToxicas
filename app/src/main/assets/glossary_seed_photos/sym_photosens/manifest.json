@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Phytophotodermatitis",
+    "attribution": "Katykidk (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780741171537
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Heracleum_mantegazzianum",
+    "attribution": "anastasiiamerkulova (CC BY 4.0) · Commons",
+    "addedAt": 1780741171537
+  }
+}

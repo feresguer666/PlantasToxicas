@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Rosette_(botany)",
+    "attribution": "User AdamRetchless on en.wikipedia (CC SA 1.0) · Commons",
+    "addedAt": 1780708624893
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Plantago_major",
+    "attribution": "Rasbak (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708624893
+  }
+}

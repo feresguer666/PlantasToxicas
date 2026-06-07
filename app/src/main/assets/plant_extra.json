@@ -1,0 +1,679 @@
+[
+  {
+    "scientificName": "Abrus precatorius",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Judía común",
+      "Garbanzo"
+    ],
+    "confusionReason": "Las semillas rojas con punto negro se usan en bisutería y pueden confundirse con semillas decorativas comestibles."
+  },
+  {
+    "scientificName": "Aconitum napellus",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "azul",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Perejil",
+      "Rábano rusticano",
+      "Genciana azul"
+    ],
+    "confusionReason": "Las hojas jóvenes se confunden con perejil o apio silvestre. La raíz con rábano."
+  },
+  {
+    "scientificName": "Atropa belladonna",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "morado",
+    "fruitColor": "negro",
+    "confusableWith": [
+      "Cereza",
+      "Mora",
+      "Arándano"
+    ],
+    "confusionReason": "Los frutos negros brillantes se confunden fácilmente con cerezas o arándanos, especialmente para los niños."
+  },
+  {
+    "scientificName": "Conium maculatum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "verde",
+    "confusableWith": [
+      "Perejil",
+      "Zanahoria silvestre",
+      "Anís",
+      "Hinojo"
+    ],
+    "confusionReason": "Es la confusión más mortal conocida. Las hojas y raíces son casi idénticas al perejil y la zanahoria silvestre."
+  },
+  {
+    "scientificName": "Digitalis purpurea",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Consuelda",
+      "Gordolobo",
+      "Verbascum"
+    ],
+    "confusionReason": "Las hojas basales de la digital se confunden frecuentemente con consuelda y gordolobo, también usadas en herboristería."
+  },
+  {
+    "scientificName": "Datura stramonium",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "verde",
+    "confusableWith": [
+      "Pimiento",
+      "Tomate silvestre",
+      "Okra"
+    ],
+    "confusionReason": "Las plantas jóvenes y los frutos verdes se confunden con pimiento o tomate silvestre en huertos."
+  },
+  {
+    "scientificName": "Hyoscyamus niger",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "amarillo",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Remolacha silvestre",
+      "Verónica"
+    ],
+    "confusionReason": "Las hojas basales se confunden con remolacha silvestre. Confusión histórica muy documentada."
+  },
+  {
+    "scientificName": "Taxus baccata",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "sin flor",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Enebro",
+      "Picea",
+      "Rosa"
+    ],
+    "confusionReason": "Los arilos rojos se confunden con bayas de otras coníferas. La semilla interior es mortal."
+  },
+  {
+    "scientificName": "Solanum nigrum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "negro",
+    "confusableWith": [
+      "Arándano",
+      "Mora",
+      "Tomate cherry"
+    ],
+    "confusionReason": "Las bayas negras pequeñas se confunden con arándanos o moras, especialmente en niños."
+  },
+  {
+    "scientificName": "Solanum dulcamara",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "morado",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Tomate cherry",
+      "Physalis"
+    ],
+    "confusionReason": "Los frutos rojos colgantes se confunden con tomates cherry o physalis."
+  },
+  {
+    "scientificName": "Euphorbia pulcherrima",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "rojo",
+    "fruitColor": "sin fruto",
+    "confusableWith": [],
+    "confusionReason": ""
+  },
+  {
+    "scientificName": "Nerium oleander",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Laurel",
+      "Eucalipto"
+    ],
+    "confusionReason": "Las hojas largas se confunden con laurel en preparaciones culinarias. Varios casos mortales documentados."
+  },
+  {
+    "scientificName": "Ricinus communis",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rojo",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Alcaparra",
+      "Higuera"
+    ],
+    "confusionReason": "Las semillas moteadas se confunden con semillas decorativas. Las hojas jóvenes con higuera."
+  },
+  {
+    "scientificName": "Prunus laurocerasus",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "negro",
+    "confusableWith": [
+      "Laurel",
+      "Cerezo silvestre"
+    ],
+    "confusionReason": "Las hojas se confunden con laurel culinario en condimentos. Los frutos con cerezas silvestres."
+  },
+  {
+    "scientificName": "Colchicum autumnale",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Ajo silvestre",
+      "Cebolla silvestre"
+    ],
+    "confusionReason": "Las hojas primaverales se confunden fatalmente con ajo silvestre. Varios casos mortales en Europa."
+  },
+  {
+    "scientificName": "Allium ursinum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": false,
+    "flowerColor": "blanco",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Colchicum autumnale",
+      "Convallaria majalis",
+      "Arum maculatum"
+    ],
+    "confusionReason": "El ajo de oso (comestible) se confunde con quitameriendas (mortal), lirio del valle y aro, todos tóxicos."
+  },
+  {
+    "scientificName": "Convallaria majalis",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Allium ursinum",
+      "Polygonatum"
+    ],
+    "confusionReason": "Las hojas se confunden con ajo de oso y sello de Salomón. Los frutos rojos con arándanos."
+  },
+  {
+    "scientificName": "Veratrum album",
+    "toxicDogs": false,
+    "toxicCats": false,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Genciana amarilla",
+      "Árnica"
+    ],
+    "confusionReason": "Confusión mortal clásica con genciana amarilla usada para hacer licores alpinos. Raíces casi idénticas."
+  },
+  {
+    "scientificName": "Arum maculatum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "verde",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Allium ursinum",
+      "Castaña de Indias"
+    ],
+    "confusionReason": "Las hojas jóvenes con ajo silvestre. Los frutos rojos brillantes atraen a los niños."
+  },
+  {
+    "scientificName": "Sambucus nigra",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "negro",
+    "confusableWith": [
+      "Arándano",
+      "Mora"
+    ],
+    "confusionReason": "Los frutos maduros son comestibles cocidos pero crudos son tóxicos. Se confunden con arándanos y moras."
+  },
+  {
+    "scientificName": "Ligustrum vulgare",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "negro",
+    "confusableWith": [
+      "Arándano",
+      "Mora",
+      "Saúco"
+    ],
+    "confusionReason": "Las bayas negras brillantes se confunden con moras, arándanos o saúco maduro."
+  },
+  {
+    "scientificName": "Ilex aquifolium",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "rojo",
+    "confusableWith": [],
+    "confusionReason": "Los frutos rojos brillantes atraen a los niños en Navidad."
+  },
+  {
+    "scientificName": "Laburnum anagyroides",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "amarillo",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Acacia",
+      "Mimosa"
+    ],
+    "confusionReason": "Las flores amarillas colgantes se confunden con acacia o mimosa."
+  },
+  {
+    "scientificName": "Rhododendron ferrugineum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Arándano rojo",
+      "Brezo"
+    ],
+    "confusionReason": "Las hojas se confunden con arándano rojo. La miel de rododendro también es tóxica."
+  },
+  {
+    "scientificName": "Oenanthe crocata",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "verde",
+    "confusableWith": [
+      "Apio silvestre",
+      "Perejil",
+      "Zanahoria"
+    ],
+    "confusionReason": "Una de las plantas más mortales de Europa. Raíces y hojas casi idénticas al apio silvestre."
+  },
+  {
+    "scientificName": "Helleborus niger",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "sin fruto",
+    "confusableWith": [],
+    "confusionReason": ""
+  },
+  {
+    "scientificName": "Daphne mezereum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Madreselva",
+      "Rosa silvestre"
+    ],
+    "confusionReason": "Los frutos rojos se confunden con madreselva o Rosa silvestre en el bosque."
+  },
+  {
+    "scientificName": "Nicotiana tabacum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Tomate",
+      "Patata"
+    ],
+    "confusionReason": "Las plantas jóvenes se confunden con tomate y patata (misma familia)."
+  },
+  {
+    "scientificName": "Papaver somniferum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "morado",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Amapola silvestre",
+      "Papaver rhoeas"
+    ],
+    "confusionReason": "La adormidera del opio se confunde con la amapola silvestre. Las cápsulas son distintas."
+  },
+  {
+    "scientificName": "Lophophora williamsii",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "rojo",
+    "confusableWith": [],
+    "confusionReason": ""
+  },
+  {
+    "scientificName": "Peganum harmala",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Ruda",
+      "Artemisa"
+    ],
+    "confusionReason": "Se confunde con ruda común en usos medicinales tradicionales."
+  },
+  {
+    "scientificName": "Euphorbia lathyris",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "verde",
+    "fruitColor": "verde",
+    "confusableWith": [
+      "Alcaparra"
+    ],
+    "confusionReason": "Las semillas se confunden con alcaparras. Casos documentados en España."
+  },
+  {
+    "scientificName": "Cicuta virosa",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "verde",
+    "confusableWith": [
+      "Apio silvestre",
+      "Perejil",
+      "Zanahoria"
+    ],
+    "confusionReason": "La cicuta acuática es quizá la planta más tóxica de Europa. Raíces confundidas con chirivía y apio silvestre."
+  },
+  {
+    "scientificName": "Mimosa tenuiflora",
+    "toxicDogs": false,
+    "toxicCats": false,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": false,
+    "flowerColor": "blanco",
+    "fruitColor": "sin fruto",
+    "confusableWith": [],
+    "confusionReason": ""
+  },
+  {
+    "scientificName": "Banisteriopsis caapi",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "rosa",
+    "fruitColor": "sin fruto",
+    "confusableWith": [],
+    "confusionReason": ""
+  },
+  {
+    "scientificName": "Psychotria viridis",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "rojo",
+    "confusableWith": [],
+    "confusionReason": ""
+  },
+  {
+    "scientificName": "Arundo donax",
+    "toxicDogs": false,
+    "toxicCats": false,
+    "toxicHorses": false,
+    "toxicCattle": true,
+    "toxicChildren": false,
+    "flowerColor": "sin flor",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Bambú",
+      "Phragmites"
+    ],
+    "confusionReason": "Se confunde con bambú (comestible) y con el carrizo común."
+  },
+  {
+    "scientificName": "Phragmites australis",
+    "toxicDogs": false,
+    "toxicCats": false,
+    "toxicHorses": false,
+    "toxicCattle": true,
+    "toxicChildren": false,
+    "flowerColor": "sin flor",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Arundo donax",
+      "Bambú"
+    ],
+    "confusionReason": "El carrizo se confunde con caña de Castilla y bambú."
+  },
+  {
+    "scientificName": "Passiflora caerulea",
+    "toxicDogs": false,
+    "toxicCats": false,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "azul",
+    "fruitColor": "naranja",
+    "confusableWith": [
+      "Maracuyá",
+      "Granadilla"
+    ],
+    "confusionReason": "Los frutos naranja se confunden con maracuyá comestible."
+  },
+  {
+    "scientificName": "Voacanga africana",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "verde",
+    "confusableWith": [],
+    "confusionReason": ""
+  },
+  {
+    "scientificName": "Anadenanthera colubrina",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "blanco",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Acacia",
+      "Algarrobo"
+    ],
+    "confusionReason": "El árbol se confunde con acacias y algarrobos. Las semillas con semillas decorativas."
+  },
+  {
+    "scientificName": "Mucuna pruriens",
+    "toxicDogs": true,
+    "toxicCats": false,
+    "toxicHorses": false,
+    "toxicCattle": false,
+    "toxicChildren": true,
+    "flowerColor": "morado",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Judía",
+      "Habichuela"
+    ],
+    "confusionReason": "Las vainas se confunden con habichuelas. Los pelos urticantes causan irritación severa."
+  },
+  {
+    "scientificName": "Hypericum perforatum",
+    "toxicDogs": true,
+    "toxicCats": false,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": false,
+    "flowerColor": "amarillo",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Hypericum calycinum",
+      "Tutsan"
+    ],
+    "confusionReason": "El hipérico (medicinal) se confunde con otras especies del género. Causa fotosensibilización en animales."
+  },
+  {
+    "scientificName": "Delphininium elatum",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "azul",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Aconitum napellus",
+      "Consolida"
+    ],
+    "confusionReason": "La espuela de caballero se confunde con acónito (mortal) y consolida. Misma familia y aspecto."
+  },
+  {
+    "scientificName": "Ranunculus acris",
+    "toxicDogs": false,
+    "toxicCats": false,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": false,
+    "flowerColor": "amarillo",
+    "fruitColor": "sin fruto",
+    "confusableWith": [
+      "Ficaria verna",
+      "Trollius europaeus"
+    ],
+    "confusionReason": "El botón de oro se confunde con celidonia menor y trolio europeo."
+  },
+  {
+    "scientificName": "Bryonia dioica",
+    "toxicDogs": true,
+    "toxicCats": true,
+    "toxicHorses": true,
+    "toxicCattle": true,
+    "toxicChildren": true,
+    "flowerColor": "verde",
+    "fruitColor": "rojo",
+    "confusableWith": [
+      "Madreselva",
+      "Vid silvestre"
+    ],
+    "confusionReason": "La brionia trepa como la vid y madreselva. Sus frutos rojos atraen a los niños."
+  }
+]

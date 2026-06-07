@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aconitine",
+    "attribution": "Fvasconcellos (Public domain) · Commons",
+    "addedAt": 1780741149757
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aconitum_napellus",
+    "attribution": "Bernd Haynold (CC BY-SA 2.5) · Commons",
+    "addedAt": 1780741149757
+  }
+}

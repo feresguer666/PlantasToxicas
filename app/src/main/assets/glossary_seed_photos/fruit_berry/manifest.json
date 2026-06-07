@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Berry_(botany)",
+    "attribution": "Lukas Riebling (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708657225
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Vaccinium_myrtillus",
+    "attribution": "Amédée Masclef (Public domain) · Commons",
+    "addedAt": 1780708657225
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Stamen",
+    "attribution": "André Karwath aka Aka (CC BY-SA 2.5) · Commons",
+    "addedAt": 1780741123641
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lilium",
+    "attribution": "Stan Shebs (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780741123641
+  }
+}

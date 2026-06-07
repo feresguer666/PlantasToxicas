@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Samara_(fruit)",
+    "attribution": "Walter Siegmund (talk) (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708667047
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Acer_pseudoplatanus",
+    "attribution": "Willow (CC BY 2.5) · Commons",
+    "addedAt": 1780708667047
+  }
+}

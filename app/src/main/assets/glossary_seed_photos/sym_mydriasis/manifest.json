@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Mydriasis",
+    "attribution": "Nutschig at English Wikipedia (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780741162819
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Pupil",
+    "attribution": "che (Please credit as \"Petr Novák, Wikipedia\" in case you us (CC BY-SA 2.5) · Commons",
+    "addedAt": 1780741162819
+  }
+}

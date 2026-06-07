@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Cardiac_arrhythmia",
+    "attribution": "Jer5150 (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780741177679
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Electrocardiography",
+    "attribution": "Created by Agateller (Anthony Atkielski), converted to svg b (Public domain) · Commons",
+    "addedAt": 1780741177679
+  }
+}

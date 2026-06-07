@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aesculus_hippocastanum",
+    "attribution": "User:Kilom691 (Public domain) · Commons",
+    "addedAt": 1780708631590
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Lupinus",
+    "attribution": "Cheongweei Gan (CC BY 4.0) · Commons",
+    "addedAt": 1780708631590
+  }
+}

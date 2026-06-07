@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Coniine",
+    "attribution": "NEUROtiker (Public domain) · Commons",
+    "addedAt": 1780741151393
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Conium_maculatum",
+    "attribution": "(Public domain) · Commons",
+    "addedAt": 1780741151393
+  }
+}

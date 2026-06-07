@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aconitum_napellus",
+    "attribution": "Bernd Haynold (CC BY-SA 2.5) · Commons",
+    "addedAt": 1780708655628
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aconitum",
+    "attribution": "Bernd Haynold (CC BY 2.5) · Commons",
+    "addedAt": 1780708655628
+  }
+}

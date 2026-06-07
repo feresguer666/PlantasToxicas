@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Contact_dermatitis",
+    "attribution": "Digitalgadget at English Wikipedia (Public domain) · Commons",
+    "addedAt": 1780741169762
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Urushiol",
+    "attribution": "Calvero. (Public domain) · Commons",
+    "addedAt": 1780741169762
+  }
+}

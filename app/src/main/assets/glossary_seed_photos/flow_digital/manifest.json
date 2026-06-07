@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Digitalis_purpurea",
+    "attribution": "Jörg Hempel (CC BY-SA 3.0 de) · Commons",
+    "addedAt": 1780708592512
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Digitalis",
+    "attribution": "Kurt Stüber [1] (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708592512
+  }
+}

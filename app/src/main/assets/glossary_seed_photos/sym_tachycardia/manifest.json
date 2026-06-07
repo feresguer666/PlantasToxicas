@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tachycardia",
+    "attribution": "Madhero88 (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780741167455
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Electrocardiography",
+    "attribution": "Created by Agateller (Anthony Atkielski), converted to svg b (Public domain) · Commons",
+    "addedAt": 1780741167455
+  }
+}

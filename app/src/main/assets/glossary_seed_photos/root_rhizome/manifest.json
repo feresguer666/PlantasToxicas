@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Rhizome",
+    "attribution": "Frank Vincentz (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708682320
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Zingiber_officinale",
+    "attribution": "Franz Eugen Köhler, Köhler's Medizinal-Pflanzen (Public domain) · Commons",
+    "addedAt": 1780708682320
+  }
+}

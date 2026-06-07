@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Leaf",
+    "attribution": "Krzysztof P. Jasiutowicz (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708638266
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Castanea_sativa",
+    "attribution": "Fir0002 (GFDL 1.2) · Commons",
+    "addedAt": 1780708638266
+  }
+}

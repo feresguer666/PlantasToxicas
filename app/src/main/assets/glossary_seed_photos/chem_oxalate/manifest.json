@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Calcium_oxalate",
+    "attribution": "Д.Ильин: vectorization (CC0) · Commons",
+    "addedAt": 1780741144536
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Dieffenbachia",
+    "attribution": "Krzysztof Ziarnek, Kenraiz (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780741144536
+  }
+}

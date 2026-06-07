@@ -1,0 +1,1126 @@
+{
+  "version": 1,
+  "_doc": "Glosario botánico ilustrado. Detector autoresalta términos en fichas.",
+  "categories": [
+    {
+      "id": "habit",
+      "label": "Porte y hábito",
+      "icon": "🌳"
+    },
+    {
+      "id": "leaf",
+      "label": "Hojas",
+      "icon": "🍃"
+    },
+    {
+      "id": "venation",
+      "label": "Nervación",
+      "icon": "🌿"
+    },
+    {
+      "id": "flower_parts",
+      "label": "Partes de la flor",
+      "icon": "🌷"
+    },
+    {
+      "id": "inflorescence",
+      "label": "Inflorescencias",
+      "icon": "💐"
+    },
+    {
+      "id": "flower",
+      "label": "Flores",
+      "icon": "🌸"
+    },
+    {
+      "id": "fruit",
+      "label": "Frutos",
+      "icon": "🍒"
+    },
+    {
+      "id": "surface",
+      "label": "Superficie y látex",
+      "icon": "💧"
+    },
+    {
+      "id": "root",
+      "label": "Raíces y bulbos",
+      "icon": "🌱"
+    },
+    {
+      "id": "defense",
+      "label": "Defensas",
+      "icon": "🌵"
+    },
+    {
+      "id": "chemistry",
+      "label": "Química y toxinas",
+      "icon": "🧪"
+    },
+    {
+      "id": "symptoms",
+      "label": "Síntomas y síndromes",
+      "icon": "🩺"
+    }
+  ],
+  "terms": [
+    {
+      "id": "tree",
+      "category": "habit",
+      "term": "árbol",
+      "synonyms": [
+        "arbóreo",
+        "arbórea",
+        "arbolito"
+      ],
+      "definition": "Planta leñosa de gran porte con un tronco principal único, normalmente de más de 4 metros de altura.",
+      "image": "key_images/habit_tree.png",
+      "wikimediaSearch": "tree"
+    },
+    {
+      "id": "shrub",
+      "category": "habit",
+      "term": "arbusto",
+      "synonyms": [
+        "arbustivo",
+        "arbustiva",
+        "mata"
+      ],
+      "definition": "Planta leñosa más baja que un árbol, con varios tallos que parten desde la base. Normalmente entre 0,5 y 4 m.",
+      "image": "key_images/habit_shrub.png",
+      "wikimediaSearch": "shrub plant"
+    },
+    {
+      "id": "herb",
+      "category": "habit",
+      "term": "hierba",
+      "synonyms": [
+        "herbáceo",
+        "herbácea",
+        "anual",
+        "vivaz"
+      ],
+      "definition": "Planta sin tejidos leñosos persistentes. Suele morir cada año o rebrotar desde órganos subterráneos.",
+      "image": "key_images/habit_herb.png",
+      "wikimediaSearch": "herbaceous plant"
+    },
+    {
+      "id": "climber",
+      "category": "habit",
+      "term": "trepadora",
+      "synonyms": [
+        "enredadera",
+        "liana",
+        "voluble",
+        "rastrera"
+      ],
+      "definition": "Planta con tallos largos y débiles que necesitan apoyo para crecer hacia arriba.",
+      "image": "key_images/habit_climber.png",
+      "wikimediaSearch": "climbing plant vine"
+    },
+    {
+      "id": "leaf_needle",
+      "category": "leaf",
+      "term": "acicular",
+      "synonyms": [
+        "aguja",
+        "agujas",
+        "aciculares"
+      ],
+      "definition": "Hoja muy estrecha y alargada en forma de aguja. Típica de coníferas.",
+      "image": "key_images/leaf_needle.png",
+      "wikimediaSearch": "pine needles leaves"
+    },
+    {
+      "id": "leaf_lanceolate",
+      "category": "leaf",
+      "term": "lanceolada",
+      "synonyms": [
+        "lanceolado",
+        "lanceoladas"
+      ],
+      "definition": "Hoja con forma de lanza: alargada y aguda en los extremos. Típica del laurel o la adelfa.",
+      "image": "key_images/leaf_lanceolate.png",
+      "wikimediaSearch": "lanceolate leaf nerium"
+    },
+    {
+      "id": "leaf_ovate",
+      "category": "leaf",
+      "term": "ovalada",
+      "synonyms": [
+        "ovada",
+        "ovado",
+        "oval",
+        "ovales"
+      ],
+      "definition": "Hoja con forma de huevo: más ancha en la base que en la punta.",
+      "image": "key_images/leaf_ovate.png",
+      "wikimediaSearch": "ovate leaf shape"
+    },
+    {
+      "id": "leaf_palmate",
+      "category": "leaf",
+      "term": "palmeada",
+      "synonyms": [
+        "palmeado",
+        "palmeadas",
+        "palmada"
+      ],
+      "definition": "Hoja con varios lóbulos que parten desde un mismo punto, como los dedos de una mano.",
+      "image": "key_images/leaf_palmate.png",
+      "wikimediaSearch": "palmate leaf hedera"
+    },
+    {
+      "id": "leaf_heart",
+      "category": "leaf",
+      "term": "acorazonada",
+      "synonyms": [
+        "cordiforme",
+        "cordada",
+        "corazón"
+      ],
+      "definition": "Hoja con forma de corazón, con dos lóbulos basales redondeados y la punta aguda.",
+      "image": "key_images/leaf_heart.png",
+      "wikimediaSearch": "cordate heart shaped leaf"
+    },
+    {
+      "id": "leaf_rosette",
+      "category": "leaf",
+      "term": "roseta",
+      "synonyms": [
+        "rosetas",
+        "roseta basal"
+      ],
+      "definition": "Conjunto de hojas dispuestas circularmente, brotando todas desde la base de la planta.",
+      "image": "key_images/leaf_rosette.png",
+      "wikimediaSearch": "rosette plant leaves"
+    },
+    {
+      "id": "leaf_opposite",
+      "category": "leaf",
+      "term": "opuestas",
+      "synonyms": [
+        "opuesto",
+        "opuesta",
+        "decusadas"
+      ],
+      "definition": "Hojas dispuestas de dos en dos en cada nudo del tallo, una frente a otra.",
+      "image": "key_images/leaf_opposite.png",
+      "wikimediaSearch": "opposite leaves arrangement"
+    },
+    {
+      "id": "leaf_alternate",
+      "category": "leaf",
+      "term": "alternas",
+      "synonyms": [
+        "alterno",
+        "alterna",
+        "alternos"
+      ],
+      "definition": "Hojas dispuestas de una en una en cada nudo del tallo, alternando lados.",
+      "image": "key_images/leaf_alternate.png",
+      "wikimediaSearch": "alternate leaves arrangement"
+    },
+    {
+      "id": "leaf_comp_pinn",
+      "category": "leaf",
+      "term": "pinnada",
+      "synonyms": [
+        "pinnado",
+        "pinnadas",
+        "imparipinnada",
+        "paripinnada"
+      ],
+      "definition": "Hoja compuesta cuyos foliolos se disponen a lo largo de un raquis central, como plumas.",
+      "image": "key_images/leaf_compound_pinnate.png"
+    },
+    {
+      "id": "leaf_comp_palm",
+      "category": "leaf",
+      "term": "palmaticompuesta",
+      "synonyms": [
+        "palmadocompuesta",
+        "digitada",
+        "compuesta palmeada"
+      ],
+      "definition": "Hoja compuesta cuyos foliolos parten todos desde un mismo punto. Típica del castaño de Indias.",
+      "image": "key_images/leaf_compound_palmate.png"
+    },
+    {
+      "id": "leaf_serrate",
+      "category": "leaf",
+      "term": "aserrada",
+      "synonyms": [
+        "aserrado",
+        "serrada",
+        "dentada",
+        "dentado"
+      ],
+      "definition": "Margen foliar con pequeños dientes orientados hacia la punta, como una sierra.",
+      "image": "key_images/leaf_serrate.png"
+    },
+    {
+      "id": "leaf_entire",
+      "category": "leaf",
+      "term": "entera",
+      "synonyms": [
+        "margen entero"
+      ],
+      "definition": "Margen foliar liso, sin dientes ni lóbulos.",
+      "image": "key_images/leaf_entire.png"
+    },
+    {
+      "id": "leaf_lobed",
+      "category": "leaf",
+      "term": "lobulada",
+      "synonyms": [
+        "lobulado",
+        "lobuladas",
+        "lobada",
+        "lobado"
+      ],
+      "definition": "Margen con entrantes y salientes redondeados (lóbulos). Típica de robles y encinas.",
+      "image": "key_images/leaf_lobed.png"
+    },
+    {
+      "id": "ven_pinn",
+      "category": "venation",
+      "term": "nervación pinnada",
+      "synonyms": [
+        "venación pinnada",
+        "nerviación pinnada"
+      ],
+      "definition": "Un nervio principal central del que parten secundarios a los lados.",
+      "image": "key_images/venation_pinnate.png"
+    },
+    {
+      "id": "ven_palm",
+      "category": "venation",
+      "term": "nervación palmeada",
+      "synonyms": [
+        "venación palmeada"
+      ],
+      "definition": "Varios nervios principales parten desde el peciolo, abriéndose como dedos.",
+      "image": "key_images/venation_palmate.png"
+    },
+    {
+      "id": "ven_para",
+      "category": "venation",
+      "term": "nervación paralela",
+      "synonyms": [
+        "venación paralela",
+        "nervios paralelos"
+      ],
+      "definition": "Nervios principales paralelos entre sí. Típica de monocotiledóneas (gramíneas, lirios).",
+      "image": "key_images/venation_parallel.png"
+    },
+    {
+      "id": "infl_raceme",
+      "category": "inflorescence",
+      "term": "racimo",
+      "synonyms": [
+        "racimos",
+        "racimosa"
+      ],
+      "definition": "Eje principal con flores pediceladas (las inferiores con pedicelos más largos que las superiores).",
+      "image": "key_images/inflorescence_raceme.png",
+      "wikimediaSearch": "raceme inflorescence"
+    },
+    {
+      "id": "infl_spike",
+      "category": "inflorescence",
+      "term": "espiga",
+      "synonyms": [
+        "espigas",
+        "espiciforme"
+      ],
+      "definition": "Inflorescencia alargada con flores sentadas (sin pedicelo) directamente sobre el eje.",
+      "image": "key_images/inflorescence_spike.png",
+      "wikimediaSearch": "spike inflorescence"
+    },
+    {
+      "id": "infl_panicle",
+      "category": "inflorescence",
+      "term": "panícula",
+      "synonyms": [
+        "panículas",
+        "paniculada",
+        "paniculado"
+      ],
+      "definition": "Inflorescencia ramificada, como un racimo de racimos. Aspecto plumoso (avena, lilas).",
+      "image": "key_images/inflorescence_panicle.png",
+      "wikimediaSearch": "panicle inflorescence"
+    },
+    {
+      "id": "infl_corymb",
+      "category": "inflorescence",
+      "term": "corimbo",
+      "synonyms": [
+        "corimbos",
+        "corimbosa"
+      ],
+      "definition": "Pedicelos de distinta longitud que sitúan todas las flores al mismo nivel.",
+      "image": "key_images/inflorescence_corymb.png",
+      "wikimediaSearch": "corymb inflorescence"
+    },
+    {
+      "id": "infl_umbel",
+      "category": "inflorescence",
+      "term": "umbela",
+      "synonyms": [
+        "umbelas",
+        "umbelado",
+        "umbelada"
+      ],
+      "definition": "Muchos pedicelos parten de un mismo punto, como un paraguas invertido. Familia Apiaceae (perejil, cicuta).",
+      "image": "key_images/flower_umbel.png",
+      "wikimediaSearch": "umbel Apiaceae inflorescence"
+    },
+    {
+      "id": "infl_head",
+      "category": "inflorescence",
+      "term": "capítulo",
+      "synonyms": [
+        "cabezuela",
+        "capítulos"
+      ],
+      "definition": "Muchas flores diminutas sobre un receptáculo común. Típica de Asteraceae.",
+      "image": "key_images/inflorescence_head.png",
+      "wikimediaSearch": "capitulum Asteraceae"
+    },
+    {
+      "id": "infl_spadix",
+      "category": "inflorescence",
+      "term": "espádice",
+      "synonyms": [
+        "espádices",
+        "espata"
+      ],
+      "definition": "Inflorescencia carnosa envuelta por una hoja modificada (espata). Típica de Araceae.",
+      "image": "key_images/inflorescence_spadix.png",
+      "wikimediaSearch": "spadix spathe Araceae"
+    },
+    {
+      "id": "flow_trumpet",
+      "category": "flower",
+      "term": "trompeta",
+      "synonyms": [
+        "trompetas",
+        "infundibuliforme",
+        "tubular grande"
+      ],
+      "definition": "Flor con forma de embudo. Típica de Datura, Brugmansia o lirio de Pascua.",
+      "image": "key_images/flower_trumpet.png"
+    },
+    {
+      "id": "flow_bell",
+      "category": "flower",
+      "term": "acampanada",
+      "synonyms": [
+        "acampanado",
+        "campanulada",
+        "campaniforme",
+        "campana"
+      ],
+      "definition": "Flor con forma de campana, ancha en la boca y estrecha hacia la base.",
+      "image": "key_images/flower_bell.png"
+    },
+    {
+      "id": "flow_digital",
+      "category": "flower",
+      "term": "dedalera",
+      "synonyms": [
+        "digital",
+        "digitales"
+      ],
+      "definition": "Flores tubulares dispuestas en una espiga vertical, colgando hacia un lado.",
+      "image": "key_images/flower_digital.png"
+    },
+    {
+      "id": "flow_aconite",
+      "category": "flower",
+      "term": "yelmo",
+      "synonyms": [
+        "capuchón",
+        "casco",
+        "monje"
+      ],
+      "definition": "Flor irregular con el pétalo superior en forma de casco. Típica del acónito.",
+      "image": "key_images/flower_aconitum.png"
+    },
+    {
+      "id": "fruit_berry",
+      "category": "fruit",
+      "term": "baya",
+      "synonyms": [
+        "bayas"
+      ],
+      "definition": "Fruto carnoso sin hueso, con varias semillas embebidas en la pulpa (uva, tomate).",
+      "image": "key_images/fruit_berry.png",
+      "wikimediaSearch": "berry fruit"
+    },
+    {
+      "id": "fruit_drupe",
+      "category": "fruit",
+      "term": "drupa",
+      "synonyms": [
+        "drupas",
+        "drupáceo"
+      ],
+      "definition": "Fruto carnoso con un hueso central que contiene una sola semilla (cereza, ciruela, oliva).",
+      "image": "key_images/fruit_drupe.png",
+      "wikimediaSearch": "drupe stone fruit"
+    },
+    {
+      "id": "fruit_capsule",
+      "category": "fruit",
+      "term": "cápsula",
+      "synonyms": [
+        "cápsulas",
+        "capsular"
+      ],
+      "definition": "Fruto seco que se abre al madurar liberando varias semillas (amapola, datura).",
+      "image": "key_images/fruit_capsule.png",
+      "wikimediaSearch": "poppy capsule fruit"
+    },
+    {
+      "id": "fruit_legume",
+      "category": "fruit",
+      "term": "legumbre",
+      "synonyms": [
+        "vaina",
+        "vainas",
+        "legumbres"
+      ],
+      "definition": "Fruto seco alargado típico de Fabaceae que se abre por dos suturas (judía, guisante, algarrobo).",
+      "image": "key_images/fruit_legume.png",
+      "wikimediaSearch": "legume pod Fabaceae"
+    },
+    {
+      "id": "fruit_silique",
+      "category": "fruit",
+      "term": "silicua",
+      "synonyms": [
+        "silicuas"
+      ],
+      "definition": "Fruto seco alargado típico de Brassicaceae (col, mostaza), con un tabique central.",
+      "image": "key_images/fruit_silique.png",
+      "wikimediaSearch": "silique Brassicaceae"
+    },
+    {
+      "id": "fruit_samara",
+      "category": "fruit",
+      "term": "sámara",
+      "synonyms": [
+        "sámaras",
+        "alada"
+      ],
+      "definition": "Fruto seco con un ala membranosa que facilita la dispersión por el viento (arce, fresno).",
+      "image": "key_images/fruit_samara.png",
+      "wikimediaSearch": "samara maple fruit"
+    },
+    {
+      "id": "fruit_aggregate",
+      "category": "fruit",
+      "term": "fruto agregado",
+      "synonyms": [
+        "agregado",
+        "polidrupa"
+      ],
+      "definition": "Conjunto de pequeños frutos derivados de la misma flor (mora, frambuesa).",
+      "image": "key_images/fruit_aggregate.png",
+      "wikimediaSearch": "aggregate fruit raspberry"
+    },
+    {
+      "id": "fruit_dry",
+      "category": "fruit",
+      "term": "fruto seco",
+      "synonyms": [
+        "frutos secos"
+      ],
+      "definition": "Fruto sin pulpa carnosa: vainas, cápsulas, sámaras, aquenios, nueces…",
+      "image": "key_images/fruit_dry.png",
+      "wikimediaSearch": "dry fruit capsule"
+    },
+    {
+      "id": "surf_latex",
+      "category": "surface",
+      "term": "látex",
+      "synonyms": [
+        "lechoso"
+      ],
+      "definition": "Líquido lechoso (blanco) o coloreado que exudan ciertas plantas al cortar. A menudo IRRITANTE o TÓXICO. NO tocar los ojos.",
+      "image": "key_images/latex_white.png",
+      "wikimediaSearch": "plant latex Euphorbia"
+    },
+    {
+      "id": "surf_latex_yellow",
+      "category": "surface",
+      "term": "látex amarillo",
+      "synonyms": [
+        "jugo amarillo",
+        "látex anaranjado"
+      ],
+      "definition": "Látex de color amarillo o anaranjado. Típico de Papaveraceae (celidonia, amapolas).",
+      "image": "key_images/latex_yellow.png",
+      "wikimediaSearch": "Chelidonium latex yellow"
+    },
+    {
+      "id": "surf_pubescent",
+      "category": "surface",
+      "term": "pubescente",
+      "synonyms": [
+        "pubescencia",
+        "vellosa",
+        "vellosidad",
+        "tomentosa"
+      ],
+      "definition": "Superficie cubierta de pelos finos, dando aspecto aterciopelado.",
+      "image": "key_images/hairs_pubescent.png",
+      "wikimediaSearch": "pubescent leaf hair trichome"
+    },
+    {
+      "id": "surf_glabrous",
+      "category": "surface",
+      "term": "glabra",
+      "synonyms": [
+        "glabro",
+        "lampiño",
+        "lampiña"
+      ],
+      "definition": "Superficie lisa y sin pelos, generalmente brillante.",
+      "image": "key_images/hairs_glabrous.png",
+      "wikimediaSearch": "glabrous leaf shiny"
+    },
+    {
+      "id": "root_tap",
+      "category": "root",
+      "term": "raíz pivotante",
+      "synonyms": [
+        "raíz axonomorfa",
+        "pivotante"
+      ],
+      "definition": "Raíz principal gruesa que penetra verticalmente en el suelo, con raicillas laterales (zanahoria).",
+      "image": "key_images/root_taproot.png",
+      "wikimediaSearch": "taproot carrot"
+    },
+    {
+      "id": "root_bulb",
+      "category": "root",
+      "term": "bulbo",
+      "synonyms": [
+        "bulbos",
+        "bulboso",
+        "bulbosa"
+      ],
+      "definition": "Órgano subterráneo formado por capas (cebolla, narciso, tulipán) que almacena reservas.",
+      "image": "key_images/bulb.png",
+      "wikimediaSearch": "onion bulb cross section"
+    },
+    {
+      "id": "root_rhizome",
+      "category": "root",
+      "term": "rizoma",
+      "synonyms": [
+        "rizomas",
+        "rizomatoso"
+      ],
+      "definition": "Tallo subterráneo horizontal del que brotan raíces y tallos aéreos (jengibre, lirio).",
+      "image": "key_images/rhizome.png",
+      "wikimediaSearch": "ginger rhizome"
+    },
+    {
+      "id": "root_tuber",
+      "category": "root",
+      "term": "tubérculo",
+      "synonyms": [
+        "tubérculos",
+        "tuberoso"
+      ],
+      "definition": "Engrosamiento subterráneo de un tallo o raíz, rico en reservas (patata).",
+      "image": "key_images/tuber.png",
+      "wikimediaSearch": "potato tuber"
+    },
+    {
+      "id": "def_thorns",
+      "category": "defense",
+      "term": "espinas",
+      "synonyms": [
+        "espina",
+        "espinoso",
+        "espinosa",
+        "aguijones"
+      ],
+      "definition": "Estructuras puntiagudas que protegen la planta del herbivorismo (rosa, ciruelo silvestre, cactus).",
+      "image": "key_images/thorns.png",
+      "wikimediaSearch": "rose thorns stem"
+    },
+    {
+      "id": "def_sting",
+      "category": "defense",
+      "term": "pelos urticantes",
+      "synonyms": [
+        "urticante",
+        "urticantes"
+      ],
+      "definition": "Pelos que al contacto liberan sustancias irritantes/tóxicas que causan picor y ronchas (ortiga).",
+      "image": "key_images/stinging_hairs.png",
+      "wikimediaSearch": "Urtica dioica stinging hairs"
+    },
+    {
+      "id": "fp_stamen",
+      "category": "flower_parts",
+      "term": "estambre",
+      "synonyms": [
+        "estambres",
+        "androceo"
+      ],
+      "definition": "Órgano masculino de la flor. Consta de un filamento que sostiene la antera donde se produce el polen.",
+      "image": "key_images/flower_oleander.png",
+      "wikimediaSearch": "stamen"
+    },
+    {
+      "id": "fp_pistil",
+      "category": "flower_parts",
+      "term": "pistilo",
+      "synonyms": [
+        "gineceo",
+        "carpelo",
+        "carpelos"
+      ],
+      "definition": "Órgano femenino de la flor, formado por ovario, estilo y estigma. Recibe el polen y se transforma en fruto.",
+      "image": "key_images/flower_white.png",
+      "wikimediaSearch": "gynoecium"
+    },
+    {
+      "id": "fp_calyx",
+      "category": "flower_parts",
+      "term": "cáliz",
+      "synonyms": [
+        "sépalo",
+        "sépalos"
+      ],
+      "definition": "Verticilo más externo de la flor, formado por los sépalos (suelen ser verdes). Protege la flor antes de abrir.",
+      "image": "key_images/flower_bell.png",
+      "wikimediaSearch": "sepal"
+    },
+    {
+      "id": "fp_corolla",
+      "category": "flower_parts",
+      "term": "corola",
+      "synonyms": [
+        "pétalo",
+        "pétalos"
+      ],
+      "definition": "Conjunto de los pétalos, generalmente coloridos. Es la parte vistosa que atrae polinizadores.",
+      "image": "key_images/flower_red.png",
+      "wikimediaSearch": "petal"
+    },
+    {
+      "id": "fp_bract",
+      "category": "flower_parts",
+      "term": "bráctea",
+      "synonyms": [
+        "brácteas"
+      ],
+      "definition": "Hoja modificada que aparece asociada a la flor o inflorescencia. A veces es muy vistosa (poinsetia).",
+      "image": "key_images/leaf_lanceolate.png",
+      "wikimediaSearch": "bract"
+    },
+    {
+      "id": "fp_petiole",
+      "category": "flower_parts",
+      "term": "peciolo",
+      "synonyms": [
+        "pecíolo",
+        "peciolos"
+      ],
+      "definition": "Tallito que une la hoja al tallo principal. Algunas hojas son sésiles (sin peciolo).",
+      "image": "key_images/leaf_ovate.png",
+      "wikimediaSearch": "petiole_(botany)"
+    },
+    {
+      "id": "fp_stipule",
+      "category": "flower_parts",
+      "term": "estípula",
+      "synonyms": [
+        "estípulas"
+      ],
+      "definition": "Apéndice generalmente foliáceo situado en la base del peciolo. Su presencia ayuda en la identificación.",
+      "image": "key_images/leaf_alternate.png",
+      "wikimediaSearch": "stipule"
+    },
+    {
+      "id": "fp_nectary",
+      "category": "flower_parts",
+      "term": "nectario",
+      "synonyms": [
+        "nectarios",
+        "néctar"
+      ],
+      "definition": "Estructura glandular productora de néctar, generalmente en la base de los pétalos. Atrae polinizadores.",
+      "image": "key_images/flower_yellow.png",
+      "wikimediaSearch": "nectary"
+    },
+    {
+      "id": "chem_alkaloid",
+      "category": "chemistry",
+      "term": "alcaloide",
+      "synonyms": [
+        "alcaloides",
+        "alcaloideo"
+      ],
+      "definition": "Compuesto nitrogenado de origen vegetal con fuerte actividad biológica. Muchos son tóxicos o adictivos: morfina, atropina, cafeína, nicotina, estricnina.",
+      "image": "key_images/flower_aconitum.png",
+      "wikimediaSearch": "alkaloid"
+    },
+    {
+      "id": "chem_tropane",
+      "category": "chemistry",
+      "term": "alcaloide tropánico",
+      "synonyms": [
+        "tropano",
+        "atropina",
+        "escopolamina",
+        "hiosciamina"
+      ],
+      "definition": "Familia de alcaloides anticolinérgicos típicos de Solanáceas (Datura, belladona, beleño). Provocan midriasis, delirio, taquicardia.",
+      "image": "key_images/flower_trumpet.png",
+      "wikimediaSearch": "tropane"
+    },
+    {
+      "id": "chem_cardenolide",
+      "category": "chemistry",
+      "term": "cardenólido",
+      "synonyms": [
+        "cardenólidos",
+        "glucósido cardiotónico",
+        "glicósido cardíaco"
+      ],
+      "definition": "Glucósido que actúa sobre el corazón (digital, adelfa, lirio del valle). En dosis bajas es medicina; en altas, parada cardíaca.",
+      "image": "key_images/flower_digital.png",
+      "wikimediaSearch": "cardiac_glycoside"
+    },
+    {
+      "id": "chem_cyanogenic",
+      "category": "chemistry",
+      "term": "glucósido cianogénico",
+      "synonyms": [
+        "cianogénico",
+        "amigdalina",
+        "linamarina"
+      ],
+      "definition": "Compuesto que libera cianhídrico al ser hidrolizado. Presente en huesos de almendra amarga, manzana, cereza, mandioca.",
+      "image": "key_images/fruit_drupe.png",
+      "wikimediaSearch": "cyanogenic_glycoside"
+    },
+    {
+      "id": "chem_oxalate",
+      "category": "chemistry",
+      "term": "oxalato",
+      "synonyms": [
+        "oxalatos",
+        "oxalato cálcico",
+        "rafidios"
+      ],
+      "definition": "Cristales en forma de aguja presentes en Araceae (dieffenbachia, philodendron). Causan quemazón inmediata en boca y garganta.",
+      "image": "key_images/inflorescence_spadix.png",
+      "wikimediaSearch": "calcium_oxalate"
+    },
+    {
+      "id": "chem_saponin",
+      "category": "chemistry",
+      "term": "saponina",
+      "synonyms": [
+        "saponinas"
+      ],
+      "definition": "Glucósido jabonoso que destruye glóbulos rojos por hemólisis. Presente en hiedra, saponaria, ginseng.",
+      "image": "key_images/leaf_palmate.png",
+      "wikimediaSearch": "saponin"
+    },
+    {
+      "id": "chem_tannin",
+      "category": "chemistry",
+      "term": "tanino",
+      "synonyms": [
+        "taninos"
+      ],
+      "definition": "Polifenol astringente. En exceso es hepatotóxico y antinutritivo (bellotas verdes, té muy cargado).",
+      "image": "key_images/leaf_broad.png",
+      "wikimediaSearch": "tannin"
+    },
+    {
+      "id": "chem_grayanotoxin",
+      "category": "chemistry",
+      "term": "grayanotoxina",
+      "synonyms": [
+        "grayanotoxinas",
+        "andromedotoxina"
+      ],
+      "definition": "Toxina cardio-neurotóxica típica de Ericáceas (rododendros, azaleas). La 'miel loca' producida por abejas que liban estas flores también es tóxica.",
+      "image": "key_images/flower_bell.png",
+      "wikimediaSearch": "grayanotoxin"
+    },
+    {
+      "id": "chem_aconitine",
+      "category": "chemistry",
+      "term": "aconitina",
+      "synonyms": [
+        "aconitinas"
+      ],
+      "definition": "Alcaloide diterpénico extremadamente tóxico, presente en todas las partes del Aconitum. Absorbible por la piel.",
+      "image": "key_images/flower_aconitum.png",
+      "wikimediaSearch": "aconitine"
+    },
+    {
+      "id": "chem_coniine",
+      "category": "chemistry",
+      "term": "coniína",
+      "synonyms": [
+        "coniina"
+      ],
+      "definition": "Alcaloide piperídico de la cicuta (Conium maculatum). Parálisis muscular ascendente. Mató a Sócrates.",
+      "image": "key_images/flower_umbel.png",
+      "wikimediaSearch": "coniine"
+    },
+    {
+      "id": "chem_ricin",
+      "category": "chemistry",
+      "term": "ricina",
+      "synonyms": [],
+      "definition": "Toxina proteica de Ricinus communis (ricino). Bloquea la síntesis proteica. Una semilla puede matar a un niño.",
+      "image": "key_images/fruit_capsule.png",
+      "wikimediaSearch": "ricin"
+    },
+    {
+      "id": "chem_amatoxin",
+      "category": "chemistry",
+      "term": "amatoxina",
+      "synonyms": [
+        "amatoxinas",
+        "alfa-amanitina"
+      ],
+      "definition": "Toxina termoestable de Amanita phalloides. Provoca insuficiencia hepática fulminante. El más mortal de los venenos fúngicos.",
+      "image": "key_images/fruit_berry.png",
+      "wikimediaSearch": "amatoxin"
+    },
+    {
+      "id": "chem_psilocybin",
+      "category": "chemistry",
+      "term": "psilocibina",
+      "synonyms": [
+        "psilocibinas",
+        "psilocina"
+      ],
+      "definition": "Triptamina alucinógena de setas del género Psilocybe. Efecto similar a LSD pero más corto.",
+      "image": "key_images/fruit_berry.png",
+      "wikimediaSearch": "psilocybin"
+    },
+    {
+      "id": "chem_furocoumarin",
+      "category": "chemistry",
+      "term": "furocumarina",
+      "synonyms": [
+        "furocumarinas",
+        "psoraleno"
+      ],
+      "definition": "Compuesto fototóxico de Apiáceas (Heracleum, Ruta). El contacto con la savia + sol provoca quemaduras y ampollas graves.",
+      "image": "key_images/flower_umbel.png",
+      "wikimediaSearch": "furanocoumarin"
+    },
+    {
+      "id": "chem_phorbol",
+      "category": "chemistry",
+      "term": "éster de forbol",
+      "synonyms": [
+        "forbol",
+        "forboles"
+      ],
+      "definition": "Compuesto del látex de Euphorbiaceae. Muy irritante, promotor tumoral. Causa dermatitis intensa y quemazón ocular.",
+      "image": "key_images/latex_white.png",
+      "wikimediaSearch": "phorbol"
+    },
+    {
+      "id": "sym_mydriasis",
+      "category": "symptoms",
+      "term": "midriasis",
+      "synonyms": [
+        "pupila dilatada",
+        "pupilas dilatadas"
+      ],
+      "definition": "Dilatación pupilar. Signo cardinal de intoxicación anticolinérgica (atropina, Datura, belladona).",
+      "image": "key_images/flower_aconitum.png",
+      "wikimediaSearch": "mydriasis"
+    },
+    {
+      "id": "sym_miosis",
+      "category": "symptoms",
+      "term": "miosis",
+      "synonyms": [
+        "pupila contraída",
+        "pupilas puntiformes"
+      ],
+      "definition": "Contracción pupilar. Aparece en intoxicaciones por opiáceos, organofosforados, hongos colinérgicos.",
+      "image": "key_images/flower_violet.png",
+      "wikimediaSearch": "miosis"
+    },
+    {
+      "id": "sym_bradycardia",
+      "category": "symptoms",
+      "term": "bradicardia",
+      "synonyms": [
+        "pulso lento",
+        "ritmo cardíaco lento"
+      ],
+      "definition": "Frecuencia cardíaca <60 lpm. Típica de intoxicación digitálica, acónito, adelfa, cardenólidos.",
+      "image": "key_images/flower_oleander.png",
+      "wikimediaSearch": "bradycardia"
+    },
+    {
+      "id": "sym_tachycardia",
+      "category": "symptoms",
+      "term": "taquicardia",
+      "synonyms": [
+        "pulso rápido",
+        "ritmo cardíaco rápido"
+      ],
+      "definition": "Frecuencia cardíaca >100 lpm. Aparece en intoxicación por anticolinérgicos, simpaticomiméticos, cafeína.",
+      "image": "key_images/flower_trumpet.png",
+      "wikimediaSearch": "tachycardia"
+    },
+    {
+      "id": "sym_salivation",
+      "category": "symptoms",
+      "term": "salivación",
+      "synonyms": [
+        "sialorrea",
+        "hipersalivación",
+        "babeo"
+      ],
+      "definition": "Producción excesiva de saliva. Signo de síndrome colinérgico (hongos del género Inocybe, Clitocybe).",
+      "image": "key_images/fruit_berry.png",
+      "wikimediaSearch": "hypersalivation"
+    },
+    {
+      "id": "sym_dermatitis",
+      "category": "symptoms",
+      "term": "dermatitis",
+      "synonyms": [
+        "dermatitis de contacto",
+        "eccema",
+        "irritación cutánea"
+      ],
+      "definition": "Inflamación de la piel por contacto con sustancia irritante o alergénica (ortiga, Toxicodendron, Euphorbia).",
+      "image": "key_images/stinging_hairs.png",
+      "wikimediaSearch": "contact_dermatitis"
+    },
+    {
+      "id": "sym_photosens",
+      "category": "symptoms",
+      "term": "fotosensibilización",
+      "synonyms": [
+        "fototoxicidad",
+        "fotodermatitis"
+      ],
+      "definition": "Reacción cutánea exagerada al sol tras contacto con savia (Heracleum, Ruta, Apiáceas). Provoca ampollas y quemaduras tras 1-2 días.",
+      "image": "key_images/flower_umbel.png",
+      "wikimediaSearch": "phytophotodermatitis"
+    },
+    {
+      "id": "sym_anticholinergic",
+      "category": "symptoms",
+      "term": "síndrome anticolinérgico",
+      "synonyms": [
+        "anticolinérgico"
+      ],
+      "definition": "Síndrome clásico: 'rojo como remolacha, seco como hueso, caliente como horno, ciego como murciélago, loco como cabra'. Por atropina/escopolamina.",
+      "image": "key_images/flower_trumpet.png",
+      "wikimediaSearch": "anticholinergic"
+    },
+    {
+      "id": "sym_cholinergic",
+      "category": "symptoms",
+      "term": "síndrome colinérgico",
+      "synonyms": [
+        "colinérgico",
+        "muscarínico"
+      ],
+      "definition": "Síndrome SLUDGE: Salivación, Lagrimeo, Urinación, Defecación, GI distress, Emesis. Hongos del género Inocybe, organofosforados.",
+      "image": "key_images/fruit_berry.png",
+      "wikimediaSearch": "cholinergic_crisis"
+    },
+    {
+      "id": "sym_gastroenteritis",
+      "category": "symptoms",
+      "term": "gastroenteritis",
+      "synonyms": [
+        "náuseas",
+        "vómitos",
+        "diarrea"
+      ],
+      "definition": "Inflamación gastrointestinal con vómitos y diarrea. Síntoma más frecuente de intoxicación vegetal.",
+      "image": "key_images/fruit_berry.png",
+      "wikimediaSearch": "gastroenteritis"
+    },
+    {
+      "id": "sym_hepatotoxicity",
+      "category": "symptoms",
+      "term": "hepatotoxicidad",
+      "synonyms": [
+        "daño hepático",
+        "insuficiencia hepática"
+      ],
+      "definition": "Daño al hígado por toxinas. Características amatoxinas (Amanita phalloides), pirrolizidínicos (Senecio), aceite de poleo.",
+      "image": "key_images/fruit_berry.png",
+      "wikimediaSearch": "hepatotoxicity"
+    },
+    {
+      "id": "sym_nephrotoxicity",
+      "category": "symptoms",
+      "term": "nefrotoxicidad",
+      "synonyms": [
+        "daño renal",
+        "insuficiencia renal"
+      ],
+      "definition": "Daño a los riñones. Lirium (gatos), oxalatos solubles (ruibarbo), orellanina (Cortinarius).",
+      "image": "key_images/leaf_lanceolate.png",
+      "wikimediaSearch": "nephrotoxicity"
+    },
+    {
+      "id": "sym_neurological",
+      "category": "symptoms",
+      "term": "neurotoxicidad",
+      "synonyms": [
+        "convulsiones",
+        "delirio",
+        "alucinaciones"
+      ],
+      "definition": "Afectación del sistema nervioso: convulsiones (estricnina, cicuta), alucinaciones (Datura, hongos), parálisis (acónito).",
+      "image": "key_images/flower_aconitum.png",
+      "wikimediaSearch": "neurotoxicity"
+    },
+    {
+      "id": "sym_arrhythmia",
+      "category": "symptoms",
+      "term": "arritmia",
+      "synonyms": [
+        "arritmias",
+        "trastorno del ritmo"
+      ],
+      "definition": "Alteración del ritmo cardíaco. Cardenólidos (digital, adelfa, cerbera) provocan arritmias graves potencialmente mortales.",
+      "image": "key_images/flower_digital.png",
+      "wikimediaSearch": "cardiac_arrhythmia"
+    },
+    {
+      "id": "sym_methemoglobinemia",
+      "category": "symptoms",
+      "term": "metahemoglobinemia",
+      "synonyms": [
+        "cianosis"
+      ],
+      "definition": "Hemoglobina oxidada incapaz de transportar oxígeno. Piel azulada (cianosis). Causada por nitratos vegetales, paraquat, anilinas.",
+      "image": "key_images/flower_violet.png",
+      "wikimediaSearch": "methemoglobinemia"
+    }
+  ]
+}

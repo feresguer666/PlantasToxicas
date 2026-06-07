@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Ilex_aquifolium",
+    "attribution": "Jürgen Howaldt (CC BY-SA 2.0 de) · Commons",
+    "addedAt": 1780708677667
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Magnolia_grandiflora",
+    "attribution": "Josep Renalias Lohen11 (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780708677667
+  }
+}

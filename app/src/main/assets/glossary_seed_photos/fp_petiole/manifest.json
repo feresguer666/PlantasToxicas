@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Petiole_(botany)",
+    "attribution": "Downtowngal (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780741132322
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Acer_palmatum",
+    "attribution": "Kurt Stüber [1] (CC BY-SA 3.0) · Commons",
+    "addedAt": 1780741132322
+  }
+}

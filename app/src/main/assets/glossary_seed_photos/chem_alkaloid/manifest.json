@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Alkaloid",
+    "attribution": "George Chernilevsky (CC BY-SA 4.0) · Commons",
+    "addedAt": 1780741137050
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Aconitum_napellus",
+    "attribution": "Bernd Haynold (CC BY-SA 2.5) · Commons",
+    "addedAt": 1780741137050
+  }
+}

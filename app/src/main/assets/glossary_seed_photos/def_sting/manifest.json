@@ -1,0 +1,14 @@
+{
+  "seed_1.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Urtica_dioica",
+    "attribution": "Evelyn Simak (CC BY-SA 2.0) · Commons",
+    "addedAt": 1780708594012
+  },
+  "seed_2.jpg": {
+    "seed": true,
+    "sourceUrl": "https://en.wikipedia.org/wiki/Trichome",
+    "attribution": "The original uploader was Lrothc at English Wikipedia. (CC BY-SA 2.5) · Commons",
+    "addedAt": 1780708594012
+  }
+}

@@ -28,5 +28,10 @@ data class PlantEntity(
     val longitude: Double? = null,
     val locationName: String? = null,
     val foundDate: String? = null,
-    val notes: String? = null
+    val notes: String? = null,
+
+    // ✅ CAMPOS DE FENOLOGÍA (meses como números separados por coma, ej: "3,4,5,6")
+    val floweringMonths: String = "",
+    val fruitingMonths: String = "",
+    val maxToxicityMonths: String = ""
 )

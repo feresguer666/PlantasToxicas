@@ -99,6 +99,7 @@ fun HomeScreen(
     onNavigateToToxicParts: () -> Unit = {},
     onNavigateToIntoxication: () -> Unit = {},
     onNavigateToGlobalSearch: (String) -> Unit = {},
+    onNavigateToCalendar: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
     val context = LocalContext.current
@@ -221,13 +222,13 @@ fun HomeScreen(
                 }
             }
 
-            // Fila Glosario (izquierda, compacto) + Recurso (derecha, ancho)
+            // Fila Glosario + Recurso + Calendario
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    // ── GLOSARIO (compacto cuadrado, como Riesgo) ──
+                    // ── GLOSARIO (compacto cuadrado) ──
                     Box(
                         modifier = Modifier
                             .width(82.dp)
@@ -253,7 +254,7 @@ fun HomeScreen(
                         }
                     }
 
-                    // ── RECURSO (ancho, como Emergencia) ──
+                    // ── RECURSO (reducido) ──
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -264,7 +265,7 @@ fun HomeScreen(
                             )
                             .carbonFiber()
                             .clickable { onNavigateToOnlineDatabases() }
-                            .padding(horizontal = 14.dp),
+                            .padding(horizontal = 10.dp),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -272,26 +273,53 @@ fun HomeScreen(
                                 Icons.Filled.Language,
                                 null,
                                 tint = Color.White,
-                                modifier = Modifier.size(30.dp)
+                                modifier = Modifier.size(26.dp)
                             )
-                            Spacer(Modifier.width(10.dp))
+                            Spacer(Modifier.width(6.dp))
                             Column {
                                 Text(
                                     "RECURSO",
                                     color = Color.Black,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 21.sp,
+                                    fontSize = 12.sp,
                                     maxLines = 1,
                                     softWrap = false
                                 )
                                 Text(
                                     "Bases externas",
                                     color = Color.Gray.copy(alpha = 0.92f),
-                                    fontSize = 13.sp,
+                                    fontSize = 6.sp,
                                     maxLines = 1,
                                     softWrap = false
                                 )
                             }
+                        }
+                    }
+
+                    // ── CALENDARIO DE TÓXICOS (compacto, como Calculadora) ──
+                    Box(
+                        modifier = Modifier
+                            .width(86.dp)
+                            .height(80.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(Color(0xFF880E4F), Color(0xFFE91E63))
+                                )
+                            )
+                            .carbonFiber()
+                            .clickable { onNavigateToCalendar() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("📅", fontSize = 26.sp)
+                            Text(
+                                "Calendario",
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 10.sp,
+                                maxLines = 1
+                            )
                         }
                     }
                 }

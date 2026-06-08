@@ -8,8 +8,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [PlantEntity::class, CompoundEntity::class, MushroomEntity::class],
-    version = 7,
+    entities = [PlantEntity::class, CompoundEntity::class, MushroomEntity::class, ToxicCalendarEvent::class],
+    version = 8,
     exportSchema = true
 )
 abstract class PlantDatabase : RoomDatabase() {
@@ -17,6 +17,7 @@ abstract class PlantDatabase : RoomDatabase() {
     abstract fun plantDao(): PlantDao
     abstract fun compoundDao(): CompoundDao
     abstract fun mushroomDao(): MushroomDao
+    abstract fun toxicCalendarDao(): ToxicCalendarDao
 
     companion object {
 
@@ -168,6 +169,33 @@ abstract class PlantDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * v7 → v8: añade campos de fenología a `plants` y crea tabla `calendar_events`.
+         */
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Fenología en plants
+                db.execSQL("ALTER TABLE plants ADD COLUMN floweringMonths TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE plants ADD COLUMN fruitingMonths TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE plants ADD COLUMN maxToxicityMonths TEXT NOT NULL DEFAULT ''")
+                // Tabla de eventos del calendario
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `calendar_events` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `description` TEXT NOT NULL,
+                        `date` TEXT NOT NULL,
+                        `plantId` INTEGER,
+                        `plantName` TEXT,
+                        `eventType` TEXT NOT NULL,
+                        `createdAt` INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         @Volatile
         private var INSTANCE: PlantDatabase? = null
 
@@ -179,7 +207,7 @@ abstract class PlantDatabase : RoomDatabase() {
                     PlantDatabase::class.java,
                     "plant_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                     .build()
                 INSTANCE = instance
                 instance

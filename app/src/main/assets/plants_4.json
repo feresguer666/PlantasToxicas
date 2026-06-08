@@ -10601,7 +10601,10 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Taban_Park_Botanical_nature_trail._Atlantic_ivy_%28Hedera_hibernica%29.JPG",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "10,11",
+    "fruitingMonths": "3,4,5",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 1983,

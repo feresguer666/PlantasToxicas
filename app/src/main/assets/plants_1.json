@@ -261,7 +261,10 @@
     "firstAid": "EMERGENCIA. Anticuerpos antidigoxina. UCI cardíaca.",
     "imageUrl": "file:///android_asset/generated_images/plant_12.jpg",
     "category": "Tropical",
-    "commonNames": "acokantera, acokantera negra, acokantera africana, acokanthera negra, acokanthera africana, acokanthera negra africana, acokanthera negra de África"
+    "commonNames": "acokantera, acokantera negra, acokantera africana, acokanthera negra, acokanthera africana, acokanthera negra africana, acokanthera negra de África",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 13,
@@ -283,7 +286,10 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Sin antídoto específico. UCI. Soporte cardiorrespiratorio.",
     "imageUrl": "file:///android_asset/generated_images/plant_13.jpg",
     "category": "Montaña",
-    "commonNames": "aconito amarillo, aconito de montaña, aconito montano, aconito amarillo de montaña, aconito de montañas"
+    "commonNames": "aconito amarillo, aconito de montaña, aconito montano, aconito amarillo de montaña, aconito de montañas",
+    "floweringMonths": "7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "7,8,9"
   },
   {
     "id": 14,
@@ -305,7 +311,10 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Sin antídoto. UCI. Soporte cardiorrespiratorio máximo.",
     "imageUrl": "file:///android_asset/generated_images/plant_14.jpg",
     "category": "Montaña",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "9,10",
+    "fruitingMonths": "11",
+    "maxToxicityMonths": "9,10,11"
   },
   {
     "id": 15,
@@ -327,7 +336,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico inmediato, carbón activado, atropina, monitoreo cardíaco. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Aconitum_vulparia_-_Wolfs-Eisenhut.jpg",
     "category": "Montaña",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 16,
@@ -349,7 +361,10 @@
     "firstAid": "EMERGENCIA MÁXIMA. La muerte puede ocurrir en 2-6 horas. Hospitalización inmediata. UCI. No hay antídoto. Tratamiento sintomático cardíaco.",
     "imageUrl": "file:///android_asset/generated_images/plant_16.jpg",
     "category": "Silvestre",
-    "commonNames": "acónito, matalobos, aconito, aconito blanco, aconito de montaña, aconito europeo, aconito montano, aconito silvestre"
+    "commonNames": "acónito, matalobos, aconito, aconito blanco, aconito de montaña, aconito europeo, aconito montano, aconito silvestre",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 17,
@@ -371,7 +386,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico inmediato, atropina IV, monitoreo cardíaco, soporte vital. UCI.",
     "imageUrl": "file:///android_asset/generated_images/plant_17.jpg",
     "category": "Montaña",
-    "commonNames": "acónito de las montañas, acónito de la montaña, acónito de montaña común"
+    "commonNames": "acónito de las montañas, acónito de la montaña, acónito de montaña común",
+    "floweringMonths": "7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "7,8,9"
   },
   {
     "id": 18,
@@ -393,7 +411,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico, atropina IV, monitoreo cardíaco continuo, soporte vital. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Aconitum_vulparia_-_Wolfs-Eisenhut.jpg",
     "category": "Montaña",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 19,
@@ -437,7 +458,10 @@
     "firstAid": "Inducir vómito. Hospitalización si hay síntomas neurológicos.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Actaea_spicata_kz01.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "8,9"
   },
   {
     "id": 21,
@@ -1867,7 +1891,10 @@
     "firstAid": "No consumir. Consultar médico si hay síntomas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/29/Anagallis_arvensis_%28habitus%29.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7,8",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "5,6,7,8"
   },
   {
     "id": 86,
@@ -2043,7 +2070,10 @@
     "firstAid": "Lavar con agua y jabón. Consultar toxicología si ingestión.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Anemone_nemorosa_ENBLA01.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "3,4,5",
+    "fruitingMonths": "5,6",
+    "maxToxicityMonths": "3,4,5"
   },
   {
     "id": 94,
@@ -2373,7 +2403,10 @@
     "firstAid": "Urgencia médica inmediata.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Anticlea_elegans.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 109,
@@ -2483,7 +2516,10 @@
     "firstAid": "Consultar toxicología. Especial cuidado con niños.",
     "imageUrl": "file:///android_asset/generated_images/plant_113.jpg",
     "category": "Jardín",
-    "commonNames": "aguileña, estrellita, estrellita de mayo, estrellita de mayo común, estrellita de mayo europea, estrellita de mayo silvestre, estrellita silvestre"
+    "commonNames": "aguileña, estrellita, estrellita de mayo, estrellita de mayo común, estrellita de mayo europea, estrellita de mayo silvestre, estrellita silvestre",
+    "floweringMonths": "5,6",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "5,6,7"
   },
   {
     "id": 114,
@@ -2967,7 +3003,10 @@
     "firstAid": "URGENCIAS. Enjuague bucal urgente. Monitorización de vía aérea.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Arum_italicum_-_Flickr_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "4,5,6,7,8"
   },
   {
     "id": 136,
@@ -2989,7 +3028,10 @@
     "firstAid": "Lavar boca con agua fría, dar helado o leche fría para aliviar. Consulta médica si edema severo.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c1/Arum_maculatum_fruits.jpg",
     "category": "Bosque",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "4,5,6,7,8"
   },
   {
     "id": 137,
@@ -3033,7 +3075,10 @@
     "firstAid": "Inducir vómito. Monitorización cardíaca. Hospitalización.",
     "imageUrl": "file:///android_asset/generated_images/plant_138.jpg",
     "category": "Jardín",
-    "commonNames": "cardo de la muerte, cardo de muerte, cardo santo de la muerte, cardo santo de muerte, cuerda de la muerte, cuerda de muerte, flor de la muerte, flor de muerte"
+    "commonNames": "cardo de la muerte, cardo de muerte, cardo santo de la muerte, cardo santo de muerte, cuerda de la muerte, cuerda de muerte, flor de la muerte, flor de muerte",
+    "floweringMonths": "6,7,8,9",
+    "fruitingMonths": "9,10,11",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 139,
@@ -3143,7 +3188,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico, carbón activado, fisostigmina, benzodiacepinas, enfriamiento. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/43/Atropa_acuminata.jpg",
     "category": "Montaña",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "8,9,10"
   },
   {
     "id": 144,
@@ -3165,7 +3213,10 @@
     "firstAid": "EMERGENCIA. Hospitalización inmediata. Antídoto: fisostigmina. No inducir vómito. Soporte respiratorio.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Atropa_belladonna_220705.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "8,9,10"
   },
   {
     "id": 145,
@@ -3649,7 +3700,10 @@
     "firstAid": "EMERGENCIA. Fisostigmina. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Brugmansia_arborea_-_Flickr_001.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8,9",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 167,
@@ -3671,7 +3725,10 @@
     "firstAid": "EMERGENCIA. Fisostigmina. UCI. Sedación.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Brugmansia_aurea.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 168,
@@ -3693,7 +3750,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico, carbón activado, fisostigmina, sedación con benzodiacepinas. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Brugmansia_sanguinea_1.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 169,
@@ -3715,7 +3775,10 @@
     "firstAid": "EMERGENCIA. Hospitalización inmediata. Tratamiento con fisostigmina. Sedación con benzodiazepinas. Enfriamiento si hay hipertermia.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/22/Angel%27s_trumpet_%28Brugmansia_suaveolens%29.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8,9",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 170,
@@ -3891,7 +3954,10 @@
     "firstAid": "URGENCIAS. Requiere atención médica inmediata, lavado gástrico e ingreso hospitalario.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/98/Bryonia_alba_sl7.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "9,10"
   },
   {
     "id": 178,
@@ -3913,7 +3979,10 @@
     "firstAid": "URGENCIAS. Hidratación. Tratamiento sintomático.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Bryonia_dioica_berries_-_Flickr_001.jpg",
     "category": "Trepadora",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "9,10"
   },
   {
     "id": 179,
@@ -4067,7 +4136,10 @@
     "firstAid": "URGENCIAS. Lavado de estómago hospitalario, carbón activo y tratamiento sintomático.",
     "imageUrl": "https://inaturalist-open-data.s3.amazonaws.com/photos/37706191/original.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "3,4,5",
+    "fruitingMonths": "6,7",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 186,
@@ -4199,7 +4271,10 @@
     "firstAid": "Consultar toxicología. Tratamiento sintomático.",
     "imageUrl": "file:///android_asset/generated_images/plant_191.jpg",
     "category": "Acuática",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "3,4,5",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "3,4,5,6"
   },
   {
     "id": 192,
@@ -4221,7 +4296,10 @@
     "firstAid": "No consumir semillas ni corteza. Consultar médico si hay síntomas.",
     "imageUrl": "file:///android_asset/generated_images/plant_192.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 193,
@@ -4617,7 +4695,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico, carbón activado, anticuerpos antidigoxina, monitoreo cardíaco. UCI.",
     "imageUrl": "file:///android_asset/generated_images/plant_210.jpg",
     "category": "Tropical",
-    "commonNames": "alcaparra amarilla, yerba del diablo, yerba del perro"
+    "commonNames": "alcaparra amarilla, yerba del diablo, yerba del perro",
+    "floweringMonths": "6,7,8,9",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 211,
@@ -4727,7 +4808,10 @@
     "firstAid": "URGENCIAS. Requiere monitorización hematológica y neurológica en centro médico ante su consumo.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Vinca_%28Catharanthus_roseus%29_cultivada_em_Bag%C3%A9%2C_RS%2C_Brasil_-_55231652268.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7,8",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 216,
@@ -4903,7 +4987,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico, carbón activado, anticuerpos antidigoxina, monitoreo cardíaco. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Cerbera_manghas_%28flower%29.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "3,4,5,6",
+    "fruitingMonths": "7,8,9",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 224,
@@ -4925,7 +5012,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico, carbón activado, anticuerpos antidigoxina, monitoreo cardíaco. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/94/Cerbera_odollam_%28Pong_Pong%29.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "3,4,5,6",
+    "fruitingMonths": "7,8,9",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 225,
@@ -5123,7 +5213,10 @@
     "firstAid": "Lavar la piel con abundante agua. En caso de ingesta, acudir urgentemente a un centro médico.",
     "imageUrl": "file:///android_asset/generated_images/plant_233.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "5,6,7,8"
   },
   {
     "id": 234,
@@ -5541,7 +5634,10 @@
     "firstAid": "EMERGENCIA. Benzodiazepinas IV para convulsiones. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Cicuta_maculata.jpg",
     "category": "Acuática",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "8,9,10",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 253,
@@ -5563,7 +5659,10 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Anticonvulsivos. UCI. Puede matar en 1 hora.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/Cicuta_virosa_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-038.jpg",
     "category": "Acuática",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "8,9,10",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 254,
@@ -5739,7 +5838,10 @@
     "firstAid": "Lavar la piel con agua. Consultar médico si hay ingesta.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/87/1024_Clematis_recta-2754.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 262,
@@ -5783,7 +5885,10 @@
     "firstAid": "Lavar con agua y jabón. Consultar si ingestión.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/48/Clematis_vitalba_fruits.jpg",
     "category": "Trepadora",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "7,8,9",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "7,8,9,10"
   },
   {
     "id": 264,
@@ -5915,7 +6020,10 @@
     "firstAid": "Urgencia médica inmediata.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Books_from_the_Biodiversity_Heritage_Library_%28IA_mobot31753002306667%29.pdf",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "8,9",
+    "fruitingMonths": "5,6",
+    "maxToxicityMonths": "8,9"
   },
   {
     "id": 270,
@@ -5937,7 +6045,10 @@
     "firstAid": "EMERGENCIA. No hay antídoto. Hospitalización UCI. Lavado gástrico si fue muy reciente.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/92/Colchicum_autumnale_01.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "8,9,10",
+    "fruitingMonths": "5,6",
+    "maxToxicityMonths": "8,9,10"
   },
   {
     "id": 271,
@@ -5959,7 +6070,10 @@
     "firstAid": "EMERGENCIA. No hay antídoto. Lavado gástrico precoz, carbón activado, soporte de órganos. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/30/Colchicum_byzantinum.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "9,10",
+    "fruitingMonths": "5,6",
+    "maxToxicityMonths": "9,10"
   },
   {
     "id": 272,
@@ -5981,7 +6095,10 @@
     "firstAid": "EMERGENCIA. No hay antídoto. Lavado gástrico precoz, soporte multiorgánico. UCI.",
     "imageUrl": "file:///android_asset/generated_images/plant_272.jpg",
     "category": "Pradera",
-    "commonNames": "cólquico, cólquico lusitano"
+    "commonNames": "cólquico, cólquico lusitano",
+    "floweringMonths": "9,10",
+    "fruitingMonths": "4,5",
+    "maxToxicityMonths": "9,10"
   },
   {
     "id": 273,
@@ -6003,7 +6120,10 @@
     "firstAid": "EMERGENCIA. No hay antídoto específico. Lavado gástrico precoz, soporte multiorgánico. UCI.",
     "imageUrl": "file:///android_asset/generated_images/plant_273.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "9,10,11",
+    "fruitingMonths": "5,6",
+    "maxToxicityMonths": "9,10,11"
   },
   {
     "id": 274,
@@ -6047,7 +6167,10 @@
     "firstAid": "No consumir semillas. Consultar médico.",
     "imageUrl": "file:///android_asset/generated_images/plant_275.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "8,9"
   },
   {
     "id": 276,
@@ -6069,7 +6192,10 @@
     "firstAid": "EMERGENCIA. Llamar al 112/911. Hospitalización inmediata. Ventilación mecánica puede ser necesaria. No hay antídoto específico.",
     "imageUrl": "file:///android_asset/generated_images/plant_276.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7",
+    "fruitingMonths": "7,8,9",
+    "maxToxicityMonths": "5,6,7,8"
   },
   {
     "id": 277,
@@ -6091,7 +6217,10 @@
     "firstAid": "URGENCIAS. Soporte respiratorio. Tratamiento sintomático.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/54/Consolida_ajacis_-_Flickr_001.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 278,
@@ -6113,7 +6242,10 @@
     "firstAid": "No consumir. Consultar médico.",
     "imageUrl": "http://calphotos.berkeley.edu/imgs/512x768/0000_0000/0704/0372.jpeg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 279,
@@ -6135,7 +6267,10 @@
     "firstAid": "EMERGENCIA CARDÍACA. Hospitalización inmediata. Monitorización ECG. Tratamiento similar a intoxicación digitálica.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Convallaria_majalis_0002.JPG",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "4,5,6"
   },
   {
     "id": 280,
@@ -6157,7 +6292,10 @@
     "firstAid": "No consumir. Consultar médico.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8,9",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 281,
@@ -6245,7 +6383,10 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Anticonvulsivos. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/86/Coriaria_arborea_-_Flickr_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "10,11,12",
+    "fruitingMonths": "3,4,5",
+    "maxToxicityMonths": "3,4,5"
   },
   {
     "id": 285,
@@ -6267,7 +6408,10 @@
     "firstAid": "EMERGENCIA. Lavado gástrico, benzodiacepinas IV para convulsiones, soporte respiratorio. UCI.",
     "imageUrl": "file:///android_asset/generated_images/plant_285.jpg",
     "category": "Silvestre",
-    "commonNames": "coriaria negra, coriandrina, coriario, coriaria negra de monte, coriaria silvestre, coriaria de monte, coriaria de monte negra"
+    "commonNames": "coriaria negra, coriandrina, coriario, coriaria negra de monte, coriaria silvestre, coriaria de monte, coriaria de monte negra",
+    "floweringMonths": "3,4,5",
+    "fruitingMonths": "6,7,8",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 286,
@@ -6487,7 +6631,10 @@
     "firstAid": "No consumir. Urgencia médica si hay síntomas graves.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5",
+    "fruitingMonths": "6,7",
+    "maxToxicityMonths": "4,5,6"
   },
   {
     "id": 296,
@@ -7477,7 +7624,10 @@
     "firstAid": "URGENCIAS. Tratamiento sintomático.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Daphne_gnidium.jpg",
     "category": "Mediterránea",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5,6",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 341,
@@ -7499,7 +7649,10 @@
     "firstAid": "URGENCIAS. Tratamiento sintomático. Monitorización.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/56/Daphne_laureola_Rochers-de-Nayes.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "1,2,3",
+    "fruitingMonths": "6,7",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 342,
@@ -7521,7 +7674,10 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Pocas bayas pueden matar. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Daphne_mezereum_-_Flickr_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "2,3,4",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
   },
   {
     "id": 343,
@@ -7719,7 +7875,10 @@
     "firstAid": "EMERGENCIA. Hospitalización UCI. Fisostigmina como antídoto. Sedación con benzodiazepinas. Enfriamiento corporal.",
     "imageUrl": "file:///android_asset/generated_images/plant_351.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "7,8,9",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "7,8,9,10"
   },
   {
     "id": 352,
@@ -7807,7 +7966,10 @@
     "firstAid": "EMERGENCIA. Similar al acónito. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Delphinium_elatum1.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 356,
@@ -8005,7 +8167,10 @@
     "firstAid": "Urgencia médica inmediata. Antídoto: fragmentos Fab.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Digitalis_lutea_240606.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 365,
@@ -8027,7 +8192,10 @@
     "firstAid": "EMERGENCIA CARDÍACA. Hospital inmediato. Puede requerir anticuerpos anti-digoxina. Monitorización cardíaca continua.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Digitalis_purpurea2.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7",
+    "fruitingMonths": "7,8,9",
+    "maxToxicityMonths": "6,7,8"
   },
   {
     "id": 366,
@@ -9149,7 +9317,10 @@
     "firstAid": "URGENCIAS. Monitorización del ritmo cardíaco mediante electrocardiograma en hospital.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Erysimum_cheiri_%28L.%29_Crantz%2C_biennial_plant.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5,6",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "4,5,6"
   },
   {
     "id": 417,
@@ -9435,7 +9606,10 @@
     "firstAid": "URGENCIAS ABSOLUTA. Lavado de estómago y monitorización cardíaca/neurológica urgente.",
     "imageUrl": "file:///android_asset/generated_images/plant_429.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6",
+    "fruitingMonths": "9,10,11",
+    "maxToxicityMonths": "9,10,11"
   },
   {
     "id": 430,
@@ -9633,7 +9807,10 @@
     "firstAid": "Lavado ocular urgente si contacto con ojos. Dermatología si quemaduras.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Euphorbia_characias_subsp_wulfenii_2.jpg",
     "category": "Mediterránea",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "2,3,4,5",
+    "fruitingMonths": "6,7",
+    "maxToxicityMonths": "2,3,4,5,6"
   },
   {
     "id": 439,
@@ -9765,7 +9942,10 @@
     "firstAid": "Lavado ocular urgente si contacto con ojos. Lavar piel.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Euphorbia_helioscopia_2005.jpg",
     "category": "Ruderal",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5,6",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "4,5,6,7"
   },
   {
     "id": 445,
@@ -9897,7 +10077,10 @@
     "firstAid": "Lavar el látex con abundante agua. Ingesta o contacto ocular requiere urgencia médica inmediata.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6e/Euphorbia_lathyris_Sturm33.jpg",
     "category": "Huerto",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6",
+    "fruitingMonths": "7,8,9",
+    "maxToxicityMonths": "5,6,7,8"
   },
   {
     "id": 451,
@@ -10051,7 +10234,10 @@
     "firstAid": "Lavado ocular urgente. Consultar dermatología si quemaduras.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/93/Euphorbia_peplus_-_Flickr_001.jpg",
     "category": "Ruderal",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6,7",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "5,6,7,8"
   },
   {
     "id": 458,
@@ -10117,7 +10303,10 @@
     "firstAid": "Lavar zona afectada. Beber agua o leche. Generalmente no requiere atención médica.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Euphorbia_pulcherrima_red.jpg",
     "category": "Doméstica",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "12,1,2",
+    "fruitingMonths": "3,4",
+    "maxToxicityMonths": "12,1,2,3"
   },
   {
     "id": 461,
@@ -10513,7 +10702,10 @@
     "firstAid": "Lavar con agua y jabón. Evitar sol tras contacto con látex.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/7/75/Ficus_carica_2.jpg",
     "category": "Frutal",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "8,9",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 479,
@@ -10645,7 +10837,10 @@
     "firstAid": "Rehidratación intensa. Consultar si ingestión de corteza fresca.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Frangula_alnus_-_berries.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "9,10"
   },
   {
     "id": 485,

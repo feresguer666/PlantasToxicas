@@ -42,6 +42,7 @@ import com.toxicplants.database.ui.viewmodel.LichenViewModel
 import com.toxicplants.database.ui.viewmodel.MushroomViewModel
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import com.toxicplants.database.ui.viewmodel.SightingViewModel
+import com.toxicplants.database.ui.viewmodel.ToxicCalendarViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,6 +113,7 @@ fun MainApp() {
                 onNavigateToToxicParts      = { navController.navigate("toxic_parts") },
                 onNavigateToIntoxication    = { navController.navigate("intoxication") },
                 onNavigateToGlobalSearch    = { query -> navController.navigate("global_search/$query") },
+                onNavigateToCalendar        = { navController.navigate("toxic_calendar") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
@@ -647,6 +649,20 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
                 onBack       = { navController.popBackStack() }
+            )
+        }
+
+        // ── CALENDARIO DE TÓXICOS ───────────────────────────────────────
+        composable("toxic_calendar") {
+            val calendarViewModel: ToxicCalendarViewModel = viewModel()
+            ToxicCalendarScreen(
+                viewModel = calendarViewModel,
+                plantViewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                }
             )
         }
 

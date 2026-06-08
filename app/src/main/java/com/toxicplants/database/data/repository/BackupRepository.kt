@@ -104,6 +104,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val mushrooms = MushroomUserStore.load(context) ?: MushroomDataSource.loadAll(context)
             val lichens = LichenUserStore.load(context) ?: LichenDataSource.loadAll(context)
             val sightings = SightingStore.load(context)
+            val calendarEvents = db.toxicCalendarDao().getAllEventsSync()
 
             val plantLocations = plants
                 .filter {
@@ -197,6 +198,11 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     // sightings
                     w.name("sightings").beginArray()
                     for (s in sightings) gson.toJson(s, SightingEntity::class.java, w)
+                    w.endArray()
+
+                    // calendarEvents
+                    w.name("calendarEvents").beginArray()
+                    for (e in calendarEvents) gson.toJson(e, com.toxicplants.database.ToxicCalendarEvent::class.java, w)
                     w.endArray()
 
                     // plantImages (todas o solo las cambiadas según incremental)
@@ -520,6 +526,16 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         }
                         SightingStore.save(context, restored)
                     }
+                }
+
+                "calendarEvents" -> {
+                    progress?.onProgress("Eventos del calendario…", 0, 1)
+                    r.beginArray()
+                    while (r.hasNext()) {
+                        val evt = gson.fromJson<com.toxicplants.database.ToxicCalendarEvent>(r, com.toxicplants.database.ToxicCalendarEvent::class.java)
+                        runCatching { db.toxicCalendarDao().insert(evt) }
+                    }
+                    r.endArray()
                 }
 
                 "plantImages" -> {

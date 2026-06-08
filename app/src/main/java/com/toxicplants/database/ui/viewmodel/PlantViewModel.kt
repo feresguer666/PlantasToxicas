@@ -183,4 +183,37 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
     // ✅ OBTENER PLANTAS CON UBICACIÓN
     fun getPlantsWithLocation(): LiveData<List<PlantEntity>> = repository.getPlantsWithLocation()
+
+    // ✅ SEMBRAR DATOS FENOLÓGICOS (se llama desde PlantDetailScreen y ToxicCalendarScreen)
+    private var phenologySeeded = false
+    fun seedPhenologyIfNeeded() {
+        if (phenologySeeded) return
+        phenologySeeded = true
+        viewModelScope.launch(Dispatchers.IO) {
+            val all = repository.getAllPlantsSync()
+            val needsSeed = all.any { it.floweringMonths.isBlank() && it.toxicityLevel in listOf("Mortal", "Muy alto", "Alto") }
+            if (!needsSeed) return@launch
+
+            val phenologyMap = com.toxicplants.database.ui.viewmodel.ToxicCalendarViewModel.getPhenologySeedData()
+            var updated = 0
+            for (plant in all) {
+                if (plant.floweringMonths.isNotBlank()) continue
+                val norm = plant.scientificName.trim().lowercase().split(Regex("\\s+")).let { parts ->
+                    if (parts.size >= 2) "${parts[0]} ${parts[1]}" else plant.scientificName.trim().lowercase()
+                }
+                val entry = phenologyMap[norm] ?: phenologyMap[plant.scientificName.lowercase().trim()]
+                if (entry != null) {
+                    repository.insert(plant.copy(
+                        floweringMonths = entry.flowering,
+                        fruitingMonths = entry.fruiting,
+                        maxToxicityMonths = entry.maxToxicity
+                    ))
+                    updated++
+                }
+            }
+            if (updated > 0) {
+                plants.value = repository.getAllPlantsSync()
+            }
+        }
+    }
 }

@@ -42,6 +42,9 @@ fun EditPlantScreen(
     var firstAid by remember(existingPlant) { mutableStateOf(existingPlant?.firstAid ?: "") }
     var imageUrl by remember(existingPlant) { mutableStateOf(existingPlant?.imageUrl ?: "") }
     var category by remember(existingPlant) { mutableStateOf(existingPlant?.category ?: "") }
+    var floweringMonths by remember(existingPlant) { mutableStateOf(existingPlant?.floweringMonths ?: "") }
+    var fruitingMonths by remember(existingPlant) { mutableStateOf(existingPlant?.fruitingMonths ?: "") }
+    var maxToxicityMonths by remember(existingPlant) { mutableStateOf(existingPlant?.maxToxicityMonths ?: "") }
 
     var expanded by remember { mutableStateOf(false) }
     val toxicityOptions = listOf("Mortal", "Alto", "Moderado", "Bajo")
@@ -101,7 +104,10 @@ fun EditPlantScreen(
                                     longitude = existingPlant?.longitude,
                                     locationName = existingPlant?.locationName,
                                     foundDate = existingPlant?.foundDate,
-                                    notes = existingPlant?.notes
+                                    notes = existingPlant?.notes,
+                                    floweringMonths = floweringMonths,
+                                    fruitingMonths = fruitingMonths,
+                                    maxToxicityMonths = maxToxicityMonths
                                 )
                                 viewModel.insertPlant(plant)
                                 onBack()
@@ -273,6 +279,51 @@ fun EditPlantScreen(
                 colors = textFieldColors
             )
 
+            // ══════════════════════════════════════════════════════════
+            // CAMPOS DE FENOLOGÍA
+            // ══════════════════════════════════════════════════════════
+            Text(
+                "📅 Fenología (meses del año)",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF4CAF50)
+            )
+            Text(
+                "Indica los meses con números separados por comas. Ejemplo: 3,4,5 (marzo, abril, mayo)",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+
+            OutlinedTextField(
+                value = floweringMonths,
+                onValueChange = { floweringMonths = it },
+                label = { Text("🌸 Meses de floración") },
+                placeholder = { Text("Ej: 5,6,7") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = textFieldColors
+            )
+
+            OutlinedTextField(
+                value = fruitingMonths,
+                onValueChange = { fruitingMonths = it },
+                label = { Text("🍎 Meses de fructificación") },
+                placeholder = { Text("Ej: 9,10") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = textFieldColors
+            )
+
+            OutlinedTextField(
+                value = maxToxicityMonths,
+                onValueChange = { maxToxicityMonths = it },
+                label = { Text("☠️ Meses de toxicidad máxima") },
+                placeholder = { Text("Ej: 6,7,8,9") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = textFieldColors
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
@@ -281,6 +332,7 @@ fun EditPlantScreen(
                         val plant = PlantEntity(
                             id = existingPlant?.id ?: 0,
                             commonName = commonName,
+                            commonNames = commonNames,
                             scientificName = scientificName,
                             family = family,
                             toxicityLevel = toxicityLevel,
@@ -297,7 +349,10 @@ fun EditPlantScreen(
                             longitude = existingPlant?.longitude,
                             locationName = existingPlant?.locationName,
                             foundDate = existingPlant?.foundDate,
-                            notes = existingPlant?.notes
+                            notes = existingPlant?.notes,
+                            floweringMonths = floweringMonths,
+                            fruitingMonths = fruitingMonths,
+                            maxToxicityMonths = maxToxicityMonths
                         )
                         viewModel.insertPlant(plant)
                         onBack()

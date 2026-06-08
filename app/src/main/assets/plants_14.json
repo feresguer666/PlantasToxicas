@@ -8841,7 +8841,10 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/tulip-r.jpg?itok=4MPaC14J",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "4,5",
+    "fruitingMonths": "6,7",
+    "maxToxicityMonths": "4,5"
   },
   {
     "id": 6903,

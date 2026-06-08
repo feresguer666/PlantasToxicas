@@ -41,6 +41,9 @@ object PlantDataSource {
                         locationName = o.optStringOrNull("locationName"),
                         foundDate = o.optStringOrNull("foundDate"),
                         notes = o.optStringOrNull("notes"),
+                        floweringMonths = o.optString("floweringMonths", ""),
+                        fruitingMonths = o.optString("fruitingMonths", ""),
+                        maxToxicityMonths = o.optString("maxToxicityMonths", ""),
                     )
                 }
                 fileIndex++

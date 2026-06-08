@@ -1427,7 +1427,10 @@
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "5,6,7"
   },
   {
     "id": 9066,
@@ -1449,7 +1452,10 @@
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "5,6",
+    "fruitingMonths": "7,8",
+    "maxToxicityMonths": "5,6,7"
   },
   {
     "id": 9067,
@@ -10337,7 +10343,10 @@
     "firstAid": "Lavar con agua en contacto cutáneo u ocular. Consultar médico si hay ingestión.",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "6,7,8",
+    "fruitingMonths": "9,10",
+    "maxToxicityMonths": "6,7,8,9"
   },
   {
     "id": 9471,

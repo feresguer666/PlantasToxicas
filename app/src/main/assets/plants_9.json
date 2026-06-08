@@ -7653,7 +7653,10 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/LigustrumLucidumFlowers.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "7,8",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "10,11"
   },
   {
     "id": 4349,
@@ -8467,7 +8470,10 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Lobelia_siphilitica_001.JPG",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "7,8,9",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "7,8,9,10"
   },
   {
     "id": 4386,

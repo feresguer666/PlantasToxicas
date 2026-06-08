@@ -5827,7 +5827,10 @@
     "firstAid": "Enjuagar la boca con agua. No provocar el vómito debido a la rápida acción de los alcaloides en el sistema nervioso. Solicitar atención médica urgente.",
     "imageUrl": "https://wikimedia.org",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "7,8,9",
+    "fruitingMonths": "10,11",
+    "maxToxicityMonths": "7,8,9,10"
   },
   {
     "id": 9766,

@@ -33,7 +33,10 @@ import com.toxicplants.database.ui.viewmodel.CompoundViewModel
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,6 +58,9 @@ fun PlantDetailScreen(
 
     val allPlants by viewModel.allPlants.observeAsState(initial = emptyList())
     val plant = remember(allPlants, plantId) { allPlants.firstOrNull { it.id == plantId } }
+
+    // Sembrar datos fenológicos si faltan
+    LaunchedEffect(Unit) { viewModel.seedPhenologyIfNeeded() }
 
     Scaffold(
         topBar = {
@@ -588,6 +594,197 @@ fun PlantDetailScreen(
                 )
 
                 // ══════════════════════════════════════════════════════════
+                // CALENDARIO FENOLÓGICO
+                // ══════════════════════════════════════════════════════════
+                if (p.floweringMonths.isNotBlank() || p.fruitingMonths.isNotBlank() || p.maxToxicityMonths.isNotBlank()) {
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                "📅 Calendario fenológico",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                "Periodos anuales de esta planta",
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Barra visual de 12 meses
+                            val monthLabels = listOf(
+                                "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+                                "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+                            )
+                            val floweringMonths = p.floweringMonths.toIntList()
+                            val fruitingMonths = p.fruitingMonths.toIntList()
+                            val maxToxMonths = p.maxToxicityMonths.toIntList()
+
+                            // Encabezados de mes
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                monthLabels.forEach { label ->
+                                    Text(
+                                        label,
+                                        fontSize = 10.sp,
+                                        color = Color.Gray,
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            // Fila: Floración
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("🌸", fontSize = 14.sp)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    (1..12).forEach { month ->
+                                        val isActive = month in floweringMonths
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(14.dp)
+                                                .padding(horizontal = 1.dp)
+                                                .clip(RoundedCornerShape(2.dp))
+                                                .background(
+                                                    if (isActive) Color(0xFFE91E63)
+                                                    else Color.Gray.copy(alpha = 0.1f)
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            if (isActive) {
+                                                Text(
+                                                    "${month}",
+                                                    fontSize = 8.sp,
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            // Fila: Fructificación
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("🍎", fontSize = 14.sp)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    (1..12).forEach { month ->
+                                        val isActive = month in fruitingMonths
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(14.dp)
+                                                .padding(horizontal = 1.dp)
+                                                .clip(RoundedCornerShape(2.dp))
+                                                .background(
+                                                    if (isActive) Color(0xFFFF9800)
+                                                    else Color.Gray.copy(alpha = 0.1f)
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            if (isActive) {
+                                                Text(
+                                                    "${month}",
+                                                    fontSize = 8.sp,
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            // Fila: Toxicidad máxima
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("☠️", fontSize = 14.sp)
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    (1..12).forEach { month ->
+                                        val isActive = month in maxToxMonths
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .height(14.dp)
+                                                .padding(horizontal = 1.dp)
+                                                .clip(RoundedCornerShape(2.dp))
+                                                .background(
+                                                    if (isActive) Color(0xFFF44336)
+                                                    else Color.Gray.copy(alpha = 0.1f)
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            if (isActive) {
+                                                Text(
+                                                    "${month}",
+                                                    fontSize = 8.sp,
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            // Leyenda
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                LegendEntry("🌸 Floración", Color(0xFFE91E63))
+                                LegendEntry("🍎 Frutos", Color(0xFFFF9800))
+                                LegendEntry("☠️ Tóxica máx.", Color(0xFFF44336))
+                            }
+
+                            // Texto descriptivo de meses
+                            Spacer(modifier = Modifier.height(8.dp))
+                            if (floweringMonths.isNotEmpty()) {
+                                val monthsStr = floweringMonths.map { monthLabels[it - 1] }.joinToString(", ")
+                                Text("🌸 Floración: $monthsStr", fontSize = 13.sp, color = Color(0xFFE91E63))
+                            }
+                            if (fruitingMonths.isNotEmpty()) {
+                                val monthsStr = fruitingMonths.map { monthLabels[it - 1] }.joinToString(", ")
+                                Text("🍎 Fructificación: $monthsStr", fontSize = 13.sp, color = Color(0xFFFF9800))
+                            }
+                            if (maxToxMonths.isNotEmpty()) {
+                                val monthsStr = maxToxMonths.map { monthLabels[it - 1] }.joinToString(", ")
+                                Text("☠️ Toxicidad máxima: $monthsStr", fontSize = 13.sp, color = Color(0xFFF44336))
+                            }
+                        }
+                    }
+                }
+
+                // ══════════════════════════════════════════════════════════
                 // INFORMACIÓN ADICIONAL
                 // ══════════════════════════════════════════════════════════
                 Card(modifier = Modifier.fillMaxWidth()) {
@@ -644,6 +841,25 @@ fun getToxicityColor(level: String): Color = when (level) {
     "Moderado" -> Color(0xFFF57C00)
     "Bajo"     -> Color(0xFF388E3C)
     else       -> Color.Gray
+}
+
+/** Convierte "3,4,5" → listOf(3,4,5) */
+private fun String.toIntList(): List<Int> =
+    if (isBlank()) emptyList()
+    else split(",").mapNotNull { it.trim().toIntOrNull() }
+
+@Composable
+private fun LegendEntry(label: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(10.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(color)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(label, fontSize = 11.sp, color = Color.Gray)
+    }
 }
 
 /**

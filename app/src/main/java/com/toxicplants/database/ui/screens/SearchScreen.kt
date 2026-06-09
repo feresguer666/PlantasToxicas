@@ -87,15 +87,7 @@ fun SearchScreen(
                     ) {
                         Text("🔑 Claves dicotómicas interactivas", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                     }
-                    Spacer(Modifier.height(8.dp))
-                    Button(
-                        onClick = onIntoxicationClick,
-                        modifier = Modifier.fillMaxWidth().height(54.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = colors.error),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("☠️ Intoxicación", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    }
+
                 }
             }
         }

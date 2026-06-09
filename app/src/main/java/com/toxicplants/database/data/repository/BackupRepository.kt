@@ -16,6 +16,8 @@ import com.toxicplants.database.MushroomEntity
 import com.toxicplants.database.MushroomUserStore
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.PsychotropicOverrides
+import com.toxicplants.database.PsychotropicUserStore
 import com.toxicplants.database.SightingEntity
 import com.toxicplants.database.SightingStore
 import kotlinx.coroutines.Dispatchers
@@ -105,6 +107,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val lichens = LichenUserStore.load(context) ?: LichenDataSource.loadAll(context)
             val sightings = SightingStore.load(context)
             val calendarEvents = db.toxicCalendarDao().getAllEventsSync()
+            val psychotropicOverrides = PsychotropicUserStore.load(context)
 
             val plantLocations = plants
                 .filter {
@@ -124,6 +127,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 }
 
             val plantImagesDir = File(context.filesDir, "plant_images")
+            val mushroomImagesDir = File(context.filesDir, "mushroom_images")
             val sightingImagesDir = SightingStore.photoDir(context)
 
             // 2. Si es incremental, calcular qué fotos cambiaron vs. el manifiesto.
@@ -140,8 +144,9 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             }
 
             val nPlantImg = countImagesFiltered(plantImagesDir, plantPhotoFilter)
+            val nMushroomImg = if (incremental) 0 else countImages(mushroomImagesDir)
             val nSightImg = if (incremental) 0 else countImages(sightingImagesDir)
-            val totalSteps = plants.size + compounds.size + nPlantImg + nSightImg + 10
+            val totalSteps = plants.size + compounds.size + nPlantImg + nMushroomImg + nSightImg + 10
             var step = 0
 
             // 3. Abrir el OutputStream (con GZIP opcional).
@@ -154,7 +159,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             finalOut.use { out ->
                 JsonWriter(OutputStreamWriter(out, Charsets.UTF_8)).use { w ->
                     w.beginObject()
-                    w.name("backupVersion").value(2)
+                    w.name("backupVersion").value(4)
                     w.name("backupType").value(if (incremental) "incremental" else "full")
                     w.name("exportedAt").value(
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
@@ -205,6 +210,10 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     for (e in calendarEvents) gson.toJson(e, com.toxicplants.database.ToxicCalendarEvent::class.java, w)
                     w.endArray()
 
+                    // Capa editable de plantas psicotrópicas sobre el JSON fijo
+                    w.name("psychotropicOverrides")
+                    gson.toJson(psychotropicOverrides, PsychotropicOverrides::class.java, w)
+
                     // plantImages (todas o solo las cambiadas según incremental)
                     val phaseImg = if (incremental) "Fotos modificadas…" else "Fotos de plantas…"
                     progress?.onProgress(phaseImg, step, totalSteps)
@@ -215,6 +224,23 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     }
                     w.endArray()
 
+                    // mushroomImages: solo en backup completo
+                    if (!incremental) {
+                        progress?.onProgress("Fotos de setas…", step, totalSteps)
+                        w.name("mushroomImages").beginArray()
+                        writeImagesStreaming(mushroomImagesDir, w, { true }, recompression) { current ->
+                            progress?.onProgress(
+                                "Fotos de setas… ($current/$nMushroomImg)",
+                                plants.size + compounds.size + nPlantImg + current,
+                                totalSteps
+                            )
+                        }
+                        w.endArray()
+                    } else {
+                        // Marca explícita de que en este backup no van.
+                        w.name("mushroomImages").beginArray().endArray()
+                    }
+
                     // sightingImages: solo en backup completo
                     if (!incremental) {
                         progress?.onProgress("Fotos de avistamientos…", step, totalSteps)
@@ -222,7 +248,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         writeImagesStreaming(sightingImagesDir, w, { true }, recompression) { current ->
                             progress?.onProgress(
                                 "Fotos de avistamientos… ($current/$nSightImg)",
-                                plants.size + compounds.size + nPlantImg + current,
+                                plants.size + compounds.size + nPlantImg + nMushroomImg + current,
                                 totalSteps
                             )
                         }
@@ -538,12 +564,27 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     r.endArray()
                 }
 
+                "psychotropicOverrides" -> {
+                    progress?.onProgress("Restaurando psicotrópicas…", 0, 1)
+                    val overrides = gson.fromJson<PsychotropicOverrides>(r, PsychotropicOverrides::class.java)
+                    if (overrides != null) {
+                        PsychotropicUserStore.save(context, overrides)
+                    }
+                }
+
                 "plantImages" -> {
                     val dir = File(context.filesDir, "plant_images").apply { if (!exists()) mkdirs() }
                     // Borrar todas las imágenes existentes antes de restaurar
                     dir.listFiles()?.filter { it.isFile }?.forEach { it.delete() }
                     progress?.onProgress("Fotos de plantas…", 0, 1)
                     streamImageArray(r, dir) { i -> progress?.onProgress("Fotos de plantas… ($i)", i, i) }
+                }
+
+                "mushroomImages" -> {
+                    val dir = File(context.filesDir, "mushroom_images").apply { if (!exists()) mkdirs() }
+                    dir.listFiles()?.filter { it.isFile }?.forEach { it.delete() }
+                    progress?.onProgress("Fotos de setas…", 0, 1)
+                    streamImageArray(r, dir) { i -> progress?.onProgress("Fotos de setas… ($i)", i, i) }
                 }
 
                 "sightingImages" -> {

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -23,7 +24,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,9 +44,13 @@ import androidx.compose.ui.unit.sp
 fun IntoxicationScreen(
     onSymptomsClick: () -> Unit,
     onSyndromesClick: () -> Unit,
+    onChildrenClick: () -> Unit = {},
+    onPetsClick: () -> Unit = {},
+    onLivestockClick: () -> Unit = {},
     onBack: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
+    var showCompanionDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -82,13 +92,12 @@ fun IntoxicationScreen(
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Guía rápida educativa", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = colors.onErrorContainer)
+                    Text("Guía rápida", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = colors.onErrorContainer)
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        "Busca por síntomas o consulta síndromes toxicológicos de plantas, setas y líquenes. " +
-                                "Si hay ingestión real o síntomas graves, llama a emergencias/toxicología: esta sección no sustituye atención médica.",
+                        "Busca por síntomas o síndromes toxicológicos.",
                         color = colors.onErrorContainer,
-                        fontSize = 13.sp,
+                        fontSize = 11.sp,
                         lineHeight = 18.sp
                     )
                 }
@@ -97,7 +106,7 @@ fun IntoxicationScreen(
             IntoxicationActionCard(
                 icon = "🔬",
                 title = "Síntomas",
-                subtitle = "Buscar plantas y compuestos por vómitos, diarrea, alucinaciones, convulsiones, irritación…",
+                subtitle = "plantas compuestos",
                 gradient = Brush.horizontalGradient(listOf(Color(0xFF2E7D32), Color(0xFF66BB6A))),
                 onClick = onSymptomsClick
             )
@@ -105,9 +114,17 @@ fun IntoxicationScreen(
             IntoxicationActionCard(
                 icon = "📚",
                 title = "Síndromes toxicológicos",
-                subtitle = "Atropínico, Faloidiano, Muscarínico, Orellánico, Giromitrínico, Digitálico, Cianogénico y más.",
+                subtitle = "",
                 gradient = Brush.horizontalGradient(listOf(Color(0xFFB71C1C), Color(0xFFFF7043))),
                 onClick = onSyndromesClick
+            )
+
+            IntoxicationActionCard(
+                icon = "👶🐾",
+                title = "Niños y mascotas",
+                subtitle = "",
+                gradient = Brush.horizontalGradient(listOf(Color(0xFF6A1B9A), Color(0xFF8E24AA))),
+                onClick = { showCompanionDialog = true }
             )
 
             Spacer(Modifier.weight(1f))
@@ -120,6 +137,74 @@ fun IntoxicationScreen(
                 fontSize = 12.sp,
                 lineHeight = 17.sp
             )
+        }
+    }
+
+    if (showCompanionDialog) {
+        AlertDialog(
+            onDismissRequest = { showCompanionDialog = false },
+            title = { Text("👶🐾 Niños y mascotas", fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    CompanionIntoxicationOption(
+                        icon = "👶",
+                        title = "Niños",
+                        subtitle = "Riesgos domésticos y plantas peligrosas para menores",
+                        gradient = Brush.horizontalGradient(listOf(Color(0xFFE65100), Color(0xFFF57C00))),
+                        onClick = { showCompanionDialog = false; onChildrenClick() }
+                    )
+                    CompanionIntoxicationOption(
+                        icon = "🐾",
+                        title = "Mascotas",
+                        subtitle = "Perros, gatos y animales de compañía",
+                        gradient = Brush.horizontalGradient(listOf(Color(0xFF4A148C), Color(0xFF6A1B9A))),
+                        onClick = { showCompanionDialog = false; onPetsClick() }
+                    )
+                    CompanionIntoxicationOption(
+                        icon = "🐄",
+                        title = "Ganado",
+                        subtitle = "Caballos, vacas, ovejas, cabras y otros animales",
+                        gradient = Brush.horizontalGradient(listOf(Color(0xFF4E342E), Color(0xFF6D4C41))),
+                        onClick = { showCompanionDialog = false; onLivestockClick() }
+                    )
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { showCompanionDialog = false }) { Text("Cancelar") } }
+        )
+    }
+}
+
+@Composable
+private fun CompanionIntoxicationOption(
+    icon: String,
+    title: String,
+    subtitle: String,
+    gradient: Brush,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(78.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(gradient)
+            .clickable { onClick() },
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(icon, fontSize = 28.sp)
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(subtitle, color = Color.White.copy(alpha = 0.84f), fontSize = 11.sp, lineHeight = 14.sp)
+            }
+            Text("›", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

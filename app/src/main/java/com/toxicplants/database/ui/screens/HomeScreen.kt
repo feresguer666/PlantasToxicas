@@ -79,6 +79,7 @@ fun HomeScreen(
     onNavigateToCamera: () -> Unit,
     onNavigateToNatureIdentify: () -> Unit = {},
     onNavigateToPhytochemistry: () -> Unit,
+    onNavigateToPsychotropicPlants: () -> Unit = {},
     onNavigateToExtractionMethods: () -> Unit = {},
     onNavigateToChemicalReagents: () -> Unit = {},
     onNavigateToMushrooms: () -> Unit = {},
@@ -345,6 +346,7 @@ fun HomeScreen(
                     onNavigateToList           = onNavigateToList,
                     onNavigateToCategories     = onNavigateToCategories,
                     onNavigateToPhytochemistry = onNavigateToPhytochemistry,
+                    onNavigateToPsychotropicPlants = onNavigateToPsychotropicPlants,
                     onNavigateToExtractionMethods = onNavigateToExtractionMethods,
                     onNavigateToChemicalReagents = onNavigateToChemicalReagents,
                     onNavigateToMushrooms       = onNavigateToMushrooms,
@@ -353,6 +355,7 @@ fun HomeScreen(
                     onNavigateToSearch         = { showSearchDialog = true },
                     onNavigateToIdentify       = { showIdentifyDialog = true },
                     onNavigateToConfusable     = onNavigateToConfusable,
+                    onNavigateToIntoxication   = onNavigateToIntoxication,
                     onNavigateToGlobalSearch   = { onNavigateToGlobalSearch("") },
                     onNavigateToAssistant      = onNavigateToAssistant
                 )
@@ -519,6 +522,7 @@ fun NavigationGrid(
     onNavigateToList: () -> Unit,
     onNavigateToCategories: () -> Unit,
     onNavigateToPhytochemistry: () -> Unit,
+    onNavigateToPsychotropicPlants: () -> Unit = {},
     onNavigateToExtractionMethods: () -> Unit = {},
     onNavigateToChemicalReagents: () -> Unit = {},
     onNavigateToMushrooms: () -> Unit = {},
@@ -527,6 +531,7 @@ fun NavigationGrid(
     onNavigateToSearch: () -> Unit,
     onNavigateToIdentify: () -> Unit,
     onNavigateToConfusable: () -> Unit = {},
+    onNavigateToIntoxication: () -> Unit = {},
     onNavigateToGlobalSearch: () -> Unit = {},
     onNavigateToAssistant: () -> Unit = {}
 ) {
@@ -574,6 +579,7 @@ fun NavigationGrid(
                 text  = {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF43A047))), icon = "🌿", title = "Botánica", subtitle = "Líquenes, setas, plantas y categorías", onClick = { showFitoDialog = false; showBotanicaDialog = true })
+                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF263238), Color(0xFF7B1FA2))), icon = "🧠", title = "Plantas psicotrópicas", subtitle = "Alucinógenos, IMAO, depresores, estimulantes y tropánicos", onClick = { showFitoDialog = false; onNavigateToPsychotropicPlants() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF2D1B69), Color(0xFF6A1B9A))), icon = "🔬", title = "Química", subtitle = "Fitoquímica: compuestos tóxicos y alcaloides", onClick = { showFitoDialog = false; showQuimicaDialog = true })
                     }
                 },
@@ -622,7 +628,7 @@ fun NavigationGrid(
                 text  = {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF4CAF50), Color(0xFF60C264))), icon = "🔍", title = "Buscar", subtitle = "Por nombre, síntomas, color, mascotas…", onClick  = { showBusquedaDialog = false; onNavigateToSearch() })
-                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFFBF360C), Color(0xFFD84315))), icon = "🎭", title = "Parecidos Peligrosos", subtitle = "Comparador visual de confusiones", onClick  = { showBusquedaDialog = false; onNavigateToConfusable() })
+                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFFB71C1C), Color(0xFFE65100))), icon = "☠️", title = "Intoxicación", subtitle = "Síntomas, síndromes y primeros pasos", onClick  = { showBusquedaDialog = false; onNavigateToIntoxication() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF388E3C))), icon = "📷", title = "Identificar por foto", subtitle = "Cámara o galería con Pl@ntNet", onClick  = { showBusquedaDialog = false; onNavigateToIdentify() })
                     }
                 },
@@ -659,13 +665,7 @@ fun StatCard(emoji: String, value: String, label: String, color: Color) {
 fun SearchTypeDialog(onDismiss: () -> Unit, onSearchByName: () -> Unit, onSearchBySymptoms: () -> Unit, onSearchByFamily: () -> Unit, onSearchByPets: () -> Unit, onSearchByChildren: () -> Unit, onSearchByLivestock: () -> Unit, onSearchByCompanions: () -> Unit = {}, onSearchByColor: () -> Unit = {}, onSearchByConfusable: () -> Unit = {}, onSearchByToxicParts: () -> Unit = {}, onSearchByBerries: () -> Unit = {}, onIntoxication: () -> Unit = {}) {
     AlertDialog(onDismissRequest = onDismiss, title = { Text("🔍 ¿Cómo quieres buscar?", fontWeight = FontWeight.Bold) }, text  = {
         Column(modifier = Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            SearchWideOptionCompact(
-                gradient = Brush.horizontalGradient(listOf(Color(0xFF6A1B9A), Color(0xFF8E24AA))),
-                icon = "👶🐾🐄",
-                title = "Niños y",
-                subtitle = "mascotas ganado",
-                onClick = onSearchByCompanions
-            )
+
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF1565C0), Color(0xFF1976D2))), icon = "📚", title = "Familias", onClick = onSearchByFamily)
                 SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF1B5E20), Color(0xFF2E7D32))), icon = "🔤", title = "Nombres", onClick = onSearchByName)
@@ -678,24 +678,18 @@ fun SearchTypeDialog(onDismiss: () -> Unit, onSearchByName: () -> Unit, onSearch
                 SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF338034), Color(0xFF4A9E4C))), icon = "🫐", title = "Bayas", onClick = onSearchByBerries)
                 SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF4A148C), Color(0xFF6A1B9A))), icon = "☠️", title = "Parte tóxica", onClick = onSearchByToxicParts)
             }
-            SearchWideOptionCompact(
-                gradient = Brush.horizontalGradient(listOf(Color(0xFFB71C1C), Color(0xFFE65100))),
-                icon = "☠️",
-                title = "Intoxicación",
-                subtitle = "Síntomas y síndromes",
-                onClick = onIntoxication
-            )
+
         }
     }, confirmButton = {}, dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } })
 }
 
 @Composable
 private fun SearchOptionSquare(modifier: Modifier = Modifier, gradient: Brush, icon: String, title: String, onClick: () -> Unit) {
-    Box(modifier = modifier.height(68.dp).clip(RoundedCornerShape(12.dp)).background(gradient).clickable { onClick() }, contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.height(82.dp).clip(RoundedCornerShape(14.dp)).background(gradient).clickable { onClick() }, contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(icon, fontSize = 22.sp)
-            Spacer(Modifier.height(2.dp))
-            Text(text = title, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, maxLines = 2)
+            Text(icon, fontSize = 26.sp)
+            Spacer(Modifier.height(4.dp))
+            Text(text = title, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, maxLines = 2)
         }
     }
 }

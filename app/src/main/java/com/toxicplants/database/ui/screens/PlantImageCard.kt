@@ -16,10 +16,13 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
@@ -27,12 +30,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
@@ -68,6 +77,7 @@ fun PlantImageCard(
     var isLoading     by remember(plant) { mutableStateOf(true) }
     var hasError      by remember(plant) { mutableStateOf(false) }
     var loadAttempts  by remember(plant) { mutableIntStateOf(0) }
+    var showFullScreen by remember(plant) { mutableStateOf(false) }
 
     // Cargador HTTP con cabeceras de navegador (evita bloqueos de Wikimedia)
     val imageLoader = remember {
@@ -173,7 +183,9 @@ fun PlantImageCard(
                     model         = model,
                     imageLoader   = imageLoader,
                     contentDescription = plant.commonName,
-                    modifier      = Modifier.fillMaxSize(),
+                    modifier      = Modifier
+                        .fillMaxSize()
+                        .clickable { showFullScreen = true },
                     contentScale  = ContentScale.Crop,
                     onState       = { state ->
                         when (state) {
@@ -184,6 +196,22 @@ fun PlantImageCard(
                         }
                     }
                 )
+
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(8.dp),
+                    color = Color.Black.copy(alpha = 0.55f),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text(
+                        "🔍 Tocar para ampliar",
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
                 // Botón de recarga flotante (esquina superior derecha)
                 if (showReload) {
@@ -204,6 +232,95 @@ fun PlantImageCard(
                                 modifier = Modifier.size(16.dp))
                         }
                     }
+                }
+            }
+        }
+    }
+
+    if (showFullScreen && imageUrl.isNotBlank() && !hasError) {
+        FullScreenPlantImage(
+            imageUrl = imageUrl,
+            title = plant.commonName.ifBlank { plant.scientificName },
+            onDismiss = { showFullScreen = false }
+        )
+    }
+}
+
+@Composable
+private fun FullScreenPlantImage(
+    imageUrl: String,
+    title: String,
+    onDismiss: () -> Unit
+) {
+    val model: Any = if (imageUrl.startsWith("file://")) {
+        File(imageUrl.removePrefix("file://"))
+    } else {
+        imageUrl
+    }
+
+    var scale by remember { mutableStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            AsyncImage(
+                model = model,
+                contentDescription = title,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        translationX = offset.x,
+                        translationY = offset.y
+                    )
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            val newScale = (scale * zoom).coerceIn(1f, 5f)
+                            scale = newScale
+                            offset = if (newScale > 1f) offset + pan else Offset.Zero
+                        }
+                    },
+                contentScale = ContentScale.Fit
+            )
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(14.dp)
+                    .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(50))
+            ) {
+                Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.White)
+            }
+
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(14.dp),
+                color = Color.Black.copy(alpha = 0.65f),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+                    Text(
+                        text = title,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Pellizca para ampliar · arrastra para mover",
+                        color = Color.White.copy(alpha = 0.75f),
+                        fontSize = 11.sp
+                    )
                 }
             }
         }

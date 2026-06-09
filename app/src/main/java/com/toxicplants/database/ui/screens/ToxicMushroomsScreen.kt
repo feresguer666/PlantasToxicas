@@ -1,5 +1,6 @@
 package com.toxicplants.database.ui.screens
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -69,10 +70,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.toxicplants.database.MushroomEntity
 import com.toxicplants.database.ui.WikiImageFetcher
 import com.toxicplants.database.ui.viewmodel.MushroomViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -382,68 +391,162 @@ private fun MushroomCard(
 
 @Composable
 private fun MushroomThumbnail(mushroom: MushroomEntity, color: Color) {
-    var resolvedUrl by remember(mushroom.id, mushroom.imageUrl) { mutableStateOf(mushroom.imageUrl) }
+    CachedMushroomImage(
+        mushroom = mushroom,
+        color = color,
+        modifier = Modifier
+            .size(58.dp)
+            .clip(RoundedCornerShape(14.dp)),
+        fallbackIconSize = 26,
+        contentScale = ContentScale.Crop
+    )
+}
 
-    LaunchedEffect(mushroom.id, mushroom.scientificName, mushroom.imageUrl) {
-        if (resolvedUrl.isBlank()) {
-            resolvedUrl = WikiImageFetcher.getImageUrl(mushroom.scientificName)
-                .ifBlank { WikiImageFetcher.getImageUrl(mushroom.commonName) }
-        }
+@Composable
+private fun MushroomLargeImage(
+    mushroom: MushroomEntity,
+    color: Color,
+    onImageClick: (String) -> Unit = {}
+) {
+    CachedMushroomImage(
+        mushroom = mushroom,
+        color = color,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(220.dp)
+            .clip(RoundedCornerShape(14.dp)),
+        fallbackIconSize = 42,
+        contentScale = ContentScale.Crop,
+        showTapToExpand = true,
+        onImageClick = onImageClick
+    )
+}
+
+@Composable
+private fun CachedMushroomImage(
+    mushroom: MushroomEntity,
+    color: Color,
+    modifier: Modifier,
+    fallbackIconSize: Int,
+    contentScale: ContentScale,
+    showTapToExpand: Boolean = false,
+    onImageClick: ((String) -> Unit)? = null,
+) {
+    val context = LocalContext.current
+    var imageSource by remember(mushroom.id, mushroom.imageUrl) { mutableStateOf("") }
+    var isLoading by remember(mushroom.id, mushroom.imageUrl) { mutableStateOf(true) }
+    var failed by remember(mushroom.id, mushroom.imageUrl) { mutableStateOf(false) }
+
+    LaunchedEffect(mushroom.id, mushroom.scientificName, mushroom.commonName, mushroom.imageUrl) {
+        isLoading = true
+        failed = false
+        imageSource = resolveAndSaveMushroomImage(context, mushroom)
+        isLoading = false
     }
 
     Box(
-        modifier = Modifier
-            .size(58.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(color.copy(alpha = 0.14f)),
+        modifier = modifier
+            .background(color.copy(alpha = 0.14f))
+            .clickable(enabled = imageSource.isNotBlank() && !failed && onImageClick != null) {
+                onImageClick?.invoke(imageSource)
+            },
         contentAlignment = Alignment.Center
     ) {
-        if (resolvedUrl.isBlank()) {
-            Text(if (mushroom.isDeadly) "☠️" else "🍄", fontSize = 26.sp)
-        } else {
-            AsyncImage(
-                model = resolvedUrl,
-                contentDescription = mushroom.commonName,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                onError = { resolvedUrl = "" }
-            )
+        when {
+            isLoading -> {
+                CircularProgressIndicator(
+                    color = color,
+                    modifier = Modifier.size(if (fallbackIconSize > 30) 36.dp else 22.dp),
+                    strokeWidth = if (fallbackIconSize > 30) 3.dp else 2.dp
+                )
+            }
+            imageSource.isBlank() || failed -> {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(if (mushroom.isDeadly) "☠️" else "🍄", fontSize = fallbackIconSize.sp)
+                    if (fallbackIconSize > 30) Text("Foto no disponible", color = Color.Gray, fontSize = 12.sp)
+                }
+            }
+            else -> {
+                AsyncImage(
+                    model = imageSource.asMushroomImageModel(),
+                    contentDescription = mushroom.commonName,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = contentScale,
+                    onError = { failed = true }
+                )
+                if (showTapToExpand) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(8.dp),
+                        color = Color.Black.copy(alpha = 0.55f),
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+                        Text(
+                            "🔍 Tocar para ampliar",
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun MushroomLargeImage(mushroom: MushroomEntity, color: Color) {
-    var resolvedUrl by remember(mushroom.id, mushroom.imageUrl) { mutableStateOf(mushroom.imageUrl) }
-
-    LaunchedEffect(mushroom.id, mushroom.scientificName, mushroom.imageUrl) {
-        if (resolvedUrl.isBlank()) {
-            resolvedUrl = WikiImageFetcher.getImageUrl(mushroom.scientificName)
-                .ifBlank { WikiImageFetcher.getImageUrl(mushroom.commonName) }
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(190.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(color.copy(alpha = 0.12f)),
-        contentAlignment = Alignment.Center
+private fun FullScreenMushroomImage(
+    imageSource: String,
+    title: String,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        if (resolvedUrl.isBlank()) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(if (mushroom.isDeadly) "☠️" else "🍄", fontSize = 42.sp)
-                Text("Foto no disponible", color = Color.Gray, fontSize = 12.sp)
-            }
-        } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
             AsyncImage(
-                model = resolvedUrl,
-                contentDescription = mushroom.commonName,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                onError = { resolvedUrl = "" }
+                model = imageSource.asMushroomImageModel(),
+                contentDescription = title,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+                    .clickable { onDismiss() },
+                contentScale = ContentScale.Fit
             )
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(14.dp)
+                    .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(50))
+            ) {
+                Icon(Icons.Filled.Clear, contentDescription = "Cerrar", tint = Color.White)
+            }
+
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(14.dp),
+                color = Color.Black.copy(alpha = 0.65f),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text(
+                    text = title,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
         }
     }
 }
@@ -458,6 +561,8 @@ private fun MushroomDetailDialog(
     val color = toxicityColor(mushroom.toxicityLevel, mushroom.isDeadly)
     val context = LocalContext.current
     val wikiUrl = remember(mushroom.scientificName) { mushroom.wikiUrl() }
+    var expandedImage by remember(mushroom.id) { mutableStateOf<String?>(null) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -491,7 +596,11 @@ private fun MushroomDetailDialog(
                     AssistChip(onClick = {}, label = { Text(mushroom.syndrome) })
                 }
 
-                MushroomLargeImage(mushroom = mushroom, color = color)
+                MushroomLargeImage(
+                    mushroom = mushroom,
+                    color = color,
+                    onImageClick = { expandedImage = it }
+                )
 
                 TextButton(
                     onClick = {
@@ -537,6 +646,14 @@ private fun MushroomDetailDialog(
             TextButton(onClick = onEditClick) { Text("Editar") }
         }
     )
+
+    expandedImage?.let { image ->
+        FullScreenMushroomImage(
+            imageSource = image,
+            title = mushroom.commonName.ifBlank { mushroom.scientificName },
+            onDismiss = { expandedImage = null }
+        )
+    }
 }
 
 @Composable
@@ -746,6 +863,83 @@ private fun EmptyMushroomsMessage() {
         }
     }
 }
+
+private suspend fun resolveAndSaveMushroomImage(context: Context, mushroom: MushroomEntity): String {
+    val localFile = mushroomImageFile(context, mushroom)
+    if (localFile.exists() && localFile.length() > 0L) {
+        return "file://${localFile.absolutePath}"
+    }
+
+    val candidates = mutableListOf<String>()
+    if (mushroom.imageUrl.isUsableMushroomImageUrl()) candidates += mushroom.imageUrl.trim()
+
+    val wikiScientific = WikiImageFetcher.getImageUrl(mushroom.scientificName)
+    if (wikiScientific.isUsableMushroomImageUrl()) candidates += wikiScientific.trim()
+
+    val wikiCommon = WikiImageFetcher.getImageUrl(mushroom.commonName)
+    if (wikiCommon.isUsableMushroomImageUrl()) candidates += wikiCommon.trim()
+
+    var firstRemote = ""
+    for (url in candidates.distinct()) {
+        when {
+            url.startsWith("file://", ignoreCase = true) || url.startsWith("content://", ignoreCase = true) -> return url
+            url.startsWith("http://", ignoreCase = true) || url.startsWith("https://", ignoreCase = true) -> {
+                if (firstRemote.isBlank()) firstRemote = url
+                if (downloadMushroomImage(context, mushroom, url)) {
+                    return "file://${localFile.absolutePath}"
+                }
+            }
+        }
+    }
+
+    // Si no se pudo guardar pero hay URL remota, la mostramos igualmente.
+    return firstRemote
+}
+
+private fun mushroomImageFile(context: Context, mushroom: MushroomEntity): File {
+    val dir = File(context.filesDir, "mushroom_images").apply { if (!exists()) mkdirs() }
+    val safeId = if (mushroom.id != 0) mushroom.id else kotlin.math.abs(mushroom.scientificName.hashCode())
+    return File(dir, "mushroom_$safeId.jpg")
+}
+
+private suspend fun downloadMushroomImage(context: Context, mushroom: MushroomEntity, imageUrl: String): Boolean =
+    withContext(Dispatchers.IO) {
+        try {
+            val connection = URL(imageUrl.replace(" ", "%20")).openConnection() as HttpURLConnection
+            connection.apply {
+                setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android) PlantasToxicas/1.0")
+                setRequestProperty("Accept", "image/*,*/*;q=0.8")
+                connectTimeout = 15_000
+                readTimeout = 20_000
+                instanceFollowRedirects = true
+            }
+            if (connection.responseCode !in 200..299) {
+                connection.disconnect()
+                return@withContext false
+            }
+
+            val file = mushroomImageFile(context, mushroom)
+            connection.inputStream.use { input ->
+                FileOutputStream(file).use { output -> input.copyTo(output) }
+            }
+            connection.disconnect()
+            file.exists() && file.length() > 0L
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+private fun String.isUsableMushroomImageUrl(): Boolean {
+    val value = trim()
+    if (value.isBlank()) return false
+    if (value.equals("https://wikimedia.org", ignoreCase = true)) return false
+    if (value.equals("http://wikimedia.org", ignoreCase = true)) return false
+    if (value.startsWith("file:///android_asset/generated_images/", ignoreCase = true)) return false
+    return true
+}
+
+private fun String.asMushroomImageModel(): Any =
+    if (startsWith("file://", ignoreCase = true)) File(removePrefix("file://")) else this
 
 private fun MushroomEntity.wikiUrl(): String {
     val title = scientificName.ifBlank { commonName }.trim().replace(" ", "_")

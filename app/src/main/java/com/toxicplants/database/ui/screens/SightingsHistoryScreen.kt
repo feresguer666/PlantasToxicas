@@ -28,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
@@ -40,6 +41,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -64,15 +66,20 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.google.android.gms.location.LocationServices
+import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.SightingEntity
 import com.toxicplants.database.SightingStore
+import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import com.toxicplants.database.ui.viewmodel.SightingViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -80,19 +87,26 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import java.io.File
+import java.text.Normalizer
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SightingsHistoryScreen(
     viewModel: SightingViewModel,
+    plantViewModel: PlantViewModel,
+    onPlantClick: (PlantEntity) -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
     val sightings by viewModel.sightings.observeAsState(emptyList())
+    val allPlants by plantViewModel.allPlants.observeAsState(emptyList())
     var selectedTab by remember { mutableIntStateOf(0) }
+    var focusedSightingId by remember { mutableStateOf<Int?>(null) }
     var showEditor by remember { mutableStateOf(false) }
     var editTarget by remember { mutableStateOf<SightingEntity?>(null) }
     var deleteTarget by remember { mutableStateOf<SightingEntity?>(null) }
+    var fullScreenPhoto by remember { mutableStateOf<SightingEntity?>(null) }
 
     androidx.compose.runtime.LaunchedEffect(Unit) {
         Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
@@ -134,20 +148,40 @@ fun SightingsHistoryScreen(
             if (selectedTab == 0) {
                 SightingsList(
                     sightings = sightings,
+                    allPlants = allPlants,
+                    onPlantClick = onPlantClick,
+                    onPhotoClick = { fullScreenPhoto = it },
+                    onShowOnMap = { sighting ->
+                        focusedSightingId = sighting.id
+                        selectedTab = 1
+                    },
                     onEdit = { editTarget = it },
                     onDelete = { deleteTarget = it }
                 )
             } else {
-                SightingsMap(sightings = sightings)
+                SightingsMap(
+                    sightings = sightings,
+                    focusedSightingId = focusedSightingId
+                )
             }
         }
+    }
+
+    fullScreenPhoto?.let { target ->
+        FullScreenPhotoDialog(
+            sighting = target,
+            onDismiss = { fullScreenPhoto = null }
+        )
     }
 
     if (showEditor) {
         SightingEditorDialog(
             sighting = null,
             onDismiss = { showEditor = false },
-            onSave = { viewModel.addSighting(it); showEditor = false }
+            onSave = {
+                viewModel.addSighting(it.withCatalogLink(allPlants))
+                showEditor = false
+            }
         )
     }
 
@@ -155,7 +189,10 @@ fun SightingsHistoryScreen(
         SightingEditorDialog(
             sighting = target,
             onDismiss = { editTarget = null },
-            onSave = { viewModel.updateSighting(it); editTarget = null }
+            onSave = {
+                viewModel.updateSighting(it.withCatalogLink(allPlants))
+                editTarget = null
+            }
         )
     }
 
@@ -177,6 +214,10 @@ fun SightingsHistoryScreen(
 @Composable
 private fun SightingsList(
     sightings: List<SightingEntity>,
+    allPlants: List<PlantEntity>,
+    onPlantClick: (PlantEntity) -> Unit,
+    onPhotoClick: (SightingEntity) -> Unit,
+    onShowOnMap: (SightingEntity) -> Unit,
     onEdit: (SightingEntity) -> Unit,
     onDelete: (SightingEntity) -> Unit
 ) {
@@ -196,40 +237,123 @@ private fun SightingsList(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(sightings, key = { it.id }) { s ->
-            SightingCard(s, onEdit = { onEdit(s) }, onDelete = { onDelete(s) })
+            val linkedPlant = findLinkedPlant(s, allPlants)
+            SightingCard(
+                sighting = s,
+                linkedPlant = linkedPlant,
+                onPlantClick = onPlantClick,
+                onPhotoClick = { onPhotoClick(s) },
+                onShowOnMap = { onShowOnMap(s) },
+                onEdit = { onEdit(s) },
+                onDelete = { onDelete(s) }
+            )
         }
     }
 }
 
 @Composable
-private fun SightingCard(sighting: SightingEntity, onEdit: () -> Unit, onDelete: () -> Unit) {
+private fun SightingCard(
+    sighting: SightingEntity,
+    linkedPlant: PlantEntity?,
+    onPlantClick: (PlantEntity) -> Unit,
+    onPhotoClick: () -> Unit,
+    onShowOnMap: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val photoFile = remember(sighting.photoPath) { File(sighting.photoPath) }
+    val hasPhoto = sighting.photoPath.isNotBlank() && photoFile.exists()
+    val hasLocation = sighting.latitude != null && sighting.longitude != null
+
     Card(elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)) {
         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
-                modifier = Modifier.size(72.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFFE3F2FD)),
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFE3F2FD))
+                    .clickable(enabled = hasPhoto) { onPhotoClick() },
                 contentAlignment = Alignment.Center
             ) {
-                if (sighting.photoPath.isNotBlank() && File(sighting.photoPath).exists()) {
+                if (hasPhoto) {
                     AsyncImage(
-                        model = File(sighting.photoPath),
+                        model = photoFile,
                         contentDescription = sighting.commonName,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
+                    Surface(
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp),
+                        color = Color.Black.copy(alpha = 0.55f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("🔍", modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp), fontSize = 10.sp)
+                    }
                 } else {
                     Text(typeEmoji(sighting.type), fontSize = 30.sp)
                 }
             }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(sighting.commonName.ifBlank { "Sin nombre" }, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (sighting.scientificName.isNotBlank()) Text(sighting.scientificName, fontStyle = FontStyle.Italic, color = Color.Gray, fontSize = 12.sp, maxLines = 1)
+                Text(
+                    text = sighting.commonName.ifBlank { "Sin nombre" },
+                    modifier = Modifier.clickable(enabled = linkedPlant != null) {
+                        linkedPlant?.let(onPlantClick)
+                    },
+                    fontWeight = FontWeight.Bold,
+                    color = if (linkedPlant != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    textDecoration = if (linkedPlant != null) TextDecoration.Underline else null,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (sighting.scientificName.isNotBlank()) {
+                    Text(
+                        sighting.scientificName,
+                        modifier = Modifier.clickable(enabled = linkedPlant != null) {
+                            linkedPlant?.let(onPlantClick)
+                        },
+                        fontStyle = FontStyle.Italic,
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (linkedPlant != null) {
+                    Text(
+                        "Abrir ficha ↗",
+                        modifier = Modifier.clickable { onPlantClick(linkedPlant) },
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
                 Text("${typeEmoji(sighting.type)} ${sighting.type} · ${sighting.date}", fontSize = 12.sp, color = Color(0xFF1565C0))
-                if (sighting.locationName.isNotBlank()) Text("📍 ${sighting.locationName}", fontSize = 12.sp, color = Color.Gray, maxLines = 1)
-                if (sighting.latitude != null && sighting.longitude != null) Text("${"%.5f".format(sighting.latitude)}, ${"%.5f".format(sighting.longitude)}", fontSize = 11.sp, color = Color.Gray)
+                if (sighting.locationName.isNotBlank()) {
+                    Text(
+                        "📍 ${sighting.locationName}",
+                        modifier = Modifier.clickable(enabled = hasLocation) { onShowOnMap() },
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (hasLocation) {
+                    Text(
+                        "${"%.5f".format(sighting.latitude)}, ${"%.5f".format(sighting.longitude)}",
+                        modifier = Modifier.clickable { onShowOnMap() },
+                        fontSize = 11.sp,
+                        color = Color.Gray
+                    )
+                }
                 if (sighting.notes.isNotBlank()) Text("📝 ${sighting.notes}", fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
-            Column {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (hasLocation) {
+                    IconButton(onClick = onShowOnMap) {
+                        Icon(Icons.Filled.LocationOn, contentDescription = "Ver en mapa", tint = Color(0xFF1565C0))
+                    }
+                }
                 IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, contentDescription = "Editar", tint = Color.Gray) }
                 IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, contentDescription = "Eliminar", tint = Color.Red) }
             }
@@ -238,7 +362,66 @@ private fun SightingCard(sighting: SightingEntity, onEdit: () -> Unit, onDelete:
 }
 
 @Composable
-private fun SightingsMap(sightings: List<SightingEntity>) {
+private fun FullScreenPhotoDialog(
+    sighting: SightingEntity,
+    onDismiss: () -> Unit
+) {
+    val photoFile = remember(sighting.photoPath) { File(sighting.photoPath) }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            AsyncImage(
+                model = photoFile,
+                contentDescription = sighting.commonName,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
+                    .clickable { onDismiss() },
+                contentScale = ContentScale.Fit
+            )
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .background(Color.Black.copy(alpha = 0.45f), RoundedCornerShape(50))
+            ) {
+                Icon(Icons.Filled.Close, contentDescription = "Cerrar", tint = Color.White)
+            }
+
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                color = Color.Black.copy(alpha = 0.62f),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(Modifier.padding(12.dp)) {
+                    Text(sighting.commonName.ifBlank { "Avistamiento" }, color = Color.White, fontWeight = FontWeight.Bold)
+                    if (sighting.scientificName.isNotBlank()) {
+                        Text(sighting.scientificName, color = Color.White.copy(alpha = 0.78f), fontStyle = FontStyle.Italic, fontSize = 12.sp)
+                    }
+                    Text("Toca la imagen o la X para cerrar", color = Color.White.copy(alpha = 0.70f), fontSize = 11.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SightingsMap(
+    sightings: List<SightingEntity>,
+    focusedSightingId: Int?
+) {
     val located = sightings.filter { it.latitude != null && it.longitude != null }
     if (located.isEmpty()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -246,23 +429,36 @@ private fun SightingsMap(sightings: List<SightingEntity>) {
         }
         return
     }
+
     AndroidView(
         factory = { ctx ->
             MapView(ctx).apply {
                 setTileSource(TileSourceFactory.MAPNIK)
                 setMultiTouchControls(true)
-                controller.setZoom(6.0)
-                val first = located.first()
-                controller.setCenter(GeoPoint(first.latitude!!, first.longitude!!))
-                located.forEach { s ->
-                    val marker = Marker(this)
-                    marker.position = GeoPoint(s.latitude!!, s.longitude!!)
-                    marker.title = "${typeEmoji(s.type)} ${s.commonName}"
-                    marker.snippet = listOf(s.scientificName, s.locationName, s.notes).filter { it.isNotBlank() }.joinToString("\n")
-                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    overlays.add(marker)
-                }
             }
+        },
+        update = { map ->
+            val focused = located.firstOrNull { it.id == focusedSightingId }
+            val center = focused ?: located.first()
+            val centerPoint = GeoPoint(center.latitude!!, center.longitude!!)
+
+            map.overlays.removeAll { it is Marker }
+            map.controller.setZoom(if (focused != null) 16.0 else 6.0)
+            map.controller.setCenter(centerPoint)
+
+            located.forEach { s ->
+                val marker = Marker(map).apply {
+                    position = GeoPoint(s.latitude!!, s.longitude!!)
+                    title = "${typeEmoji(s.type)} ${s.commonName}"
+                    snippet = listOf(s.scientificName, s.locationName, s.notes)
+                        .filter { it.isNotBlank() }
+                        .joinToString("\n")
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                }
+                map.overlays.add(marker)
+                if (s.id == focusedSightingId) marker.showInfoWindow()
+            }
+            map.invalidate()
         },
         modifier = Modifier.fillMaxSize()
     )
@@ -332,7 +528,11 @@ private fun SightingEditorDialog(
                 }) { Text("📍 Usar última ubicación GPS") }
                 SightingEditorTextField("Nombre del lugar", locationName) { locationName = it }
                 SightingEditorTextField("Notas", notes, minLines = 3) { notes = it }
-                TextButton(onClick = { photoLauncher.launch("image/*") }) { Text("📷 Elegir foto") }
+                TextButton(onClick = { photoLauncher.launch("image/*") }) {
+                    Icon(Icons.Filled.PhotoCamera, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text("Elegir foto")
+                }
                 if (photoPath.isNotBlank()) Text("Foto guardada: ${File(photoPath).name}", fontSize = 11.sp, color = Color.Gray)
                 if (status.isNotBlank()) Text(status, fontSize = 12.sp, color = Color(0xFF1565C0))
             }
@@ -343,6 +543,7 @@ private fun SightingEditorDialog(
                     SightingEntity(
                         id = sighting?.id ?: 0,
                         type = type,
+                        itemId = sighting?.itemId,
                         commonName = commonName.trim(),
                         scientificName = scientificName.trim(),
                         toxicityLevel = toxicity.trim(),
@@ -365,6 +566,59 @@ private fun fillLastLocation(context: Context, onResult: (Double?, Double?) -> U
     LocationServices.getFusedLocationProviderClient(context).lastLocation
         .addOnSuccessListener { onResult(it?.latitude, it?.longitude) }
         .addOnFailureListener { onResult(null, null) }
+}
+
+private fun SightingEntity.withCatalogLink(plants: List<PlantEntity>): SightingEntity {
+    if (!type.equals("Planta", ignoreCase = true)) return copy(itemId = null)
+    val textMatch = findLinkedPlant(copy(itemId = null), plants)
+    val currentMatch = findLinkedPlant(this, plants)
+    return copy(itemId = textMatch?.id ?: currentMatch?.id ?: itemId)
+}
+
+private fun findLinkedPlant(sighting: SightingEntity, plants: List<PlantEntity>): PlantEntity? {
+    sighting.itemId?.let { id ->
+        plants.firstOrNull { it.id == id }?.let { return it }
+    }
+
+    val sightingScientific = sighting.scientificName.canonicalScientificName()
+    if (sightingScientific.isNotBlank()) {
+        plants.firstOrNull { it.scientificName.canonicalScientificName() == sightingScientific }?.let { return it }
+    }
+
+    val sightingCommon = sighting.commonName.catalogSearchKey()
+    if (sightingCommon.isNotBlank()) {
+        plants.firstOrNull { plant ->
+            plant.catalogCommonNameKeys().any { it == sightingCommon }
+        }?.let { return it }
+
+        // Fallback flexible para pequeños cambios de escritura: "adelfa roja" ↔ "adelfa".
+        plants.firstOrNull { plant ->
+            plant.catalogCommonNameKeys().any { key ->
+                key.length >= 4 && sightingCommon.length >= 4 && (key.contains(sightingCommon) || sightingCommon.contains(key))
+            }
+        }?.let { return it }
+    }
+
+    return null
+}
+
+private fun PlantEntity.catalogCommonNameKeys(): List<String> =
+    (listOf(commonName) + commonNames.split(","))
+        .map { it.catalogSearchKey() }
+        .filter { it.isNotBlank() }
+
+private fun String.canonicalScientificName(): String {
+    val parts = catalogSearchKey().split(Regex("\\s+")).filter { it.isNotBlank() }
+    return parts.take(2).joinToString(" ")
+}
+
+private fun String.catalogSearchKey(): String {
+    val withoutAccents = Normalizer.normalize(this, Normalizer.Form.NFD)
+        .replace(Regex("\\p{Mn}+"), "")
+    return withoutAccents
+        .lowercase(Locale.getDefault())
+        .replace(Regex("[^a-z0-9]+"), " ")
+        .trim()
 }
 
 private fun typeEmoji(type: String): String = when (type) {

@@ -94,6 +94,7 @@ fun MainApp() {
                 onNavigateToCamera           = { navController.navigate("camera_identify") },
                 onNavigateToNatureIdentify   = { navController.navigate("nature_photo_identify") },
                 onNavigateToPhytochemistry   = { navController.navigate("phytochemistry") },
+                onNavigateToPsychotropicPlants = { navController.navigate("psychotropic_plants") },
                 onNavigateToExtractionMethods = { navController.navigate("chemical_extraction_methods") },
                 onNavigateToChemicalReagents = { navController.navigate("chemical_reagents") },
                 onNavigateToMushrooms        = { navController.navigate("toxic_mushrooms") },
@@ -253,6 +254,9 @@ fun MainApp() {
             IntoxicationScreen(
                 onSymptomsClick = { navController.navigate("search_symptoms") },
                 onSyndromesClick = { navController.navigate("toxic_syndromes") },
+                onChildrenClick = { navController.navigate("child_safety") },
+                onPetsClick = { navController.navigate("pet_safety") },
+                onLivestockClick = { navController.navigate("livestock_safety") },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -454,6 +458,19 @@ fun MainApp() {
             )
         }
 
+        // ── PLANTAS PSICOTRÓPICAS ───────────────────────────────────
+        composable("psychotropic_plants") {
+            PsychotropicPlantsScreen(
+                plantViewModel    = viewModel,
+                compoundViewModel = compoundViewModel,
+                onPlantClick      = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                },
+                onBack            = { navController.popBackStack() }
+            )
+        }
+
         // ── QUÍMICA / FITOQUÍMICA ────────────────────────────────────
         composable("chemical_extraction_methods") {
             ChemicalExtractionMethodsScreen(onBack = { navController.popBackStack() })
@@ -577,6 +594,11 @@ fun MainApp() {
             val sightingViewModel: SightingViewModel = viewModel()
             SightingsHistoryScreen(
                 viewModel = sightingViewModel,
+                plantViewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                },
                 onBack = { navController.popBackStack() }
             )
         }

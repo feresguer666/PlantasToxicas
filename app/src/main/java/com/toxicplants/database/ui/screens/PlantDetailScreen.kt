@@ -57,7 +57,11 @@ fun PlantDetailScreen(
     var nameSuggestMsg by remember { mutableStateOf("") }
 
     val allPlants by viewModel.allPlants.observeAsState(initial = emptyList())
-    val plant = remember(allPlants, plantId) { allPlants.firstOrNull { it.id == plantId } }
+    val selectedPlant by viewModel.selectedPlantData.collectAsState()
+    val plant = remember(allPlants, plantId, selectedPlant) {
+        allPlants.firstOrNull { it.id == plantId }
+            ?: selectedPlant?.takeIf { it.id == plantId }
+    }
 
     // Sembrar datos fenológicos si faltan
     LaunchedEffect(Unit) { viewModel.seedPhenologyIfNeeded() }

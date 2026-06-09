@@ -16,6 +16,8 @@ import com.toxicplants.database.MushroomEntity
 import com.toxicplants.database.MushroomUserStore
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.PsychotropicOverrides
+import com.toxicplants.database.PsychotropicUserStore
 import com.toxicplants.database.SightingEntity
 import com.toxicplants.database.SightingStore
 import kotlinx.coroutines.Dispatchers
@@ -105,6 +107,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val lichens = LichenUserStore.load(context) ?: LichenDataSource.loadAll(context)
             val sightings = SightingStore.load(context)
             val calendarEvents = db.toxicCalendarDao().getAllEventsSync()
+            val psychotropicOverrides = PsychotropicUserStore.load(context)
 
             val plantLocations = plants
                 .filter {
@@ -154,7 +157,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             finalOut.use { out ->
                 JsonWriter(OutputStreamWriter(out, Charsets.UTF_8)).use { w ->
                     w.beginObject()
-                    w.name("backupVersion").value(2)
+                    w.name("backupVersion").value(3)
                     w.name("backupType").value(if (incremental) "incremental" else "full")
                     w.name("exportedAt").value(
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
@@ -204,6 +207,10 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     w.name("calendarEvents").beginArray()
                     for (e in calendarEvents) gson.toJson(e, com.toxicplants.database.ToxicCalendarEvent::class.java, w)
                     w.endArray()
+
+                    // Capa editable de plantas psicotrópicas sobre el JSON fijo
+                    w.name("psychotropicOverrides")
+                    gson.toJson(psychotropicOverrides, PsychotropicOverrides::class.java, w)
 
                     // plantImages (todas o solo las cambiadas según incremental)
                     val phaseImg = if (incremental) "Fotos modificadas…" else "Fotos de plantas…"
@@ -536,6 +543,14 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         runCatching { db.toxicCalendarDao().insert(evt) }
                     }
                     r.endArray()
+                }
+
+                "psychotropicOverrides" -> {
+                    progress?.onProgress("Restaurando psicotrópicas…", 0, 1)
+                    val overrides = gson.fromJson<PsychotropicOverrides>(r, PsychotropicOverrides::class.java)
+                    if (overrides != null) {
+                        PsychotropicUserStore.save(context, overrides)
+                    }
                 }
 
                 "plantImages" -> {

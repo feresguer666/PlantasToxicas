@@ -57,16 +57,31 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch(Dispatchers.IO) {
             isLoading.postValue(true)
-            // Siembra inicial de datos (solo la primera vez que se crea la BD)
+            // Siembra inicial y actualización incremental de datos locales.
+            // Si el usuario ya tenía la app instalada, añadimos las plantas nuevas del JSON
+            // sin sobrescribir las existentes ni sus favoritos/ubicaciones/notas.
+            val seedPlants = PlantDataSource.loadAll(application)
             if (repository.getPlantCount() == 0) {
-                repository.insertAll(PlantDataSource.loadAll(application))
-            }
-            if (compoundDao.count() == 0) {
-                compoundDao.insertAll(CompoundDataSource.loadAll(application))
+                repository.insertAll(seedPlants)
             } else {
+                val existingIds = repository.getAllPlantsSync().map { it.id }.toHashSet()
+                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds }
+                if (missingPlants.isNotEmpty()) {
+                    repository.insertAll(missingPlants)
+                }
+            }
+            val seedCompounds = CompoundDataSource.loadAll(application)
+            if (compoundDao.count() == 0) {
+                compoundDao.insertAll(seedCompounds)
+            } else {
+                // Añade compuestos nuevos del JSON sin tocar los existentes.
+                val existingCompoundIds = compoundDao.getAllSync().map { it.id }.toHashSet()
+                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds }
+                if (missingCompounds.isNotEmpty()) {
+                    compoundDao.insertAll(missingCompounds)
+                }
                 // Actualiza los pubchemCid desde el JSON para compuestos que aún tengan CID = 0
-                val fromJson = CompoundDataSource.loadAll(application)
-                for (c in fromJson) {
+                for (c in seedCompounds) {
                     if (c.pubchemCid != 0) {
                         compoundDao.updatePubchemCid(c.id, c.pubchemCid)
                     }
@@ -142,6 +157,45 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     fun insertPlant(plant: PlantEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(plant)
+        }
+    }
+
+    /**
+     * Fuerza la siembra/actualización del catálogo local desde assets.
+     * Útil si una instalación previa dejó la base Room sin plantas.
+     */
+    fun ensureCatalogSeeded() {
+        viewModelScope.launch(Dispatchers.IO) {
+            isLoading.postValue(true)
+            val app = getApplication<Application>()
+
+            val seedPlants = PlantDataSource.loadAll(app)
+            val existingPlants = repository.getAllPlantsSync()
+            if (existingPlants.isEmpty()) {
+                repository.insertAll(seedPlants)
+            } else {
+                val existingIds = existingPlants.map { it.id }.toHashSet()
+                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds }
+                if (missingPlants.isNotEmpty()) {
+                    repository.insertAll(missingPlants)
+                }
+            }
+
+            val compoundDao = PlantDatabase.getDatabase(app).compoundDao()
+            val seedCompounds = CompoundDataSource.loadAll(app)
+            val existingCompounds = compoundDao.getAllSync()
+            if (existingCompounds.isEmpty()) {
+                compoundDao.insertAll(seedCompounds)
+            } else {
+                val existingCompoundIds = existingCompounds.map { it.id }.toHashSet()
+                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds }
+                if (missingCompounds.isNotEmpty()) {
+                    compoundDao.insertAll(missingCompounds)
+                }
+            }
+
+            plants.value = repository.getAllPlantsSync()
+            isLoading.postValue(false)
         }
     }
 

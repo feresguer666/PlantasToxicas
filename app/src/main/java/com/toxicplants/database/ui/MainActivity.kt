@@ -94,6 +94,7 @@ fun MainApp() {
                 onNavigateToCamera           = { navController.navigate("camera_identify") },
                 onNavigateToNatureIdentify   = { navController.navigate("nature_photo_identify") },
                 onNavigateToPhytochemistry   = { navController.navigate("phytochemistry") },
+                onNavigateToPsychotropicPlants = { navController.navigate("psychotropic_plants") },
                 onNavigateToExtractionMethods = { navController.navigate("chemical_extraction_methods") },
                 onNavigateToChemicalReagents = { navController.navigate("chemical_reagents") },
                 onNavigateToMushrooms        = { navController.navigate("toxic_mushrooms") },
@@ -449,6 +450,19 @@ fun MainApp() {
                 },
                 onCompoundClick   = { compound ->
                     navController.navigate("compound_detail/${compound.id}")
+                },
+                onBack            = { navController.popBackStack() }
+            )
+        }
+
+        // ── PLANTAS PSICOTRÓPICAS ───────────────────────────────────
+        composable("psychotropic_plants") {
+            PsychotropicPlantsScreen(
+                plantViewModel    = viewModel,
+                compoundViewModel = compoundViewModel,
+                onPlantClick      = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
                 },
                 onBack            = { navController.popBackStack() }
             )

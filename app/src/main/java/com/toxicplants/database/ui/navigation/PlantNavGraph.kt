@@ -38,6 +38,7 @@ sealed class Screen(val route: String) {
     object BerriesGuide      : Screen("berries_guide")
     object Notes             : Screen("notes")
     object Phytochemistry    : Screen("phytochemistry")
+    object PsychotropicPlants: Screen("psychotropic_plants")
     object Settings          : Screen("settings")
     object CompoundInteractions : Screen("compound_interactions")
     object CompoundGroup     : Screen("compound_group/{group}") {
@@ -90,6 +91,7 @@ fun PlantNavGraph(
                 onNavigateToNewPlant         = { navController.navigate(Screen.NewPlant.route) },
                 onNavigateToCamera           = { navController.navigate(Screen.CameraIdentify.route) },
                 onNavigateToPhytochemistry   = { navController.navigate(Screen.Phytochemistry.route) },
+                onNavigateToPsychotropicPlants = { navController.navigate(Screen.PsychotropicPlants.route) },
                 onNavigateToSettings         = { navController.navigate(Screen.Settings.route) },
                 onNavigateToAR               = { navController.navigate(Screen.AR.route) },
                 onNavigateToBerries          = { navController.navigate(Screen.BerriesGuide.route) },
@@ -268,6 +270,18 @@ fun PlantNavGraph(
             SettingsScreen(
                 onBack                    = { navController.popBackStack() },
                 onNavigateToDownloadImages = { navController.navigate(Screen.DownloadImages.route) }
+            )
+        }
+
+        composable(Screen.PsychotropicPlants.route) {
+            PsychotropicPlantsScreen(
+                plantViewModel    = viewModel,
+                compoundViewModel = compoundViewModel,
+                onPlantClick      = { plant: PlantEntity ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate(Screen.PlantDetail.createRoute(plant.id))
+                },
+                onBack            = { navController.popBackStack() }
             )
         }
 

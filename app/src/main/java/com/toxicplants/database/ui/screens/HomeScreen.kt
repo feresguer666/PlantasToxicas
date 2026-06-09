@@ -79,6 +79,7 @@ fun HomeScreen(
     onNavigateToCamera: () -> Unit,
     onNavigateToNatureIdentify: () -> Unit = {},
     onNavigateToPhytochemistry: () -> Unit,
+    onNavigateToPsychotropicPlants: () -> Unit = {},
     onNavigateToExtractionMethods: () -> Unit = {},
     onNavigateToChemicalReagents: () -> Unit = {},
     onNavigateToMushrooms: () -> Unit = {},
@@ -345,6 +346,7 @@ fun HomeScreen(
                     onNavigateToList           = onNavigateToList,
                     onNavigateToCategories     = onNavigateToCategories,
                     onNavigateToPhytochemistry = onNavigateToPhytochemistry,
+                    onNavigateToPsychotropicPlants = onNavigateToPsychotropicPlants,
                     onNavigateToExtractionMethods = onNavigateToExtractionMethods,
                     onNavigateToChemicalReagents = onNavigateToChemicalReagents,
                     onNavigateToMushrooms       = onNavigateToMushrooms,
@@ -519,6 +521,7 @@ fun NavigationGrid(
     onNavigateToList: () -> Unit,
     onNavigateToCategories: () -> Unit,
     onNavigateToPhytochemistry: () -> Unit,
+    onNavigateToPsychotropicPlants: () -> Unit = {},
     onNavigateToExtractionMethods: () -> Unit = {},
     onNavigateToChemicalReagents: () -> Unit = {},
     onNavigateToMushrooms: () -> Unit = {},
@@ -574,6 +577,7 @@ fun NavigationGrid(
                 text  = {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF43A047))), icon = "🌿", title = "Botánica", subtitle = "Líquenes, setas, plantas y categorías", onClick = { showFitoDialog = false; showBotanicaDialog = true })
+                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF263238), Color(0xFF7B1FA2))), icon = "🧠", title = "Plantas psicotrópicas", subtitle = "Alucinógenos, IMAO, depresores, estimulantes y tropánicos", onClick = { showFitoDialog = false; onNavigateToPsychotropicPlants() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF2D1B69), Color(0xFF6A1B9A))), icon = "🔬", title = "Química", subtitle = "Fitoquímica: compuestos tóxicos y alcaloides", onClick = { showFitoDialog = false; showQuimicaDialog = true })
                     }
                 },

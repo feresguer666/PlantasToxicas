@@ -63,7 +63,7 @@ fun PhytochemistryScreen(
         }
     }
 
-    val dangerLevels = listOf("☠️ Extrema", "💀 Alta", "⚠️ Moderada", "❓ Sin datos")
+    val dangerLevels = listOf("☠️", "💀", "⚠️", "❓")
 
     val filteredGroups = remember(groups, query) {
         if (query.isBlank()) groups
@@ -181,7 +181,7 @@ fun PhytochemistryScreen(
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         Text("Interacciones entre compuestos", color = Color.White, fontWeight = FontWeight.Bold)
-                        Text("Pares relevantes y comparador toxicológico", color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp)
+                        Text("", color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp)
                     }
                 }
             }

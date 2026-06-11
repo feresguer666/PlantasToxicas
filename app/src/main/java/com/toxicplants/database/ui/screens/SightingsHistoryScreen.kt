@@ -2,7 +2,9 @@ package com.toxicplants.database.ui.screens
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -70,22 +72,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.android.gms.location.LocationServices
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.SightingEntity
 import com.toxicplants.database.SightingStore
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import com.toxicplants.database.ui.viewmodel.SightingViewModel
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 import java.io.File
 import java.text.Normalizer
 import java.util.Locale
@@ -101,17 +98,13 @@ fun SightingsHistoryScreen(
     val context = LocalContext.current
     val sightings by viewModel.sightings.observeAsState(emptyList())
     val allPlants by plantViewModel.allPlants.observeAsState(emptyList())
+
     var selectedTab by remember { mutableIntStateOf(0) }
     var focusedSightingId by remember { mutableStateOf<Int?>(null) }
     var showEditor by remember { mutableStateOf(false) }
     var editTarget by remember { mutableStateOf<SightingEntity?>(null) }
     var deleteTarget by remember { mutableStateOf<SightingEntity?>(null) }
     var fullScreenPhoto by remember { mutableStateOf<SightingEntity?>(null) }
-
-    androidx.compose.runtime.LaunchedEffect(Unit) {
-        Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
-        Configuration.getInstance().userAgentValue = "PlantasToxicasApp/1.0"
-    }
 
     Scaffold(
         topBar = {
@@ -123,7 +116,9 @@ fun SightingsHistoryScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") }
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF1565C0),
@@ -206,7 +201,9 @@ fun SightingsHistoryScreen(
                     Text("Eliminar", color = Color.Red)
                 }
             },
-            dismissButton = { TextButton(onClick = { deleteTarget = null }) { Text("Cancelar") } }
+            dismissButton = {
+                TextButton(onClick = { deleteTarget = null }) { Text("Cancelar") }
+            }
         )
     }
 }
@@ -231,17 +228,18 @@ private fun SightingsList(
         }
         return
     }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(sightings, key = { it.id }) { s ->
-            val linkedPlant = findLinkedPlant(s, allPlants)
+        items(sightings, key = { it.id }, contentType = { "sighting" }) { s ->
             SightingCard(
                 sighting = s,
-                linkedPlant = linkedPlant,
-                onPlantClick = onPlantClick,
+                onPlantNameClick = {
+                    findLinkedPlant(s, allPlants)?.let(onPlantClick)
+                },
                 onPhotoClick = { onPhotoClick(s) },
                 onShowOnMap = { onShowOnMap(s) },
                 onEdit = { onEdit(s) },
@@ -254,13 +252,13 @@ private fun SightingsList(
 @Composable
 private fun SightingCard(
     sighting: SightingEntity,
-    linkedPlant: PlantEntity?,
-    onPlantClick: (PlantEntity) -> Unit,
+    onPlantNameClick: () -> Unit,
     onPhotoClick: () -> Unit,
     onShowOnMap: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val context = LocalContext.current
     val photoFile = remember(sighting.photoPath) { File(sighting.photoPath) }
     val hasPhoto = sighting.photoPath.isNotBlank() && photoFile.exists()
     val hasLocation = sighting.latitude != null && sighting.longitude != null
@@ -276,8 +274,16 @@ private fun SightingCard(
                 contentAlignment = Alignment.Center
             ) {
                 if (hasPhoto) {
+                    // Miniatura: evita decodificar fotos enormes en la lista.
+                    val thumbRequest = remember(photoFile.absolutePath) {
+                        ImageRequest.Builder(context)
+                            .data(photoFile)
+                            .size(160)
+                            .crossfade(false)
+                            .build()
+                    }
                     AsyncImage(
-                        model = photoFile,
+                        model = thumbRequest,
                         contentDescription = sighting.commonName,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -293,25 +299,23 @@ private fun SightingCard(
                     Text(typeEmoji(sighting.type), fontSize = 30.sp)
                 }
             }
+
             Spacer(Modifier.width(12.dp))
+
             Column(Modifier.weight(1f)) {
                 Text(
                     text = sighting.commonName.ifBlank { "Sin nombre" },
-                    modifier = Modifier.clickable(enabled = linkedPlant != null) {
-                        linkedPlant?.let(onPlantClick)
-                    },
+                    modifier = Modifier.clickable { onPlantNameClick() },
                     fontWeight = FontWeight.Bold,
-                    color = if (linkedPlant != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                    textDecoration = if (linkedPlant != null) TextDecoration.Underline else null,
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (sighting.scientificName.isNotBlank()) {
                     Text(
                         sighting.scientificName,
-                        modifier = Modifier.clickable(enabled = linkedPlant != null) {
-                            linkedPlant?.let(onPlantClick)
-                        },
+                        modifier = Modifier.clickable { onPlantNameClick() },
                         fontStyle = FontStyle.Italic,
                         color = Color.Gray,
                         fontSize = 12.sp,
@@ -319,14 +323,12 @@ private fun SightingCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                if (linkedPlant != null) {
-                    Text(
-                        "Abrir ficha ↗",
-                        modifier = Modifier.clickable { onPlantClick(linkedPlant) },
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                Text(
+                    "Abrir ficha ↗",
+                    modifier = Modifier.clickable { onPlantNameClick() },
+                    fontSize = 10.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
                 Text("${typeEmoji(sighting.type)} ${sighting.type} · ${sighting.date}", fontSize = 12.sp, color = Color(0xFF1565C0))
                 if (sighting.locationName.isNotBlank()) {
                     Text(
@@ -346,16 +348,23 @@ private fun SightingCard(
                         color = Color.Gray
                     )
                 }
-                if (sighting.notes.isNotBlank()) Text("📝 ${sighting.notes}", fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                if (sighting.notes.isNotBlank()) {
+                    Text("📝 ${sighting.notes}", fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                }
             }
+
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 if (hasLocation) {
                     IconButton(onClick = onShowOnMap) {
                         Icon(Icons.Filled.LocationOn, contentDescription = "Ver en mapa", tint = Color(0xFF1565C0))
                     }
                 }
-                IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, contentDescription = "Editar", tint = Color.Gray) }
-                IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, contentDescription = "Eliminar", tint = Color.Red) }
+                IconButton(onClick = onEdit) {
+                    Icon(Icons.Filled.Edit, contentDescription = "Editar", tint = Color.Gray)
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Eliminar", tint = Color.Red)
+                }
             }
         }
     }
@@ -422,7 +431,13 @@ private fun SightingsMap(
     sightings: List<SightingEntity>,
     focusedSightingId: Int?
 ) {
-    val located = sightings.filter { it.latitude != null && it.longitude != null }
+    val context = LocalContext.current
+    val located = remember(sightings) { sightings.filter { it.latitude != null && it.longitude != null } }
+    val ordered = remember(located, focusedSightingId) {
+        if (focusedSightingId == null) located
+        else located.sortedBy { if (it.id == focusedSightingId) 0 else 1 }
+    }
+
     if (located.isEmpty()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No hay avistamientos con coordenadas", color = Color.Gray)
@@ -430,38 +445,73 @@ private fun SightingsMap(
         return
     }
 
-    AndroidView(
-        factory = { ctx ->
-            MapView(ctx).apply {
-                setTileSource(TileSourceFactory.MAPNIK)
-                setMultiTouchControls(true)
-            }
-        },
-        update = { map ->
-            val focused = located.firstOrNull { it.id == focusedSightingId }
-            val center = focused ?: located.first()
-            val centerPoint = GeoPoint(center.latitude!!, center.longitude!!)
-
-            map.overlays.removeAll { it is Marker }
-            map.controller.setZoom(if (focused != null) 16.0 else 6.0)
-            map.controller.setCenter(centerPoint)
-
-            located.forEach { s ->
-                val marker = Marker(map).apply {
-                    position = GeoPoint(s.latitude!!, s.longitude!!)
-                    title = "${typeEmoji(s.type)} ${s.commonName}"
-                    snippet = listOf(s.scientificName, s.locationName, s.notes)
-                        .filter { it.isNotBlank() }
-                        .joinToString("\n")
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5)),
+        contentPadding = PaddingValues(12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+            ) {
+                Column(Modifier.fillMaxWidth().padding(12.dp)) {
+                    Text("🗺️ Mapa ligero", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                    Text(
+                        "Para evitar cierres y carga lenta, se abre la ubicación en la app de mapas del móvil.",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f)
+                    )
                 }
-                map.overlays.add(marker)
-                if (s.id == focusedSightingId) marker.showInfoWindow()
             }
-            map.invalidate()
-        },
-        modifier = Modifier.fillMaxSize()
-    )
+        }
+
+        items(ordered, key = { it.id }, contentType = { "map_sighting" }) { s ->
+            val focused = s.id == focusedSightingId
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { openSightingInExternalMap(context, s) },
+                elevation = CardDefaults.cardElevation(defaultElevation = if (focused) 6.dp else 2.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (focused) Color(0xFFE3F2FD) else MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("📍", fontSize = 28.sp)
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(s.commonName.ifBlank { "Avistamiento" }, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        if (s.scientificName.isNotBlank()) {
+                            Text(s.scientificName, fontStyle = FontStyle.Italic, fontSize = 12.sp, color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
+                        if (s.locationName.isNotBlank()) {
+                            Text(s.locationName, fontSize = 12.sp, color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
+                        Text(
+                            "${"%.5f".format(s.latitude)}, ${"%.5f".format(s.longitude)}",
+                            fontSize = 11.sp,
+                            color = Color(0xFF1565C0)
+                        )
+                    }
+                    Text("Abrir ›", color = Color(0xFF1565C0), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                }
+            }
+        }
+    }
+}
+
+private fun openSightingInExternalMap(context: Context, sighting: SightingEntity) {
+    val lat = sighting.latitude ?: return
+    val lng = sighting.longitude ?: return
+    val label = Uri.encode(sighting.commonName.ifBlank { "Avistamiento" })
+    val uri = Uri.parse("geo:$lat,$lng?q=$lat,$lng($label)")
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    runCatching { context.startActivity(intent) }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

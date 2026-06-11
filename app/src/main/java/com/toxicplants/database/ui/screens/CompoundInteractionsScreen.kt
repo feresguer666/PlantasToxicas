@@ -591,8 +591,8 @@ private fun DisclaimerCard() {
             Text("⚠️", fontSize = 18.sp)
             Spacer(Modifier.width(8.dp))
             Text(
-                "Estimación educativa basada en mecanismos, sistemas clínicos y plantas compartidas. No sustituye a toxicología clínica ni confirma interacciones reales en humanos.",
-                fontSize = 12.sp,
+                "Estimación educativa basada en mecanismos, sistemas clínicos.",
+                fontSize = 10.sp,
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                 lineHeight = 17.sp,
             )

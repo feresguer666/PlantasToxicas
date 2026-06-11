@@ -63,7 +63,8 @@
     "firstAid": "EMERGENCIA. Hospitalización. Soporte respiratorio. No consumir miel de esta planta.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Gelsemium_sempervirens2.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Jazmín amarillo. Cuentan los historiadores que Sir Arthur Conan Doyle padecía dolores de cabeza, y se automedicó diariamente con extracto venenoso de gelsemium para observar y apuntar metódicamente cómo su cuerpo se paralizaba antes de perder el conocimiento."
   },
   {
     "id": 504,
@@ -261,7 +262,8 @@
     "firstAid": "Evitar pisar o romper los frutos caídos. Lavar la piel si hay contacto.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/56/Ginkgo_huttoni.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "En Japón es un árbol de longevidad milagrosa. Uno de los pocos árboles que sobrevivió literalmente a centímetros del epicentro del bombardeo nuclear de Hiroshima en 1945. Las leyendas sintoístas lo veneran como depositario de espíritus ancianos."
   },
   {
     "id": 513,
@@ -349,7 +351,8 @@
     "firstAid": "Evitar contacto con espinas. Consultar médico si hay ingesta.",
     "imageUrl": "file:///android_asset/generated_images/plant_516.jpg",
     "category": "Exterior",
-    "commonNames": "acacia de tres espinas no es un nombre común, es un nombre común conocido, por lo que no lo incluiré, huisache, espinillo, gleditsia, huisache blanco"
+    "commonNames": "acacia de tres espinas no es un nombre común, es un nombre común conocido, por lo que no lo incluiré, huisache, espinillo, gleditsia, huisache blanco",
+    "mythsAndLegends": "La Acacia de tres espinas. Conocida como la 'Corona de espinas del Diablo'. Una leyenda sudista de Norteamérica dice que Satanás plantó estos árboles con espinas de hasta 20 cm para desgarrar las telas de los vestidos de las mujeres puras en los bosques."
   },
   {
     "id": 517,
@@ -729,7 +732,8 @@
     "commonNames": "",
     "floweringMonths": "2,3,4",
     "fruitingMonths": "6,7",
-    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12",
+    "mythsAndLegends": "La Rosa de Invierno o Eléboro fétido. Su fuerte olor y la letalidad para el corazón eran usados por los granjeros de la Edad Media como prueba de vida: si un recién nacido aguantaba el olor cerca de la planta sin toser, sería un granjero fuerte."
   },
   {
     "id": 534,
@@ -754,7 +758,8 @@
     "commonNames": "",
     "floweringMonths": "1,2,3",
     "fruitingMonths": "7,8",
-    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12",
+    "mythsAndLegends": "Eléboro negro. En la Edad Media, se creía que curaba la demencia inducida por los demonios. Los brujos esparcían su polvo por el suelo y caminaban sobre él descalzos para invocar espíritus para hacer hechizos de invisibilidad."
   },
   {
     "id": 535,
@@ -977,7 +982,8 @@
     "firstAid": "Hidratación, observación. Generalmente no requiere tratamiento.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Hesperaloe_parviflora_2.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 545,
@@ -1263,7 +1269,8 @@
     "firstAid": "EMERGENCIA. Peligro de proyectiles con frutos maduros. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Hura_crepitans_-_Flickr_001.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Árbol Arenero o 'Monkey no-climb'. Sus frutos explotan como granadas de fragmentación al secarse, lanzando semillas tóxicas a 250 km/h. Se dice que las tribus caribeñas metían estos frutos en las hogueras enemigas a modo de bombas de metralla botánica."
   },
   {
     "id": 558,
@@ -1285,7 +1292,8 @@
     "firstAid": "Lavar las manos inmediatamente con agua y jabón. Usar guantes para plantar los bulbos.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/34/Etex_Hyacinthe_Salon_de_1833.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Jacinto. Nació de la sangre derramada del joven príncipe espartano Jacinto, amante del dios Apolo, tras ser asesinado accidentalmente por un disco desviado por el dios del viento, Céfiro, movido por los celos."
   },
   {
     "id": 559,
@@ -1530,7 +1538,8 @@
     "firstAid": "Evitar sol. Si síndrome serotoninérgico: EMERGENCIA, enfriamiento, benzodiacepinas, UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/56/Hypericum_perforatum_i04.jpg",
     "category": "Pradera",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Hierba de San Juan. Tradicionalmente recolectada en la noche del solsticio de verano, se colgaba sobre los marcos de las ventanas en Europa para ahuyentar a los demonios y a los relámpagos. Resulta ser tan fotosensible que hace que el ganado que la come sufra graves quemaduras solares."
   },
   {
     "id": 570,
@@ -2535,7 +2544,8 @@
     "commonNames": "",
     "floweringMonths": "5,6",
     "fruitingMonths": "9,10",
-    "maxToxicityMonths": "9,10"
+    "maxToxicityMonths": "9,10",
+    "mythsAndLegends": "La Lluvia de oro. Este hermoso árbol de flores amarillas caídas se asocia fuertemente al luto. Las tribus germánicas lo consideraban una planta de mal agüero, dado que los niños se intoxican fácilmente al confundir sus vainas venenosas llenas de citisina con las vainas comestibles de los guisantes."
   },
   {
     "id": 615,
@@ -2689,7 +2699,8 @@
     "firstAid": "No consumir bayas. Si se ingirieron, buscar atención médica. Proteger la piel del sol si hubo contacto con hojas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Lantana_camara_flowers.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Banderita española. Tan hermosa y colorida como mortal para el hígado. En Australia, los colonos la introdujeron como ornamento en el siglo XIX; la planta mutó y se volvió tan invasiva que ha envenenado y devastado millones de hectáreas de ganado australiano."
   },
   {
     "id": 622,
@@ -3154,7 +3165,8 @@
     "commonNames": "",
     "floweringMonths": "6,7",
     "fruitingMonths": "9,10",
-    "maxToxicityMonths": "9,10"
+    "maxToxicityMonths": "9,10",
+    "mythsAndLegends": "El Aligustre. Famoso en los cuentos góticos victorianos porque sus bayas negras se usaban para tintar secretamente los vinos baratos de los puertos piratas, causando severos envenenamientos gástricos a los marineros incautos."
   },
   {
     "id": 643,
@@ -3575,7 +3587,8 @@
     "commonNames": "",
     "floweringMonths": "7,8",
     "fruitingMonths": "9,10",
-    "maxToxicityMonths": "7,8,9"
+    "maxToxicityMonths": "7,8,9",
+    "mythsAndLegends": "Tabaco indio. Fue defendida en 1800 por Samuel Thomson como un 'cura-todo' mediante vómito y sudor extremo. Causó tantas muertes por paro cardiorrespiratorio que se convirtió en el primer caso famoso de un herborista demandado por 'asesinato botánico'."
   },
   {
     "id": 662,
@@ -4433,7 +4446,8 @@
     "firstAid": "EMERGENCIA. Pocos frutos pueden ser letales para niños. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Melia_azedarach_-_Flickr_001.jpg",
     "category": "Árbol",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Cinamomo o 'Árbol del Paraíso'. Las semillas de este hermoso árbol son tan letalmente tóxicas que 6 de ellas matan a un humano, sin embargo, los frailes europeos las usaban vaciadas para hacer los rosarios cristianos de madera."
   },
   {
     "id": 701,
@@ -4810,7 +4824,8 @@
     "firstAid": "Consultar toxicología si ingestión. Tratamiento sintomático.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Mimosa_pudica_1.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La 'Planta sensible'. Porque cierra sus hojas al tacto, en algunas partes de Haití se usa en rituales para 'dormir la voluntad' de los espíritus hostiles o mal de ojo lanzados sobre un recién nacido."
   },
   {
     "id": 718,
@@ -4986,7 +5001,8 @@
     "firstAid": "Retirar pelos con cinta adhesiva. No rascar. URGENCIAS si ingestión.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Mucuna_pruriens_pods.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Frijol de terciopelo. En el vudú africano de Benín, los hechiceros soplaban los pelos microscópicos e irritantes de sus vainas sobre la piel de los infieles, causándoles tal picor y tortura que confesaban cualquier crimen."
   },
   {
     "id": 726,
@@ -5382,7 +5398,8 @@
     "firstAid": "Carbón activado, hidratación, monitoreo cardíaco si ingesta de bulbo. Consulta médica.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/35/Narcissus_jonquilla_2.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Narciso. Según Ovidio, el joven Narciso se enamoró de su propio reflejo en el agua y, al caer y ahogarse, los dioses transformaron su cuerpo en esta flor. Sus bulbos son venenosos para evitar ser devorados y preservar su eterna belleza maldita."
   },
   {
     "id": 744,
@@ -5404,7 +5421,8 @@
     "firstAid": "URGENCIAS. Monitorización. Tratamiento sintomático.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Narcissus_poeticus_-_Flickr_001.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 745,
@@ -5429,7 +5447,8 @@
     "commonNames": "",
     "floweringMonths": "2,3,4",
     "fruitingMonths": "5,6",
-    "maxToxicityMonths": "2,3,4,5"
+    "maxToxicityMonths": "2,3,4,5",
+    "mythsAndLegends": ""
   },
   {
     "id": 746,
@@ -5451,7 +5470,8 @@
     "firstAid": "No consumir. Consultar médico.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 747,
@@ -5473,7 +5493,8 @@
     "firstAid": "No consumir. Consultar médico.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 748,
@@ -5586,7 +5607,8 @@
     "commonNames": "oleander, laurel rosa, adelfa, rosa de la muerte, flor de la muerte, oleandro, laurel de la muerte",
     "floweringMonths": "6,7,8,9",
     "fruitingMonths": "10,11",
-    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12"
+    "maxToxicityMonths": "1,2,3,4,5,6,7,8,9,10,11,12",
+    "mythsAndLegends": "Plinio el Viejo escribió sobre soldados romanos en la región del Ponto que murieron tras asar carne en ramas de adelfa. Además, hay leyendas que dicen que durante la guerra peninsular, las tropas de Napoleón perecieron en España por el mismo error de usar madera de adelfa para asar."
   },
   {
     "id": 753,
@@ -5850,7 +5872,8 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Anticonvulsivos. UCI. Similar a cicuta de agua.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Oenanthe_crocata_-_Flickr_001.jpg",
     "category": "Acuática",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Nabo del Diablo. Altamente mortífero. Sus raíces huelen igual que el apio dulce o las chirivías, y tienen un sabor delicioso. Esta trampa botánica ha engañado y matado a familias enteras de forrajeadores a lo largo de la historia rural europea."
   },
   {
     "id": 765,
@@ -6730,7 +6753,8 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Mantener vía aérea libre. Uso hospitalario de naloxona como antídoto.",
     "imageUrl": "file:///android_asset/generated_images/plant_804.jpg",
     "category": "Silvestre",
-    "commonNames": "papavero, papaya, papaver, papavero somnífero, papavero de opio, papaya de opio, dormidera"
+    "commonNames": "papavero, papaya, papaver, papavero somnífero, papavero de opio, papaya de opio, dormidera",
+    "mythsAndLegends": "La amapola del opio. En la mitología griega, estaba consagrada a Morfeo, el dios de los sueños, y a Deméter, la diosa de la agricultura. Es la causante de las infames Guerras del Opio entre Gran Bretaña y China en el siglo XIX."
   },
   {
     "id": 805,
@@ -6752,7 +6776,8 @@
     "firstAid": "Inducir vómito. Hospitalización.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/66/Paris_quadrifolia_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Uva de Raposo o Hierba de Paris. Se la conocía como 'El nudo de los Amantes'. Su perfecta simetría de 4 hojas y 1 baya en el centro se consideraba un símbolo de traición mágica, usándose en brebajes venenosos para amantes infieles."
   },
   {
     "id": 806,
@@ -6950,7 +6975,8 @@
     "firstAid": "Consultar médico si consumo excesivo. Contraindicado en cardiopatías.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Paullinia_cupana_-_Flickr_001.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Guaraná. Una de las leyendas amazónicas más tétricas dice que la planta nació cuando un dios maligno mató a un niño adorado por la tribu. De sus ojos enterrados brotó esta planta sagrada, cuyos frutos precisamente parecen ojos inyectados en sangre observándote."
   },
   {
     "id": 815,
@@ -7852,7 +7878,8 @@
     "firstAid": "EMERGENCIA. Atropina IV inmediata, soporte respiratorio, benzodiacepinas para convulsiones. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/40/Physostigma_venenosum_-_Köhler–s_Medizinal-Pflanzen-235.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Haba de Calabar. En África Occidental, las tribus la usaban como 'ordalía' o prueba judicial por veneno para detectar brujería. Si el acusado sobrevivía (generalmente por vomitarla al instante por su extrema toxicidad), se le declaraba inocente; si no, la muerte confirmaba su culpabilidad."
   },
   {
     "id": 856,
@@ -7877,7 +7904,8 @@
     "commonNames": "",
     "floweringMonths": "7,8,9",
     "fruitingMonths": "9,10,11",
-    "maxToxicityMonths": "9,10,11"
+    "maxToxicityMonths": "9,10,11",
+    "mythsAndLegends": "Hierba carmín. Durante la Guerra Civil Americana, los soldados usaban la tinta púrpura venenosa de sus bayas no solo como tinte, sino para escribir las últimas cartas a sus familias cuando se quedaban sin suministros en los frentes de batalla."
   },
   {
     "id": 857,
@@ -8339,7 +8367,8 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Requiere lavado gástrico, carbón activo y monitorización neurológica y hepática.",
     "imageUrl": "http://calphotos.berkeley.edu/imgs/512x768/0000_1111/1234/2424.jpeg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Manzana de Mayo. Se vendía como panacea purgante en EE.UU. a mediados del siglo XIX bajo el nombre de 'Pastillas del Doctor Carter'. Resultó ser un tóxico celular que, años después, ayudó a crear accidentalmente las primeras bases de la quimioterapia moderna."
   },
   {
     "id": 878,
@@ -8383,7 +8412,8 @@
     "firstAid": "Consultar toxicología. Monitorización cardíaca.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/30/Polygonatum_multiflorum_-_Flickr_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Sello de Salomón. La leyenda hebrea cuenta que el Rey Salomón marcaba esta planta con su sello mágico anillado al caminar por los bosques, otorgándole la capacidad oculta de unir tendones rotos y 'sellar' las heridas incurables."
   },
   {
     "id": 880,
@@ -8405,7 +8435,8 @@
     "firstAid": "No consumir frutos. Consultar médico.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Angular_solomons-seal_Polygonatum_odoratum.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 881,
@@ -8427,7 +8458,8 @@
     "firstAid": "No consumir frutos. Consultar médico.",
     "imageUrl": "http://calphotos.berkeley.edu/imgs/512x768/0000_0000/0906/0584.jpeg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 882,
@@ -8870,7 +8902,8 @@
     "commonNames": "",
     "floweringMonths": "4,5",
     "fruitingMonths": "8,9,10",
-    "maxToxicityMonths": "8,9,10"
+    "maxToxicityMonths": "8,9,10",
+    "mythsAndLegends": "El laurel cerezo. Aunque engaña pareciéndose a un laurel inofensivo, su agua destilada se hizo tristemente célebre en la era victoriana al ser una fuente letal de cianuro que olía y sabía dulcemente a almendras amargas, convirtiéndola en un veneno muy de moda entre las clases altas de Londres."
   },
   {
     "id": 902,
@@ -10032,7 +10065,8 @@
     "commonNames": "",
     "floweringMonths": "5,6,7",
     "fruitingMonths": "7,8,9",
-    "maxToxicityMonths": "5,6,7,8"
+    "maxToxicityMonths": "5,6,7,8",
+    "mythsAndLegends": "Sardonia. Los mendigos en el Londres victoriano se frotaban la savia fuertemente caustica de esta hierba directamente sobre sus rostros y brazos para crearse horribles llagas y dar lástima a los ricos para recibir más monedas."
   },
   {
     "id": 954,

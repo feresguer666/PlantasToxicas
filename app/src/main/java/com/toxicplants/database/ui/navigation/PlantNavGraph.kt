@@ -20,6 +20,7 @@ sealed class Screen(val route: String) {
     }
     object Categories        : Screen("categories")
     object Emergency         : Screen("emergency")
+    object Myths             : Screen("myths")
     object OnlineDatabases   : Screen("online_databases")
     object Search            : Screen("search")
     object SearchBySymptoms  : Screen("search_symptoms")
@@ -83,6 +84,7 @@ fun PlantNavGraph(
                 onNavigateToList             = { navController.navigate(Screen.PlantList.route) },
                 onNavigateToCategories       = { navController.navigate(Screen.Categories.route) },
                 onNavigateToEmergency        = { navController.navigate(Screen.Emergency.route) },
+                onNavigateToMyths            = { navController.navigate(Screen.Myths.route) },
                 onNavigateToOnlineDatabases  = { navController.navigate(Screen.OnlineDatabases.route) },
                 onNavigateToSearch           = { navController.navigate(Screen.Search.route) },
                 onNavigateToSearchBySymptoms = { navController.navigate(Screen.SearchBySymptoms.route) },
@@ -149,6 +151,15 @@ fun PlantNavGraph(
             val categoryName = backStackEntry.arguments?.getString("category") ?: ""
             viewModel.setCategory(categoryName)
             navController.navigate(Screen.PlantList.route)
+        }
+
+        
+        composable(Screen.Myths.route) {
+            MythsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onPlantClick = { id -> navController.navigate(Screen.PlantDetail.createRoute(id)) }
+            )
         }
 
         composable(Screen.Emergency.route) {

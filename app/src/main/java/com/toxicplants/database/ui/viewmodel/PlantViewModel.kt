@@ -64,10 +64,30 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             if (repository.getPlantCount() == 0) {
                 repository.insertAll(seedPlants)
             } else {
-                val existingIds = repository.getAllPlantsSync().map { it.id }.toHashSet()
+                val existingList = repository.getAllPlantsSync()
+                val existingIds = existingList.map { it.id }.toHashSet()
+
                 val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds }
                 if (missingPlants.isNotEmpty()) {
                     repository.insertAll(missingPlants)
+                }
+
+                // ✅ FORZAR ACTUALIZACIÓN DE MITOS Y LEYENDAS (Smart Merge)
+                val seedMap = seedPlants.associateBy { it.id }
+                var needsUpdate = false
+
+                val updatedList = existingList.map { p ->
+                    val seed = seedMap[p.id]
+                    if (seed != null && p.mythsAndLegends != seed.mythsAndLegends) {
+                        needsUpdate = true
+                        p.copy(mythsAndLegends = seed.mythsAndLegends)
+                    } else {
+                        p
+                    }
+                }
+
+                if (needsUpdate) {
+                    repository.insertAll(updatedList) // Insert(REPLACE) sobrescribe solo el campo que cambia
                 }
             }
             val seedCompounds = CompoundDataSource.loadAll(application)

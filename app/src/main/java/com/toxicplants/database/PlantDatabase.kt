@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [PlantEntity::class, CompoundEntity::class, MushroomEntity::class, ToxicCalendarEvent::class],
-    version = 8,
+    version = 9,
     exportSchema = true
 )
 abstract class PlantDatabase : RoomDatabase() {
@@ -172,6 +172,14 @@ abstract class PlantDatabase : RoomDatabase() {
         /**
          * v7 → v8: añade campos de fenología a `plants` y crea tabla `calendar_events`.
          */
+        
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Añadimos campo de Mitos y Leyendas
+                db.execSQL("ALTER TABLE plants ADD COLUMN mythsAndLegends TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
         val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // Fenología en plants
@@ -207,7 +215,7 @@ abstract class PlantDatabase : RoomDatabase() {
                     PlantDatabase::class.java,
                     "plant_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                     .build()
                 INSTANCE = instance
                 instance

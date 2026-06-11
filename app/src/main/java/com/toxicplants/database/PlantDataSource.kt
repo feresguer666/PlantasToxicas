@@ -44,6 +44,7 @@ object PlantDataSource {
                         floweringMonths = o.optString("floweringMonths", ""),
                         fruitingMonths = o.optString("fruitingMonths", ""),
                         maxToxicityMonths = o.optString("maxToxicityMonths", ""),
+                        mythsAndLegends = o.optString("mythsAndLegends", "")
                     )
                 }
                 fileIndex++

@@ -33,5 +33,8 @@ data class PlantEntity(
     // ✅ CAMPOS DE FENOLOGÍA (meses como números separados por coma, ej: "3,4,5,6")
     val floweringMonths: String = "",
     val fruitingMonths: String = "",
-    val maxToxicityMonths: String = ""
+    val maxToxicityMonths: String = "",
+
+    // ✅ CAMPO CULTURAL (Historia, Mitos y Curiosidades)
+    val mythsAndLegends: String = ""
 )

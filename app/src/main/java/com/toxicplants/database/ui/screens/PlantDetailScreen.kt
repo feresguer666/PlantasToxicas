@@ -588,6 +588,32 @@ fun PlantDetailScreen(
                     }
                 }
 
+                
+                if (p.mythsAndLegends.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "📖 Mitos y Curiosidades",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                    ) {
+                        Text(
+                            text = p.mythsAndLegends,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontStyle = FontStyle.Italic,
+                                lineHeight = 22.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
                 DetailSection(title = "Hábitat",        content = p.habitat)
                 DetailSection(title = "Distribución",   content = p.geographicDistribution)
                 AiFillButton(

@@ -14,7 +14,23 @@ object LichenUserStore {
         val json = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getString(KEY_CATALOG, null)
             ?: return null
-        return runCatching { parse(JSONArray(json)) }.getOrNull()
+        val userList = runCatching { parse(JSONArray(json)) }.getOrNull() ?: return null
+
+        val assets = LichenDataSource.loadAll(context)
+        val userMap = userList.associateBy { it.id }
+
+        val merged = assets.map { asset ->
+            val userItem = userMap[asset.id]
+            if (userItem != null) {
+                asset.copy(isFavorite = userItem.isFavorite, notes = userItem.notes)
+            } else {
+                asset
+            }
+        }.toMutableList()
+
+        val assetIds = assets.map { it.id }.toSet()
+        merged.addAll(userList.filter { it.id !in assetIds })
+        return merged
     }
 
     fun save(context: Context, items: List<LichenEntity>) {

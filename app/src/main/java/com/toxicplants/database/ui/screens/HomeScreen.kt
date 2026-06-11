@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
@@ -69,6 +70,7 @@ fun HomeScreen(
     onNavigateToList: () -> Unit,
     onNavigateToCategories: () -> Unit,
     onNavigateToEmergency: () -> Unit,
+    onNavigateToMyths: () -> Unit,
     onNavigateToAssistant: () -> Unit = {},
     onNavigateToRiskCalculator: () -> Unit = {},
     onNavigateToLethalDoseCalculator: () -> Unit = {},
@@ -126,6 +128,7 @@ fun HomeScreen(
     var showSearchDialog   by remember { mutableStateOf(false) }
     var showCompanionSafetyDialog by remember { mutableStateOf(false) }
     var showIdentifyDialog by remember { mutableStateOf(false) }
+    var showEmergencyDialog by remember { mutableStateOf(false) }
     var showCalculatorsDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -192,15 +195,15 @@ fun HomeScreen(
                             .clip(RoundedCornerShape(14.dp))
                             .background(Brush.horizontalGradient(listOf(redStart, redEnd)))
                             .carbonFiber()
-                            .clickable { onNavigateToEmergency() }
+                            .clickable { showEmergencyDialog = true }
                             .padding(horizontal = 14.dp),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.Warning, null, tint = Color.White, modifier = Modifier.size(30.dp))
                             Column {
-                                Text("EMERGENCIA", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 21.sp, maxLines = 1, softWrap = false)
-                                Text("☎ 91 562 04 20", color = Color.Gray.copy(alpha = 0.92f), fontSize = 13.sp, maxLines = 1, softWrap = false)
+                                Text("EMERGENCIAS / BD", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 21.sp, maxLines = 1, softWrap = false)
+                                Text("Toxicológica y Recursos Externos", color = Color.Gray.copy(alpha = 0.92f), fontSize = 13.sp, maxLines = 1, softWrap = false)
                             }
                         }
                     }
@@ -265,13 +268,13 @@ fun HomeScreen(
                                 Brush.horizontalGradient(listOf(brownStart, brownEnd))
                             )
                             .carbonFiber()
-                            .clickable { onNavigateToOnlineDatabases() }
+                            .clickable { onNavigateToMyths() }
                             .padding(horizontal = 10.dp),
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                Icons.Filled.Language,
+                                Icons.Filled.MenuBook,
                                 null,
                                 tint = Color.White,
                                 modifier = Modifier.size(26.dp)
@@ -279,7 +282,7 @@ fun HomeScreen(
                             Spacer(Modifier.width(6.dp))
                             Column {
                                 Text(
-                                    "RECURSO",
+                                    "MITOS",
                                     color = Color.Black,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp,
@@ -287,7 +290,7 @@ fun HomeScreen(
                                     softWrap = false
                                 )
                                 Text(
-                                    "Bases externas",
+                                    "Leyendas y Curiosidades",
                                     color = Color.Gray.copy(alpha = 0.92f),
                                     fontSize = 6.sp,
                                     maxLines = 1,
@@ -395,6 +398,28 @@ fun HomeScreen(
             onDismiss          = { showCalculatorsDialog = false },
             onRiskCalculator   = { showCalculatorsDialog = false; onNavigateToRiskCalculator() },
             onLD50Calculator   = { showCalculatorsDialog = false; onNavigateToLethalDoseCalculator() }
+        )
+    }
+
+    
+    if (showEmergencyDialog) {
+        AlertDialog(
+            onDismissRequest = { showEmergencyDialog = false },
+            title = { Text("Emergencias y Recursos", fontWeight = FontWeight.Bold) },
+            text = { Text("Selecciona si tienes una emergencia toxicológica o si deseas consultar las bases de datos externas.") },
+            confirmButton = {
+                Button(
+                    onClick = { showEmergencyDialog = false; onNavigateToEmergency() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB71C1C))
+                ) {
+                    Text("🚨 Emergencia", color = Color.White)
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showEmergencyDialog = false; onNavigateToOnlineDatabases() }) {
+                    Text("🌐 Bases externas")
+                }
+            }
         )
     }
 

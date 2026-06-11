@@ -613,7 +613,8 @@
     "firstAid": "Urgencias. Irrigación ocular continua abundante. Lavar piel con agua jabonosa.",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El árbol de los asesinos. Los guerreros bosquimanos impregnaban sus lanzas con su látex espeso que es tan brutalmente doloroso que un animal herido moría del shock neurotóxico antes que de la propia herida."
   },
   {
     "id": 9529,
@@ -877,7 +878,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/43/Clematis_heracleifolia_FlowersLeaves_BotGardBln0906.JPG",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9541,
@@ -899,7 +901,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/95/Clematis_pubescens_gnangarra_03.JPG",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9542,
@@ -1273,7 +1276,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Clematis_parviflora_illustrated_by_Matilda_Smith.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9559,
@@ -1317,7 +1321,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Clematis_potaninii_var._fargesii.JPG",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9561,
@@ -1339,7 +1344,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/58/Clematis_viorna.jpg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9562,
@@ -2615,7 +2621,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9620,
@@ -3033,7 +3040,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9639,
@@ -4001,7 +4009,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9683,
@@ -4661,7 +4670,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9713,
@@ -5299,7 +5309,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9742,
@@ -6270,7 +6281,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9786,
@@ -7920,7 +7932,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9861,
@@ -8096,7 +8109,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9869,
@@ -9086,7 +9100,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9914,
@@ -9372,7 +9387,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9927,
@@ -9526,7 +9542,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9934,
@@ -10340,7 +10357,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9971,
@@ -10780,7 +10798,8 @@
     "firstAid": "Lavar la piel con abundante agua y jabón neutro. En caso de ingestión oral, enjuagar la boca, beber agua fría para diluir y acudir al médico si aparecen síntomas.",
     "imageUrl": "https://wikimedia.org",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9991,

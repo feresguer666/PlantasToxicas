@@ -83,6 +83,7 @@ fun MainApp() {
                 onNavigateToList             = { navController.navigate("plant_list") },
                 onNavigateToCategories       = { navController.navigate("categories") },
                 onNavigateToEmergency        = { navController.navigate("emergency") },
+                onNavigateToMyths            = { navController.navigate("myths") },
                 onNavigateToAssistant        = { navController.navigate("assistant") },
                 onNavigateToRiskCalculator   = { navController.navigate("risk_calculator") },
                 onNavigateToLethalDoseCalculator = { navController.navigate("lethal_dose_calculator") },
@@ -146,6 +147,20 @@ fun MainApp() {
         }
 
         // ── EMERGENCIA ───────────────────────────────────────────────
+                composable("myths") {
+            MythsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onPlantClick = { id -> 
+                    val plant = viewModel.allPlants.value?.find { it.id == id }
+                    if (plant != null) {
+                        viewModel.selectPlant(plant)
+                        navController.navigate("plant_detail")
+                    }
+                }
+            )
+        }
+
         composable("emergency") {
             EmergencyScreen(
                 viewModel    = viewModel,

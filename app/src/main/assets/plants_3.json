@@ -41,7 +41,8 @@
     "firstAid": "Lavar piel, evitar sol. Si ingesta, carbón activado, evaluación hepática y renal. Urgencias.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/29/Ruta_graveolens_001.JPG",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Ruda. Considerada una de las plantas mágicas más poderosas contra el mal de ojo en la cultura hispana y celta. En la antigua Roma, los jueces llevaban ramos de ruda para protegerse de los hechizos lanzados por los prisioneros."
   },
   {
     "id": 1003,
@@ -421,7 +422,8 @@
     "firstAid": "URGENCIAS. Monitorización cardíaca. Tratamiento sintomático.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Sanguinaria_canadensis_-_Flickr_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Raíz de Sangre. Como la savia de la raíz es rojo carmesí denso, las tribus indias de América la usaban como pintura de guerra. Los curanderos europeos la vendían falsamente como pasta 'arranca-cánceres' que terminaba devorando la piel del paciente."
   },
   {
     "id": 1020,
@@ -663,7 +665,8 @@
     "firstAid": "No consumir. Consultar médico si hay síntomas.",
     "imageUrl": "http://calphotos.berkeley.edu/imgs/512x768/0000_0000/0606/1380.jpeg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Escila marítima. Los griegos le temían tanto a sus bulbos repletos de glucósidos cardíacos que la plantaban lejos de los campamentos, creyendo que si una cabra comía apenas un mordisco, el veneno viajaría por la leche y mataría a los niños de la aldea entera."
   },
   {
     "id": 1031,
@@ -685,7 +688,8 @@
     "firstAid": "Consultar toxicología. Monitorización cardíaca.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Scilla_peruviana_-_Flickr_001.jpg",
     "category": "Mediterránea",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1032,
@@ -1502,7 +1506,8 @@
     "commonNames": "",
     "floweringMonths": "6,7,8",
     "fruitingMonths": "9,10",
-    "maxToxicityMonths": "6,7,8,9"
+    "maxToxicityMonths": "6,7,8,9",
+    "mythsAndLegends": "La Hierba de Santiago. Famosa entre los piratas de la Isla de Man. Creían que las brujas irlandesas utilizaban el polen dorado de esta mala hierba para montar caballos espectrales y cabalgar sobre las tormentas del mar de Irlanda."
   },
   {
     "id": 1069,
@@ -2058,7 +2063,8 @@
     "commonNames": "",
     "floweringMonths": "6,7,8",
     "fruitingMonths": "9,10",
-    "maxToxicityMonths": "6,7,8,9"
+    "maxToxicityMonths": "6,7,8,9",
+    "mythsAndLegends": "La dulcamara o 'uvas del diablo'. Según las antiguas tradiciones paganas del norte de Europa, colgar un collar de estas bayas tóxicas alrededor del cuello del ganado protegía a las vacas de los encantamientos que amargaban la leche."
   },
   {
     "id": 1094,
@@ -2124,7 +2130,8 @@
     "firstAid": "Consultar si ingestión significativa de hojas. Tratamiento sintomático.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/88/Bright_red_tomato_and_cross_section02.jpg",
     "category": "Cultivo",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Tomate (Planta). Aunque hoy todos comemos su fruto, en la Europa del siglo XVIII se la conocía como la 'Manzana Envenenada'. Su pertenencia a la familia de las solanáceas asustaba tanto que aristócratas morían envenenados indirectamente porque el ácido del tomate disolvía el plomo de sus platos de peltre, asumiéndose que el tomate era letal."
   },
   {
     "id": 1097,
@@ -2171,7 +2178,8 @@
     "commonNames": "",
     "floweringMonths": "7,8,9",
     "fruitingMonths": "9,10",
-    "maxToxicityMonths": "9,10"
+    "maxToxicityMonths": "9,10",
+    "mythsAndLegends": "La Dulcamara. En el folklore de la brujería inglesa, se tejían coronas con sus bayas moradas para ponerlas en el cuello de los cerdos y así protegerlos del 'mal de ojo' de las brujas rivales."
   },
   {
     "id": 1099,
@@ -2353,7 +2361,8 @@
     "firstAid": "Cocer o helar antes de consumir. Consultar toxicología si ingestión masiva crudas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/56/Sorbus_aucuparia_-_Flickr_001.jpg",
     "category": "Árbol",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "El Serbal de los cazadores. Las ramas del serbal eran el arma principal de protección en los cementerios escoceses. Se creía que el diablo jamás podría cruzar la sombra de este árbol, por lo que se ataba a las cunas de los bebés."
   },
   {
     "id": 1107,
@@ -2727,7 +2736,8 @@
     "firstAid": "EMERGENCIA. Ventilación mecánica inmediata. Hospitalización UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Strychnos_toxifera_-_Köhler–s_Medizinal-Pflanzen-261.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Principal ingrediente del 'Curare', el mítico veneno paralizante sudamericano. Los exploradores europeos creían que el veneno mataba por asfixia agónica, hasta que Charles Waterton demostró en 1814 que se podía salvar a una víctima si se mantenía la respiración artificialmente con fuelles."
   },
   {
     "id": 1124,
@@ -2859,7 +2869,8 @@
     "firstAid": "Solo uso externo. Evitar ingestión. Consultar hepatólogo si uso crónico.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/54/Symphytum_officinale_-_Flickr_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Consuelda. Llamada antiguamente 'suelda huesos', en la Edad Media se creía casi por arte de magia que cataplasmas de esta planta podían soldar fracturas limpiamente. Irónicamente, hoy sabemos que sus alcaloides hepatotóxicos destrozan el hígado si se llega a ingerir."
   },
   {
     "id": 1130,
@@ -2947,7 +2958,8 @@
     "firstAid": "EMERGENCIA ABSOLUTA. Monitorización cardíaca. UCI.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Tabernanthe_iboga_-_Flickr_001.jpg",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Iboga. Según la leyenda de los pigmeos Bwiti, la planta fue descubierta cuando un cazador vio cómo puercoespines y jabalíes comían la raíz y entraban en frenesíes místicos, por lo que decidió imitar a los animales y descubrió así a sus antepasados muertos."
   },
   {
     "id": 1134,
@@ -4628,7 +4640,8 @@
     "firstAid": "Contraindicada en embarazo en dosis altas. Consultar médico.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d8/Verbena_officinalis_-_Flickr_001.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "La Verbena. Los druidas celtas consideraban que esta planta debía recolectarse estrictamente sin luz de luna, marcando un círculo de hierro a su alrededor, porque era la única cura para las mordeduras de los demonios del inframundo."
   },
   {
     "id": 1210,
@@ -4716,7 +4729,8 @@
     "firstAid": "No consumir frutos. Consultar médico.",
     "imageUrl": "http://calphotos.berkeley.edu/imgs/512x768/0000_0000/0106/0056.jpeg",
     "category": "Exterior",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Mundillo. Las brujas de los Cárpatos secaban su corteza para hacer inciensos alucinógenos porque su olor pestilente, al que llamaban 'polvo de hueso', se decía que facilitaba la entrada al inframundo en sus estados de trance."
   },
   {
     "id": 1214,
@@ -4738,7 +4752,8 @@
     "firstAid": "Inducir vómito si se ingirieron muchas bayas crudas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Viburnum_opulus_fruits.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Bola de nieve (Mundillo). Cuenta una balada cosaca rusa que estas bayas rojas tan ácidas y venenosas crecían originalmente en la estepa solo para recordarle a las viudas la sangre derramada por sus maridos protegiendo las fronteras de Ucrania y Rusia."
   },
   {
     "id": 1215,
@@ -10096,7 +10111,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/Arisaema_triphyllum.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": "Jarra de oro. En la Inglaterra isabelina la apodaban 'Lords-and-Ladies'. Las campesinas usaban su tóxico y cáustico almidón de la raíz para almidonar los pomposos cuellos de la nobleza, quemándose severamente las manos en el proceso."
   },
   {
     "id": 1458,
@@ -10888,7 +10904,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/garden-hyacinth-r.jpg?itok=plcsQ1S9",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1494,
@@ -10910,7 +10927,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/garden-hyacinth-r.jpg?itok=plcsQ1S9",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1495,
@@ -10932,7 +10950,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/garden-hyacinth-r.jpg?itok=plcsQ1S9",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1496,
@@ -10954,7 +10973,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/9/94/Muscari_comosum2.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1497,
@@ -10976,7 +10996,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/garden-hyacinth-r.jpg?itok=plcsQ1S9",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1498,
@@ -10998,7 +11019,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/garden-hyacinth-r.jpg?itok=plcsQ1S9",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1499,
@@ -11020,7 +11042,8 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/garden-hyacinth-r.jpg?itok=plcsQ1S9",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 1500,
@@ -11042,6 +11065,7 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Si hubo contacto con piel u ojos, lavar con abundante agua; evitar sol directo si se sospecha fototoxicidad. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/garden-hyacinth-r.jpg?itok=plcsQ1S9",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "mythsAndLegends": ""
   }
 ]

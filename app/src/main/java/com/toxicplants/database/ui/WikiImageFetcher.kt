@@ -20,7 +20,7 @@ import java.net.URLEncoder
 object WikiImageFetcher {
 
     // ─── Fuente principal de búsqueda pública ───────────────────────────
-    suspend fun getImageUrl(name: String): String =
+    suspend fun getImageUrl(name: String, allowGenusFallback: Boolean = false): String =
         withContext(Dispatchers.IO) {
             if (name.isBlank()) return@withContext ""
             try {
@@ -50,9 +50,11 @@ object WikiImageFetcher {
                 val eolUrl = fromEOL(name.trim())
                 if (eolUrl.isNotBlank()) return@withContext eolUrl
 
-                // 6. Fallback: solo género
+                // 6. Fallback opcional: solo género.
+                //    Desactivado por defecto para evitar repetir la misma foto en especies
+                //    distintas de un mismo género.
                 val genus = name.trim().split(" ").firstOrNull() ?: ""
-                if (genus.isNotBlank() && genus != slug) {
+                if (allowGenusFallback && genus.isNotBlank() && genus != slug) {
                     for (lang in listOf("en", "es")) {
                         val url = fromWikipediaRest(genus, lang)
                         if (url.isNotBlank()) return@withContext url
@@ -160,12 +162,17 @@ object WikiImageFetcher {
             conn.readTimeout    = 12_000
             val json    = JSONObject(conn.getInputStream().bufferedReader().readText())
             val results = json.optJSONArray("results") ?: return ""
-            val genus   = name.split(" ").firstOrNull()?.lowercase() ?: ""
+            val canonicalQuery = canonicalBinomial(name).lowercase()
+            val genus   = canonicalQuery.split(" ").firstOrNull()?.lowercase() ?: ""
+            val needsExactSpecies = canonicalQuery.contains(" ")
             for (i in 0 until results.length()) {
                 val taxon = results.getJSONObject(i).optJSONObject("taxon") ?: continue
-                // Comprobar que el género coincida
-                val taxonName = taxon.optString("name", "").lowercase()
-                if (genus.isNotBlank() && !taxonName.startsWith(genus)) continue
+                val taxonName = canonicalBinomial(taxon.optString("name", "")).lowercase()
+                if (needsExactSpecies) {
+                    if (taxonName != canonicalQuery) continue
+                } else if (genus.isNotBlank() && !taxonName.startsWith(genus)) {
+                    continue
+                }
                 val photo  = taxon.optJSONObject("default_photo") ?: continue
                 val medUrl = photo.optString("medium_url", "")
                 if (medUrl.isNotBlank()) return medUrl
@@ -180,7 +187,7 @@ object WikiImageFetcher {
     private fun fromEOL(name: String): String {
         return try {
             val encoded = URLEncoder.encode(name, "UTF-8")
-            val searchUrl = "https://eol.org/api/search/1.0.json?q=$encoded&page=1&exact=false"
+            val searchUrl = "https://eol.org/api/search/1.0.json?q=$encoded&page=1&exact=true"
             val conn = URL(searchUrl).openConnection()
             conn.setRequestProperty("User-Agent", "PlantasToxicasApp/2.0")
             conn.connectTimeout = 10_000
@@ -209,6 +216,32 @@ object WikiImageFetcher {
             }
             ""
         } catch (e: Exception) { "" }
+    }
+
+    // ─────────────────── Normalizar nombre científico ───────────────────
+    private fun canonicalBinomial(name: String): String {
+        val tokens = name
+            .replace('×', 'x')
+            .replace(Regex("[,;:()\\[\\]{}]"), " ")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+            .split(" ")
+            .map { it.trim('.', '\'', '"') }
+            .filter { it.isNotBlank() }
+
+        if (tokens.isEmpty()) return ""
+        val genus = tokens[0]
+        val second = tokens.getOrNull(1).orEmpty()
+        val third = tokens.getOrNull(2).orEmpty()
+        val bad = setOf("sp", "spp", "species", "cf", "aff")
+
+        return when {
+            second.equals("x", ignoreCase = true) && third.length > 1 ->
+                "$genus x ${third.lowercase()}"
+            second.length > 1 && second.firstOrNull()?.isLowerCase() == true && second.lowercase() !in bad ->
+                "$genus ${second.lowercase()}"
+            else -> genus
+        }
     }
 
     // ─────────────────── Normalizar URL de thumbnail ────────────────────

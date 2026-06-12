@@ -21,29 +21,37 @@ object PlantImageHelper {
     }
 
     suspend fun resolveImageUrl(context: Context, plant: PlantEntity): String {
-        // 1. Verificar si ya hay una imagen local
+        // 1. Verificar si ya hay una imagen local guardada.
         if (LocalImageCache.hasLocalImage(context, plant.id)) {
             return "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"
         }
 
-        // 2. Si el JSON tiene una URL válida, intentar descargarla primero
         val jsonUrl = plant.imageUrl.trim()
-        if (!isInvalidUrl(jsonUrl)) {
-            val saved = LocalImageCache.downloadAndSave(context, plant.id, jsonUrl)
-            if (saved) {
-                return "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"
-            }
-            // Si la URL del JSON falla, no nos rendimos, seguimos buscando online
+
+        // 2. Si el JSON apunta a un asset/local, devolverlo directamente.
+        //    (No se puede descargar con HttpURLConnection, pero Coil sí puede mostrarlo.)
+        if (jsonUrl.startsWith("file://", ignoreCase = true) ||
+            jsonUrl.startsWith("android.resource://", ignoreCase = true) ||
+            jsonUrl.startsWith("asset://", ignoreCase = true)
+        ) {
+            return jsonUrl
         }
 
-        // 3. Usar la cascada completa de ImageDownloader (Wiki -> Commons -> ... -> IA)
+        // 3. Resolver online priorizando nombre científico exacto.
+        //    Esto evita usar primero fotos genéricas repetidas por nombre común.
         val resolvedUrl = ImageDownloader.resolveImageUrl(context, plant)
         if (resolvedUrl != null) {
             return resolvedUrl
         }
 
+        // 4. Último recurso: si el JSON tiene una URL válida, usarla aunque sea genérica.
+        if (!isInvalidUrl(jsonUrl)) {
+            val saved = LocalImageCache.downloadAndSave(context, plant.id, jsonUrl)
+            if (saved) {
+                return "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"
+            }
+        }
+
         return ""
     }
-
-    // Eliminamos findImageOnline ya que ahora ImageDownloader se encarga de todo
 }

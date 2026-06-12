@@ -33,11 +33,12 @@ fun DownloadImagesScreen(
     var total by remember { mutableIntStateOf(0) }
     var successCount by remember { mutableIntStateOf(0) }
     var failedCount by remember { mutableIntStateOf(0) }
+    var replaceExisting by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Descargar imagenes", fontWeight = FontWeight.Bold) },
+                title = { Text("Descargar imágenes", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack, enabled = !isDownloading) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
@@ -62,13 +63,13 @@ fun DownloadImagesScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                "Descarga de imagenes",
+                "Descarga de imágenes",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                "Descarga las fotos de todas las plantas para verlas sin conexion.",
+                "Descarga las fotos de todas las plantas para verlas sin conexión.",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
@@ -76,6 +77,37 @@ fun DownloadImagesScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             if (!isDownloading && !isFinished) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "Reemplazar imágenes existentes",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            )
+                            Text(
+                                "Útil si tienes fotos antiguas repetidas por nombre común. Si no se encuentra una foto mejor, se conserva la anterior.",
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = replaceExisting,
+                            onCheckedChange = { replaceExisting = it }
+                        )
+                    }
+                }
+
                 Button(
                     onClick = {
                         isDownloading = true
@@ -86,6 +118,7 @@ fun DownloadImagesScreen(
                             val result = ImageDownloader.downloadAll(
                                 context = context,
                                 plants = plants,
+                                overwriteExisting = replaceExisting,
                                 onProgress = { progress ->
                                     current = progress.current
                                     currentPlant = progress.plantName
@@ -107,7 +140,10 @@ fun DownloadImagesScreen(
                         .fillMaxWidth()
                         .height(56.dp)
                 ) {
-                    Text("Iniciar descarga", fontSize = 18.sp)
+                    Text(
+                        if (replaceExisting) "Redescargar imágenes" else "Iniciar descarga",
+                        fontSize = 18.sp
+                    )
                 }
             }
 

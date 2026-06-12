@@ -232,8 +232,8 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getAllPlantsForDownload(): List<PlantEntity> {
-        return plants.value
+    suspend fun getAllPlantsForDownload(): List<PlantEntity> = withContext(Dispatchers.IO) {
+        repository.getAllPlantsSync()
     }
 
     // ✅ FUNCIÓN PARA ACTUALIZAR UBICACIÓN

@@ -813,7 +813,7 @@ fun SettingsScreen(
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "Imágenes: Wikipedia · iNaturalist",
+                            "Imágenes: iNaturalist · Wikimedia · GBIF · EOL",
                             fontSize = 10.sp,
                             color    = MaterialTheme.colorScheme.onSurfaceVariant
                         )

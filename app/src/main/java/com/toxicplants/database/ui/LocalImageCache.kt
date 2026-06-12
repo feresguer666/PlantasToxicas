@@ -1,8 +1,7 @@
 package com.toxicplants.database.ui
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -53,6 +52,26 @@ object LocalImageCache {
     fun deleteLocalImage(context: Context, plantId: Int) {
         getImageFile(context, plantId).takeIf { it.exists() }?.delete()
     }
+
+    /**
+     * Guarda como imagen local una foto elegida por el usuario desde el móvil.
+     * Se copia al almacenamiento interno permanente de la app.
+     */
+    suspend fun saveFromUri(context: Context, plantId: Int, uri: Uri): Boolean =
+        withContext(Dispatchers.IO) {
+            try {
+                val file = getImageFile(context, plantId)
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    FileOutputStream(file).use { output ->
+                        input.copyTo(output)
+                    }
+                } ?: return@withContext false
+                file.exists() && file.length() > 0L
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        }
 
     /** Cuánto espacio ocupan todas las imágenes descargadas (en bytes). */
     fun totalSizeBytes(context: Context): Long =

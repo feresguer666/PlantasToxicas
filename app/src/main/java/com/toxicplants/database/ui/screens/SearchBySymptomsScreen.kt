@@ -31,6 +31,15 @@ import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import com.toxicplants.database.ui.viewmodel.CompoundViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.toxicplants.database.ui.search.buildSearchQuery
+import com.toxicplants.database.ui.search.fuzzyTextScore
+import com.toxicplants.database.ui.search.multiTermFieldScore
+import com.toxicplants.database.ui.search.splitSymptomTerms
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 
 // ── Lista de síntomas comunes para autocompletado ─────────────────────────
 private val SINTOMAS_COMUNES: List<String> = listOf(
@@ -117,42 +126,109 @@ fun SearchBySymptomsScreen(
             .take(6)
     }
 
-    // ── Filtrado de resultados (SISTEMA HÍBRIDO) ──────────────────────────
-    val filteredPlants = remember(symptomsQuery, selectedToxicity, selectedCategory, allPlants) {
-        allPlants.filter { plant ->
-            val q = symptomsQuery.trim()
-            val matchesSymptoms = q.isBlank() ||
-                    plant.symptoms.contains(q, ignoreCase = true) ||
-                    plant.commonName.contains(q, ignoreCase = true) ||
-                    plant.scientificName.contains(q, ignoreCase = true) ||
-                    plant.toxicParts.contains(q, ignoreCase = true) ||
-                    plant.firstAid.contains(q, ignoreCase = true) ||
-                    plant.description.contains(q, ignoreCase = true)
-            val matchesToxicity = selectedToxicity == null ||
-                    plant.toxicityLevel.equals(selectedToxicity, ignoreCase = true)
-            val matchesCategory = selectedCategory == null ||
-                    plant.category.equals(selectedCategory, ignoreCase = true)
-            matchesSymptoms && matchesToxicity && matchesCategory
-        }
-    }
-
-    val filteredCompounds = remember(symptomsQuery, allCompounds) {
-        val q = symptomsQuery.trim()
-        if (q.isBlank()) emptyList<CompoundEntity>()
-        else allCompounds.filter { compound ->
-            compound.commonName.contains(q, ignoreCase = true) ||
-                    compound.groupName.contains(q, ignoreCase = true) ||
-                    compound.mechanism.contains(q, ignoreCase = true) ||
-                    compound.clinicalNeuro.contains(q, ignoreCase = true) ||
-                    compound.clinicalCardio.contains(q, ignoreCase = true) ||
-                    compound.clinicalDigestive.contains(q, ignoreCase = true) ||
-                    compound.clinicalRespiratory.contains(q, ignoreCase = true) ||
-                    compound.clinicalDermal.contains(q, ignoreCase = true) ||
-                    compound.clinicalOther.contains(q, ignoreCase = true)
-        }
-    }
+    // ── Filtrado de resultados (búsqueda multi-síntoma tolerante) ────────
+    // Se calcula en segundo plano y con debounce para evitar ANR.
+    val symptomTerms = remember(symptomsQuery) { splitSymptomTerms(symptomsQuery) }
+    val fallbackQuery = remember(symptomsQuery) { buildSearchQuery(symptomsQuery) }
+    var filteredPlants by remember { mutableStateOf<List<PlantEntity>>(emptyList()) }
+    var filteredCompounds by remember { mutableStateOf<List<CompoundEntity>>(emptyList()) }
+    var isSearchingSymptoms by remember { mutableStateOf(false) }
 
     val activeFilters = listOfNotNull(selectedToxicity, selectedCategory).size
+
+    LaunchedEffect(symptomTerms, fallbackQuery, selectedToxicity, selectedCategory, allPlants, allCompounds) {
+        // Con la pantalla vacía no renderizamos 10.000 plantas de golpe.
+        if (fallbackQuery.isBlank && activeFilters == 0) {
+            filteredPlants = emptyList()
+            filteredCompounds = emptyList()
+            isSearchingSymptoms = false
+            return@LaunchedEffect
+        }
+
+        isSearchingSymptoms = true
+        delay(250)
+        val plantsSnapshot = allPlants
+        val compoundsSnapshot = allCompounds
+        val toxicity = selectedToxicity
+        val category = selectedCategory
+        val terms = symptomTerms
+        val query = fallbackQuery
+
+        val result = withContext(Dispatchers.Default) {
+            val plants = plantsSnapshot
+                .mapNotNull { plant ->
+                    currentCoroutineContext().ensureActive()
+                    val matchesToxicity = toxicity == null ||
+                            plant.toxicityLevel.equals(toxicity, ignoreCase = true)
+                    val matchesCategory = category == null ||
+                            plant.category.equals(category, ignoreCase = true)
+                    if (!matchesToxicity || !matchesCategory) return@mapNotNull null
+
+                    if (query.isBlank) {
+                        return@mapNotNull 1 to plant
+                    }
+
+                    val symptomScore = multiTermFieldScore(
+                        terms = terms,
+                        weightedFields = listOf(
+                            plant.symptoms to 8,
+                            plant.toxicParts to 5,
+                            plant.firstAid to 4,
+                            plant.description to 3,
+                            plant.commonName to 3,
+                            plant.commonNames to 3,
+                            plant.scientificName to 3,
+                            plant.family to 2
+                        )
+                    )
+
+                    val minimumMatches = if (symptomScore.totalTerms <= 1) 1 else (symptomScore.totalTerms + 1) / 2
+                    if (symptomScore.matchedTerms >= minimumMatches) {
+                        symptomScore.score to plant
+                    } else {
+                        null
+                    }
+                }
+                .sortedByDescending { it.first }
+                .take(300)
+                .map { it.second }
+
+            val compounds = if (query.isBlank) emptyList<CompoundEntity>()
+            else compoundsSnapshot
+                .mapNotNull { compound ->
+                    currentCoroutineContext().ensureActive()
+                    val symptomScore = multiTermFieldScore(
+                        terms = terms,
+                        weightedFields = listOf(
+                            compound.clinicalNeuro to 6,
+                            compound.clinicalCardio to 6,
+                            compound.clinicalDigestive to 6,
+                            compound.clinicalRespiratory to 6,
+                            compound.clinicalDermal to 6,
+                            compound.clinicalOther to 5,
+                            compound.mechanism to 4,
+                            compound.commonName to 4,
+                            compound.groupName to 3,
+                            compound.subgroup to 3,
+                            compound.sourcePlants to 2
+                        )
+                    )
+                    val nameScore = fuzzyTextScore(compound.commonName, query) * 4 +
+                            fuzzyTextScore(compound.groupName, query) * 3
+                    val score = symptomScore.score + nameScore
+                    if (score > 0 && symptomScore.matchedTerms > 0) score to compound else null
+                }
+                .sortedByDescending { it.first }
+                .take(120)
+                .map { it.second }
+
+            SymptomSearchResultSet(plants, compounds)
+        }
+
+        filteredPlants = result.plants
+        filteredCompounds = result.compounds
+        isSearchingSymptoms = false
+    }
 
     // ── UI ────────────────────────────────────────────────────────────────
     Column(modifier = Modifier.fillMaxSize()) {
@@ -234,6 +310,12 @@ fun SearchBySymptomsScreen(
                         )
                     )
                 }
+
+                Text(
+                    "Puedes combinar síntomas: vómitos + taquicardia + pupilas dilatadas",
+                    fontSize = 11.sp,
+                    color = colors.onSurfaceVariant
+                )
 
                 // ── Sugerencias de autocompletado ─────────────────────────
                 AnimatedVisibility(
@@ -457,7 +539,8 @@ fun SearchBySymptomsScreen(
             color    = colors.surfaceVariant.copy(alpha = 0.5f)
         ) {
             Text(
-                "📋 ${filteredPlants.size} plantas ${if (filteredCompounds.isNotEmpty()) "y ${filteredCompounds.size} componentes" else ""}",
+                if (isSearchingSymptoms) "🔎 Buscando coincidencias…"
+                else "📋 ${filteredPlants.size} plantas ${if (filteredCompounds.isNotEmpty()) "y ${filteredCompounds.size} componentes" else ""}",
                 modifier   = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                 fontWeight = FontWeight.Medium,
                 fontSize   = 14.sp,
@@ -467,6 +550,15 @@ fun SearchBySymptomsScreen(
 
         // Lista de resultados
         when {
+            isSearchingSymptoms && filteredPlants.isEmpty() && filteredCompounds.isEmpty() -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = colors.tertiary)
+                        Spacer(Modifier.height(8.dp))
+                        Text("Buscando…", color = colors.onSurfaceVariant)
+                    }
+                }
+            }
             filteredPlants.isNotEmpty() || filteredCompounds.isNotEmpty() -> {
                 LazyColumn(
                     modifier        = Modifier.fillMaxSize(),
@@ -538,6 +630,11 @@ fun SearchBySymptomsScreen(
         }
     }
 }
+
+private data class SymptomSearchResultSet(
+    val plants: List<PlantEntity>,
+    val compounds: List<CompoundEntity>
+)
 
 // ── Tarjeta de planta compacta con resaltado del término buscado ──────────
 @Composable

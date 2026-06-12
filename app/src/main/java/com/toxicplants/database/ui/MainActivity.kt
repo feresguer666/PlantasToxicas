@@ -1,5 +1,6 @@
 package com.toxicplants.database.ui
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -114,7 +115,10 @@ fun MainApp() {
                 onNavigateToGlossary         = { navController.navigate("glossary") },
                 onNavigateToToxicParts      = { navController.navigate("toxic_parts") },
                 onNavigateToIntoxication    = { navController.navigate("intoxication") },
-                onNavigateToGlobalSearch    = { query -> navController.navigate("global_search/$query") },
+                onNavigateToGlobalSearch    = { query ->
+                    if (query.isBlank()) navController.navigate("global_search")
+                    else navController.navigate("global_search/${Uri.encode(query)}")
+                },
                 onNavigateToCalendar        = { navController.navigate("toxic_calendar") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)

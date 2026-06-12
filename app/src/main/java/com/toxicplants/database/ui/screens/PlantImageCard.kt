@@ -68,6 +68,7 @@ fun PlantImageCard(
     height: Dp = 220.dp,
     cornerRadius: Dp = 12.dp,
     showReload: Boolean = true,
+    reloadKey: Int = 0,
 ) {
     val context = LocalContext.current
     val scope   = rememberCoroutineScope()
@@ -117,7 +118,7 @@ fun PlantImageCard(
     }
 
     // Cargar imagen al entrar o cuando cambie la planta
-    LaunchedEffect(plant.id, plant.imageUrl, loadAttempts) {
+    LaunchedEffect(plant.id, plant.imageUrl, loadAttempts, reloadKey) {
         loadImage()
     }
 

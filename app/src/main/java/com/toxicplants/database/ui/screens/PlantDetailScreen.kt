@@ -2,6 +2,9 @@ package com.toxicplants.database.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -28,7 +31,6 @@ import com.toxicplants.database.CompoundEntity
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.theme.carbonEffectSubtle
 import com.toxicplants.database.ui.LocalImageCache
-import com.toxicplants.database.ui.PlantImageHelper
 import com.toxicplants.database.ui.viewmodel.CompoundViewModel
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import kotlinx.coroutines.launch
@@ -132,23 +134,110 @@ fun PlantDetailScreen(
             val scope = rememberCoroutineScope()
 
             // ── Estado de imagen ────────────────────────────────────────
-            var imageUrl      by remember(p.id) { mutableStateOf("") }
-            var isLoadingImg  by remember(p.id) { mutableStateOf(true) }
             var loadAttempts  by remember(p.id) { mutableIntStateOf(0) }
 
             // ── Estado de generación de IA ──────────────────────────
             var isGeneratingAiImg by remember { mutableStateOf(false) }
 
-            // ── Estado del diálogo de URL manual ────────────────────────
+            // ── Estado del diálogo de URL manual / cambio de imagen ─────
             var showUrlDialog by remember { mutableStateOf(false) }
+            var showChangeImageDialog by remember { mutableStateOf(false) }
             var manualUrl     by remember { mutableStateOf("") }
             var isSavingUrl   by remember { mutableStateOf(false) }
 
-            // ── Cargar imagen al entrar o al pulsar "Reintentar" ─────────
-            LaunchedEffect(p.id, loadAttempts) {
-                isLoadingImg = true
-                imageUrl = PlantImageHelper.resolveImageUrl(context, p)
-                isLoadingImg = false
+            val galleryLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri ->
+                if (uri != null) {
+                    scope.launch {
+                        isSavingUrl = true
+                        val saved = LocalImageCache.saveFromUri(context, p.id, uri)
+                        if (saved) {
+                            val localPath = "file://${LocalImageCache.getLocalImagePath(context, p.id)}"
+                            viewModel.insertPlantSync(p.copy(imageUrl = localPath))
+                            loadAttempts++
+                            Toast.makeText(context, "Imagen guardada", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "No se pudo guardar la imagen", Toast.LENGTH_SHORT).show()
+                        }
+                        isSavingUrl = false
+                    }
+                }
+            }
+
+            // La carga visual la gestiona PlantImageCard. El contador loadAttempts fuerza
+            // que se recargue después de cambiar, borrar o guardar una foto.
+
+            // ── Diálogo principal: cambiar imagen ────────────────────────
+            if (showChangeImageDialog) {
+                AlertDialog(
+                    onDismissRequest = { showChangeImageDialog = false },
+                    title = { Text("Cambiar imagen") },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                p.scientificName,
+                                fontStyle = FontStyle.Italic,
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Button(
+                                onClick = {
+                                    showChangeImageDialog = false
+                                    scope.launch {
+                                        LocalImageCache.deleteLocalImage(context, p.id)
+                                        loadAttempts++
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("🔍 Buscar otra online") }
+
+                            OutlinedButton(
+                                onClick = {
+                                    showChangeImageDialog = false
+                                    galleryLauncher.launch("image/*")
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("🖼️ Elegir foto del móvil") }
+
+                            OutlinedButton(
+                                onClick = {
+                                    showChangeImageDialog = false
+                                    showUrlDialog = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("🔗 Pegar URL de imagen") }
+
+                            OutlinedButton(
+                                onClick = {
+                                    showChangeImageDialog = false
+                                    scope.launch {
+                                        isGeneratingAiImg = true
+                                        viewModel.forceAiImageGeneration(p.id, context, p)
+                                        loadAttempts++
+                                        isGeneratingAiImg = false
+                                    }
+                                },
+                                enabled = !isGeneratingAiImg,
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("🤖 Generar ilustración IA") }
+
+                            TextButton(
+                                onClick = {
+                                    LocalImageCache.deleteLocalImage(context, p.id)
+                                    loadAttempts++
+                                    showChangeImageDialog = false
+                                    Toast.makeText(context, "Buscando otra imagen", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("🗑️ Borrar y buscar de nuevo") }
+                        }
+                    },
+                    confirmButton = {},
+                    dismissButton = {
+                        TextButton(onClick = { showChangeImageDialog = false }) { Text("Cerrar") }
+                    }
+                )
             }
 
             // ── Diálogo de pegar URL manual ──────────────────────────────
@@ -194,15 +283,26 @@ fun PlantDetailScreen(
                                             context, p.id, manualUrl
                                         )
                                         if (saved) {
-                                            imageUrl = "file://${LocalImageCache.getLocalImagePath(context, p.id)}"
+                                            val localPath = "file://${LocalImageCache.getLocalImagePath(context, p.id)}"
+                                            viewModel.insertPlantSync(p.copy(imageUrl = localPath))
+                                            loadAttempts++
+                                            Toast.makeText(context, "Imagen descargada", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context, "No se pudo descargar la imagen", Toast.LENGTH_SHORT).show()
                                         }
                                         manualUrl   = ""
                                         isSavingUrl = false
                                     }
                                 }
                             },
-                            enabled = manualUrl.isNotBlank()
-                        ) { Text("Descargar") }
+                            enabled = manualUrl.isNotBlank() && !isSavingUrl
+                        ) {
+                            if (isSavingUrl) {
+                                CircularProgressIndicator(Modifier.size(14.dp), strokeWidth = 2.dp)
+                                Spacer(Modifier.width(6.dp))
+                            }
+                            Text("Descargar")
+                        }
                     },
                     dismissButton = {
                         TextButton(onClick = { showUrlDialog = false }) { Text("Cancelar") }
@@ -232,10 +332,21 @@ fun PlantDetailScreen(
                         plant      = p,
                         height     = 280.dp,
                         showReload = true,
+                        reloadKey  = loadAttempts,
                         modifier   = Modifier.fillMaxWidth()
                     )
 
-                    // Barra inferior con botones de acción
+                    Button(
+                        onClick = { showChangeImageDialog = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                    ) {
+                        Text("🖼️ Cambiar imagen", fontSize = 13.sp)
+                    }
+
+                    // Barra inferior con accesos rápidos
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -244,7 +355,10 @@ fun PlantDetailScreen(
                     ) {
                         // Botón: buscar imagen automáticamente
                         OutlinedButton(
-                            onClick = { loadAttempts++ },
+                            onClick = {
+                                LocalImageCache.deleteLocalImage(context, p.id)
+                                loadAttempts++
+                            },
                             modifier = Modifier.weight(1f),
                             contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp)
                         ) {

@@ -101,6 +101,7 @@ object ImageDownloader {
         context: Context,
         plants: List<PlantEntity>,
         overwriteExisting: Boolean = false,
+        rescueMode: Boolean = false,
         onProgress: (DownloadProgress) -> Unit
     ): Pair<Int, Int> {
         var success = 0
@@ -129,7 +130,7 @@ object ImageDownloader {
                 continue
             }
 
-            val downloaded = tryMultipleSources(context, plant, usedRemoteUrls)
+            val downloaded = tryMultipleSources(context, plant, usedRemoteUrls, rescueMode)
             if (downloaded != null || LocalImageCache.hasLocalImage(context, plant.id)) {
                 markImageResult(context, plant.id, failed = false)
                 success++
@@ -163,7 +164,7 @@ object ImageDownloader {
             return "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"
         }
 
-        val downloaded = tryMultipleSources(context, plant, mutableSetOf())
+        val downloaded = tryMultipleSources(context, plant, mutableSetOf(), rescueMode = false)
         return if (downloaded != null) {
             markImageResult(context, plant.id, failed = false)
             "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"
@@ -204,9 +205,10 @@ object ImageDownloader {
     private suspend fun tryMultipleSources(
         context: Context,
         plant: PlantEntity,
-        usedRemoteUrls: MutableSet<String>
+        usedRemoteUrls: MutableSet<String>,
+        rescueMode: Boolean
     ): DownloadedImage? = withContext(Dispatchers.IO) {
-        for (source in imageSources()) {
+        for (source in imageSources(rescueMode)) {
             val urls = try {
                 source.getUrls(plant)
             } catch (_: Exception) {
@@ -235,43 +237,55 @@ object ImageDownloader {
         null
     }
 
-    private fun imageSources(): List<ImageSource> = listOf(
-        // 1) URL del JSON solo si parece llevar el binomio de la especie.
-        ImageSource("JSON específico") { plant ->
-            val url = plant.imageUrl.trim()
-            if (isLikelySpeciesSpecificUrl(plant, url) && !isLocalReference(url)) listOf(url) else emptyList()
-        },
+    private fun imageSources(rescueMode: Boolean): List<ImageSource> {
+        val normalSources = listOf(
+            // 1) URL del JSON solo si parece llevar el binomio de la especie.
+            ImageSource("JSON específico") { plant ->
+                val url = plant.imageUrl.trim()
+                if (isLikelySpeciesSpecificUrl(plant, url) && !isLocalReference(url)) listOf(url) else emptyList()
+            },
 
-        // 2) iNaturalist exacto: gran cobertura y default_photo por taxón.
-        ImageSource("iNaturalist exacto") { plant -> fetchFromINaturalistExact(plant) },
+            // 2) iNaturalist exacto: gran cobertura y default_photo por taxón.
+            ImageSource("iNaturalist exacto") { plant -> fetchFromINaturalistExact(plant) },
 
-        // 3) Wikidata P18/P225: foto principal asociada al taxón exacto.
-        ImageSource("Wikidata exacto") { plant -> fetchFromWikidataExact(plant) },
+            // 3) Wikidata P18/P225: foto principal asociada al taxón exacto.
+            ImageSource("Wikidata exacto") { plant -> fetchFromWikidataExact(plant) },
 
-        // 4) Wikimedia Commons: categoría exacta de la especie.
-        ImageSource("Commons categoría exacta") { plant -> fetchFromCommonsCategoryExact(plant) },
+            // 4) Wikimedia Commons: categoría exacta de la especie.
+            ImageSource("Commons categoría exacta") { plant -> fetchFromCommonsCategoryExact(plant) },
 
-        // 5) Wikipedia por nombre científico exacto (en + es).
-        ImageSource("Wikipedia exacta") { plant -> fetchFromWikipediaExact(plant) },
+            // 5) Wikipedia por nombre científico exacto (en + es).
+            ImageSource("Wikipedia exacta") { plant -> fetchFromWikipediaExact(plant) },
 
-        // 6) Commons con datos estructurados P225.
-        ImageSource("Commons P225 exacto") { plant -> fetchFromCommonsStructuredData(plant) },
+            // 6) Commons con datos estructurados P225.
+            ImageSource("Commons P225 exacto") { plant -> fetchFromCommonsStructuredData(plant) },
 
-        // 7) Búsqueda textual en Commons, pero verificando que aparezca el binomio.
-        ImageSource("Commons búsqueda exacta") { plant -> fetchFromCommonsSearchExact(plant) },
+            // 7) Búsqueda textual en Commons, pero verificando que aparezca el binomio.
+            ImageSource("Commons búsqueda exacta") { plant -> fetchFromCommonsSearchExact(plant) },
 
-        // 8) Encyclopedia of Life exacto.
-        ImageSource("EOL exacto") { plant -> fetchFromEOLExact(plant) },
+            // 8) Encyclopedia of Life exacto.
+            ImageSource("EOL exacto") { plant -> fetchFromEOLExact(plant) },
 
-        // 9) GBIF con ocurrencias que tengan multimedia (timeout corto).
-        ImageSource("GBIF multimedia") { plant -> fetchFromGBIF(plant) },
+            // 9) GBIF con ocurrencias que tengan multimedia (timeout corto).
+            ImageSource("GBIF multimedia") { plant -> fetchFromGBIF(plant, aggressive = false) },
 
-        // 10) Nombre común, pero siempre acompañado y verificado con el nombre científico.
-        ImageSource("Nombre común verificado") { plant -> fetchFromCommonNameVerified(plant) },
+            // 10) Nombre común, pero siempre acompañado y verificado con el nombre científico.
+            ImageSource("Nombre común verificado") { plant -> fetchFromCommonNameVerified(plant) }
+        )
 
-        // 11) Último recurso: imagen botánica generada por IA con el nombre científico.
-        ImageSource("IA") { plant -> listOf(forceAiImageUrl(plant)) }
-    )
+        val rescueSources = if (rescueMode) listOf(
+            // Fuentes más lentas y profundas: solo para reintentar fallidas.
+            ImageSource("iNaturalist observaciones") { plant -> fetchFromINaturalistObservationsExact(plant) },
+            ImageSource("Commons búsqueda profunda") { plant -> fetchFromCommonsSearchDeepExact(plant) },
+            ImageSource("GBIF profundo") { plant -> fetchFromGBIF(plant, aggressive = true) }
+        ) else emptyList()
+
+        return normalSources + rescueSources + listOf(
+            // Último recurso: imagen botánica generada por IA con el nombre científico.
+            // Puede estar limitado por el proveedor, por eso se deja al final.
+            ImageSource("IA") { plant -> listOf(forceAiImageUrl(plant)) }
+        )
+    }
 
     // ───────────────────────────── Fuentes ─────────────────────────────
 
@@ -321,9 +335,62 @@ object ImageDownloader {
 
     private fun addINatPhotoUrls(photo: JSONObject?, out: MutableList<String>) {
         if (photo == null) return
-        listOf("medium_url", "original_url", "large_url", "square_url").forEach { key ->
-            photo.optString(key, "").takeIf { it.isNotBlank() }?.let(out::add)
+        listOf("medium_url", "original_url", "large_url", "square_url", "url").forEach { key ->
+            photo.optString(key, "").takeIf { it.isNotBlank() }?.let { url ->
+                out += url
+                // Muchas fotos de observación solo traen square; probamos tamaños mayores.
+                if (url.contains("/square.") || url.contains("square.")) {
+                    out += url.replace("/square.", "/medium.").replace("square.", "medium.")
+                    out += url.replace("/square.", "/large.").replace("square.", "large.")
+                }
+            }
         }
+    }
+
+    /**
+     * iNaturalist profundo: si el taxón no tiene default_photo, busca observaciones
+     * de calidad investigación con fotos. Solo se usa en modo rescate para fallidas.
+     */
+    private fun fetchFromINaturalistObservationsExact(plant: PlantEntity): List<String> {
+        val query = taxonQuery(plant)
+        if (!query.isSpecies) return emptyList()
+
+        val taxonId = findINaturalistTaxonId(query) ?: return emptyList()
+        val out = mutableListOf<String>()
+        val url = "https://api.inaturalist.org/v1/observations" +
+            "?taxon_id=$taxonId&photos=true&quality_grade=research" +
+            "&order_by=votes&per_page=12"
+
+        requestJson(url)
+            ?.optJSONArray("results")
+            ?.let { results ->
+                forEachJsonObject(results) { obs ->
+                    val taxon = obs.optJSONObject("taxon")
+                    val taxonName = taxon?.optString("name", "").orEmpty()
+                    if (taxonName.isNotBlank() && !matchesTaxonName(taxonName, query)) return@forEachJsonObject
+                    obs.optJSONArray("photos")?.let { photos ->
+                        forEachJsonObject(photos) { photo -> addINatPhotoUrls(photo, out) }
+                    }
+                }
+            }
+
+        return out.distinct()
+    }
+
+    private fun findINaturalistTaxonId(query: TaxonQuery): Int? {
+        val taxaUrl = "https://api.inaturalist.org/v1/taxa" +
+            "?q=${Uri.encode(query.canonical)}&per_page=8&is_active=true"
+        val results = requestJson(taxaUrl)?.optJSONArray("results") ?: return null
+        for (i in 0 until results.length()) {
+            val taxon = results.optJSONObject(i) ?: continue
+            val name = taxon.optString("name", "")
+            val matched = taxon.optString("matched_term", "")
+            if (matchesTaxonName(name, query) || matchesTaxonName(matched, query)) {
+                val id = taxon.optInt("id", 0)
+                if (id > 0) return id
+            }
+        }
+        return null
     }
 
     private fun fetchFromWikidataExact(plant: PlantEntity): List<String> {
@@ -436,23 +503,45 @@ object ImageDownloader {
             .distinct()
     }
 
-    private fun fetchFromGBIF(plant: PlantEntity): List<String> {
+    /** Búsqueda más amplia en Commons para fallidas: más resultados y términos morfológicos. */
+    private fun fetchFromCommonsSearchDeepExact(plant: PlantEntity): List<String> {
+        val query = taxonQuery(plant)
+        if (!query.isSpecies) return emptyList()
+
+        val searches = listOf(
+            "\"${query.canonical}\"",
+            "\"${query.canonical}\" flower",
+            "\"${query.canonical}\" fruit",
+            "\"${query.canonical}\" leaf",
+            "\"${query.canonical}\" plant",
+            "${query.canonical.replace(" ", "_")}"
+        )
+
+        return searches
+            .flatMap { fetchCommonsSearch(it, query, requireExactText = true, limit = 50) }
+            .distinct()
+    }
+
+    private fun fetchFromGBIF(plant: PlantEntity, aggressive: Boolean = false): List<String> {
         val query = taxonQuery(plant)
         if (!query.isSpecies) return emptyList()
 
         val out = mutableListOf<String>()
+        val client = if (aggressive) httpClient else gbifClient
+        val mediaLimit = if (aggressive) 25 else 10
+        val occurrenceLimit = if (aggressive) 25 else 8
 
         val matchUrl = "https://api.gbif.org/v1/species/match" +
             "?name=${Uri.encode(query.canonical)}&strict=true"
-        val match = requestJson(matchUrl, gbifClient) ?: return emptyList()
+        val match = requestJson(matchUrl, client) ?: return emptyList()
         val matchedName = match.optString("species", match.optString("scientificName", ""))
         val confidence = match.optInt("confidence", 0)
         val usageKey = match.optInt("usageKey", 0)
         if (usageKey <= 0 || confidence < 90 || !matchesTaxonName(matchedName, query)) return emptyList()
 
         // Primero media asociada a la ficha taxonómica (rápido, aunque a menudo vacío).
-        val mediaUrl = "https://api.gbif.org/v1/species/$usageKey/media?limit=10"
-        requestJson(mediaUrl, gbifClient)
+        val mediaUrl = "https://api.gbif.org/v1/species/$usageKey/media?limit=$mediaLimit"
+        requestJson(mediaUrl, client)
             ?.optJSONArray("results")
             ?.let { results ->
                 forEachJsonObject(results) { media ->
@@ -464,8 +553,8 @@ object ImageDownloader {
 
         // Después ocurrencias multimedia, pero con taxon_key exacto y timeout corto.
         val occurrenceUrl = "https://api.gbif.org/v1/occurrence/search" +
-            "?taxon_key=$usageKey&media_type=StillImage&limit=8"
-        requestJson(occurrenceUrl, gbifClient)
+            "?taxon_key=$usageKey&media_type=StillImage&limit=$occurrenceLimit"
+        requestJson(occurrenceUrl, client)
             ?.optJSONArray("results")
             ?.let { results ->
                 forEachJsonObject(results) { occurrence ->
@@ -579,10 +668,12 @@ object ImageDownloader {
     private fun fetchCommonsSearch(
         search: String,
         query: TaxonQuery,
-        requireExactText: Boolean
+        requireExactText: Boolean,
+        limit: Int = 15
     ): List<String> {
+        val safeLimit = limit.coerceIn(1, 50)
         val apiUrl = "https://commons.wikimedia.org/w/api.php" +
-            "?action=query&list=search&srnamespace=6&srlimit=15" +
+            "?action=query&list=search&srnamespace=6&srlimit=$safeLimit" +
             "&srsearch=${Uri.encode(search)}&format=json"
 
         val results = requestJson(apiUrl)

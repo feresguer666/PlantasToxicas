@@ -88,6 +88,7 @@ fun DownloadImagesScreen(
                 context = context,
                 plants = plants,
                 overwriteExisting = if (onlyFailed) false else replaceExisting,
+                rescueMode = onlyFailed,
                 onProgress = { progress ->
                     current = progress.current
                     currentPlant = progress.plantName
@@ -162,7 +163,7 @@ fun DownloadImagesScreen(
                             color = Color(0xFFE65100)
                         )
                         Text(
-                            "Incluye fallidas registradas y plantas que aún no tienen foto local. Puedes reintentar solo esas sin recorrer todo el catálogo.",
+                            "Incluye fallidas registradas y plantas que aún no tienen foto local. El reintento usa búsqueda profunda (iNaturalist observaciones, Commons profundo y GBIF ampliado) antes de IA.",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

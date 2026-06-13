@@ -63,6 +63,7 @@ fun GlobalSearchScreen(
     var compoundResults by remember { mutableStateOf<List<CompoundEntity>>(emptyList()) }
     var familyResults by remember { mutableStateOf<List<String>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
+    var usedFuzzySearch by remember { mutableStateOf(false) }
 
     LaunchedEffect(searchQuery, allPlants, allCompounds) {
         if (searchQuery.normalized.length < 2) {
@@ -70,6 +71,7 @@ fun GlobalSearchScreen(
             compoundResults = emptyList()
             familyResults = emptyList()
             isSearching = false
+            usedFuzzySearch = false
             return@LaunchedEffect
         }
 
@@ -79,41 +81,91 @@ fun GlobalSearchScreen(
         val compoundsSnapshot = allCompounds
 
         val result = withContext(Dispatchers.Default) {
-            val plants = plantsSnapshot
+            // 1) Primera pasada rápida: exacta/contiene/prefijo, sin Levenshtein.
+            val exactPlantMatches = plantsSnapshot
                 .mapNotNull { plant ->
                     currentCoroutineContext().ensureActive()
-                    val score = plantGlobalSearchScore(plant, searchQuery)
+                    val score = plantGlobalExactSearchScore(plant, searchQuery)
                     if (score > 0) score to plant else null
                 }
+
+            val exactCompoundMatches = compoundsSnapshot
+                .mapNotNull { compound ->
+                    currentCoroutineContext().ensureActive()
+                    val score = compoundGlobalExactSearchScore(compound, searchQuery)
+                    if (score > 0) score to compound else null
+                }
+
+            val exactFamilyMatches = plantsSnapshot.map { it.family }.filter { it.isNotBlank() }.distinct()
+                .mapNotNull { family ->
+                    currentCoroutineContext().ensureActive()
+                    val score = familyGlobalExactSearchScore(family, searchQuery)
+                    if (score > 0) score to family else null
+                }
+
+            val exactTotal = exactPlantMatches.size + exactCompoundMatches.size + exactFamilyMatches.size
+            val shouldUseFuzzy = exactTotal < 20 && searchQuery.normalized.length >= 4
+
+            // 2) Segunda pasada tolerante SOLO si hay pocos resultados exactos.
+            //    Esto mantiene nombres bien escritos rápidos y evita resultados raros.
+            val exactPlantIds = exactPlantMatches.map { it.second.id }.toHashSet()
+            val fuzzyPlantMatches = if (shouldUseFuzzy) {
+                plantsSnapshot.mapNotNull { plant ->
+                    currentCoroutineContext().ensureActive()
+                    if (plant.id in exactPlantIds) return@mapNotNull null
+                    val score = plantGlobalFuzzyFallbackScore(plant, searchQuery)
+                    if (score > 0) score to plant else null
+                }
+            } else emptyList()
+
+            val exactCompoundIds = exactCompoundMatches.map { it.second.id }.toHashSet()
+            val fuzzyCompoundMatches = if (shouldUseFuzzy) {
+                compoundsSnapshot.mapNotNull { compound ->
+                    currentCoroutineContext().ensureActive()
+                    if (compound.id in exactCompoundIds) return@mapNotNull null
+                    val score = compoundGlobalFuzzyFallbackScore(compound, searchQuery)
+                    if (score > 0) score to compound else null
+                }
+            } else emptyList()
+
+            val exactFamilyNames = exactFamilyMatches.map { it.second }.toHashSet()
+            val fuzzyFamilyMatches = if (shouldUseFuzzy) {
+                plantsSnapshot.map { it.family }.filter { it.isNotBlank() }.distinct()
+                    .mapNotNull { family ->
+                        currentCoroutineContext().ensureActive()
+                        if (family in exactFamilyNames) return@mapNotNull null
+                        val score = familyGlobalFuzzyFallbackScore(family, searchQuery)
+                        if (score > 0) score to family else null
+                    }
+            } else emptyList()
+
+            val plants = (exactPlantMatches + fuzzyPlantMatches)
                 .sortedByDescending { it.first }
                 .take(250)
                 .map { it.second }
 
-            val compounds = compoundsSnapshot
-                .mapNotNull { compound ->
-                    currentCoroutineContext().ensureActive()
-                    val score = compoundGlobalSearchScore(compound, searchQuery)
-                    if (score > 0) score to compound else null
-                }
+            val compounds = (exactCompoundMatches + fuzzyCompoundMatches)
                 .sortedByDescending { it.first }
                 .take(120)
                 .map { it.second }
 
-            val families = plantsSnapshot.map { it.family }.filter { it.isNotBlank() }.distinct()
-                .mapNotNull { family ->
-                    val score = fuzzyTextScore(family, searchQuery)
-                    if (score > 0) score to family else null
-                }
+            val families = (exactFamilyMatches + fuzzyFamilyMatches)
                 .sortedByDescending { it.first }
                 .take(80)
                 .map { it.second }
 
-            GlobalSearchResultSet(plants, compounds, families)
+            GlobalSearchResultSet(
+                plants = plants,
+                compounds = compounds,
+                families = families,
+                usedFuzzy = shouldUseFuzzy
+            )
         }
 
         plantResults = result.plants
         compoundResults = result.compounds
         familyResults = result.families
+        usedFuzzySearch = result.usedFuzzy
         isSearching = false
     }
 
@@ -193,7 +245,8 @@ fun GlobalSearchScreen(
             Surface(color = colors.surfaceVariant.copy(alpha = 0.5f), modifier = Modifier.fillMaxWidth()) {
                 Text(
                     if (isSearching) "🔎 Buscando…"
-                    else "📋 $totalResults resultados · filtro: ${selectedFilter.label} · \"$query\"",
+                    else "📋 $totalResults resultados · filtro: ${selectedFilter.label} · \"$query\"" +
+                            (if (usedFuzzySearch) " · búsqueda ampliada" else ""),
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
@@ -318,15 +371,14 @@ private enum class GlobalSearchFilter(val label: String, val icon: String) {
 private data class GlobalSearchResultSet(
     val plants: List<PlantEntity>,
     val compounds: List<CompoundEntity>,
-    val families: List<String>
+    val families: List<String>,
+    val usedFuzzy: Boolean
 )
 
-private fun plantGlobalSearchScore(plant: PlantEntity, query: SearchQuery): Int {
+private fun plantGlobalExactSearchScore(plant: PlantEntity, query: SearchQuery): Int {
     val q = query.normalized
     if (q.length < 2) return 0
 
-    // Primero: coincidencias exactas/por prefijo en campos importantes.
-    // Es mucho más fiable y rápido que buscar con fuzzy en todos los textos largos.
     var score = 0
     score = maxOf(score, exactFieldScore(plant.commonName, q, 12_000))
     score = maxOf(score, exactFieldScore(plant.scientificName, q, 11_500))
@@ -342,19 +394,8 @@ private fun plantGlobalSearchScore(plant: PlantEntity, query: SearchQuery): Int 
         score = 9_000 + query.tokens.size * 200
     }
 
-    // Tolerancia a errores SOLO en campos cortos de nombre. Así "beladona"
-    // sigue encontrando "belladonna" sin bloquear al buscar en descripciones largas.
-    if (score == 0) {
-        score = maxOf(
-            fuzzyTextScore(plant.commonName, query) * 80,
-            fuzzyTextScore(plant.scientificName, query) * 80,
-            fuzzyTextScore(plant.commonNames, query) * 60,
-            fuzzyTextScore(plant.family, query) * 35
-        )
-    }
-
-    // Después: coincidencias exactas en textos clínicos/descriptivos.
-    // Menos peso para que un nombre bien escrito siempre aparezca arriba.
+    // Coincidencias exactas en textos clínicos/descriptivos.
+    // Se mantienen baratas: contains/prefijo tras normalizar, sin Levenshtein.
     score = maxOf(score, exactFieldScore(plant.symptoms, q, 3_500))
     score = maxOf(score, exactFieldScore(plant.toxicParts, q, 3_000))
     score = maxOf(score, exactFieldScore(plant.description, q, 2_000))
@@ -366,7 +407,18 @@ private fun plantGlobalSearchScore(plant: PlantEntity, query: SearchQuery): Int 
     return score
 }
 
-private fun compoundGlobalSearchScore(compound: CompoundEntity, query: SearchQuery): Int {
+private fun plantGlobalFuzzyFallbackScore(plant: PlantEntity, query: SearchQuery): Int {
+    // Tolerancia a errores SOLO en campos cortos de nombre.
+    // No se ejecuta si ya hay suficientes resultados exactos.
+    return maxOf(
+        fuzzyTextScore(plant.commonName, query) * 80,
+        fuzzyTextScore(plant.scientificName, query) * 80,
+        fuzzyTextScore(plant.commonNames, query) * 60,
+        fuzzyTextScore(plant.family, query) * 35
+    )
+}
+
+private fun compoundGlobalExactSearchScore(compound: CompoundEntity, query: SearchQuery): Int {
     val q = query.normalized
     if (q.length < 2) return 0
 
@@ -376,15 +428,6 @@ private fun compoundGlobalSearchScore(compound: CompoundEntity, query: SearchQue
     score = maxOf(score, exactFieldScore(compound.groupName, q, 8_000))
     score = maxOf(score, exactFieldScore(compound.subgroup, q, 7_000))
     score = maxOf(score, exactFieldScore(compound.sourcePlants, q, 5_500))
-
-    if (score == 0) {
-        score = maxOf(
-            fuzzyTextScore(compound.commonName, query) * 75,
-            fuzzyTextScore(compound.iupacName, query) * 55,
-            fuzzyTextScore(compound.groupName, query) * 45,
-            fuzzyTextScore(compound.subgroup, query) * 35
-        )
-    }
 
     score = maxOf(score, exactFieldScore(compound.mechanism, q, 3_000))
     score = maxOf(score, exactFieldScore(compound.clinicalNeuro, q, 2_500))
@@ -396,6 +439,21 @@ private fun compoundGlobalSearchScore(compound: CompoundEntity, query: SearchQue
 
     return score
 }
+
+private fun compoundGlobalFuzzyFallbackScore(compound: CompoundEntity, query: SearchQuery): Int {
+    return maxOf(
+        fuzzyTextScore(compound.commonName, query) * 75,
+        fuzzyTextScore(compound.iupacName, query) * 55,
+        fuzzyTextScore(compound.groupName, query) * 45,
+        fuzzyTextScore(compound.subgroup, query) * 35
+    )
+}
+
+private fun familyGlobalExactSearchScore(family: String, query: SearchQuery): Int =
+    exactFieldScore(family, query.normalized, 7_000)
+
+private fun familyGlobalFuzzyFallbackScore(family: String, query: SearchQuery): Int =
+    fuzzyTextScore(family, query) * 35
 
 private fun exactFieldScore(field: String, normalizedQuery: String, base: Int): Int {
     if (field.isBlank()) return 0

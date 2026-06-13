@@ -15,6 +15,9 @@ import java.util.concurrent.TimeUnit
 
 object ImageDownloader {
 
+    private const val FAILED_PREFS = "image_download_failures"
+    private const val FAILED_IDS_KEY = "failed_plant_ids"
+
     data class DownloadProgress(
         val total: Int,
         val current: Int,
@@ -59,12 +62,40 @@ object ImageDownloader {
         .readTimeout(8, TimeUnit.SECONDS)
         .build()
 
+    fun getFailedPlantIds(context: Context): Set<Int> =
+        context.getSharedPreferences(FAILED_PREFS, Context.MODE_PRIVATE)
+            .getStringSet(FAILED_IDS_KEY, emptySet())
+            .orEmpty()
+            .mapNotNull { it.toIntOrNull() }
+            .toSet()
+
+    fun failedPlantCount(context: Context): Int = getFailedPlantIds(context).size
+
+    fun clearFailedPlants(context: Context) {
+        context.getSharedPreferences(FAILED_PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .remove(FAILED_IDS_KEY)
+            .apply()
+    }
+
+    private fun markImageResult(context: Context, plantId: Int, failed: Boolean) {
+        val prefs = context.getSharedPreferences(FAILED_PREFS, Context.MODE_PRIVATE)
+        val ids = prefs.getStringSet(FAILED_IDS_KEY, emptySet())
+            .orEmpty()
+            .toMutableSet()
+        if (failed) ids += plantId.toString() else ids -= plantId.toString()
+        prefs.edit().putStringSet(FAILED_IDS_KEY, ids).apply()
+    }
+
     /**
      * Descarga imágenes para una lista de plantas.
      *
      * El modo normal conserva las imágenes ya guardadas. Con [overwriteExisting] se intenta
      * resolver de nuevo cada planta y, si se encuentra una foto mejor, se sobrescribe. Si no se
      * encuentra nada, la foto antigua no se borra.
+     *
+     * Además mantiene una lista persistente de plantas fallidas para poder usar
+     * "Reintentar solo fallidas" sin recorrer todo el catálogo otra vez.
      */
     suspend fun downloadAll(
         context: Context,
@@ -93,14 +124,17 @@ object ImageDownloader {
             }
 
             if (!overwriteExisting && LocalImageCache.hasLocalImage(context, plant.id)) {
+                markImageResult(context, plant.id, failed = false)
                 success++
                 continue
             }
 
             val downloaded = tryMultipleSources(context, plant, usedRemoteUrls)
-            if (downloaded != null) {
+            if (downloaded != null || LocalImageCache.hasLocalImage(context, plant.id)) {
+                markImageResult(context, plant.id, failed = false)
                 success++
             } else {
+                markImageResult(context, plant.id, failed = true)
                 failed++
             }
         }
@@ -116,19 +150,25 @@ object ImageDownloader {
         )
 
     /** Fuerza generación de imagen con IA saltándose la cascada de fuentes reales. */
-    suspend fun forceAiImage(context: Context, plant: PlantEntity): Boolean =
-        LocalImageCache.downloadAndSave(context, plant.id, forceAiImageUrl(plant))
+    suspend fun forceAiImage(context: Context, plant: PlantEntity): Boolean {
+        val saved = LocalImageCache.downloadAndSave(context, plant.id, forceAiImageUrl(plant))
+        if (saved) markImageResult(context, plant.id, failed = false)
+        return saved
+    }
 
     /** Resuelve y guarda la imagen de una sola planta. */
     suspend fun resolveImageUrl(context: Context, plant: PlantEntity): String? {
         if (LocalImageCache.hasLocalImage(context, plant.id)) {
+            markImageResult(context, plant.id, failed = false)
             return "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"
         }
 
         val downloaded = tryMultipleSources(context, plant, mutableSetOf())
         return if (downloaded != null) {
+            markImageResult(context, plant.id, failed = false)
             "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"
         } else {
+            markImageResult(context, plant.id, failed = true)
             null
         }
     }

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import com.toxicplants.database.ui.ImageDownloader
+import com.toxicplants.database.ui.LocalImageCache
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,6 +35,76 @@ fun DownloadImagesScreen(
     var successCount by remember { mutableIntStateOf(0) }
     var failedCount by remember { mutableIntStateOf(0) }
     var replaceExisting by remember { mutableStateOf(false) }
+    var failedListCount by remember { mutableIntStateOf(ImageDownloader.failedPlantCount(context)) }
+    var retryPendingCount by remember { mutableIntStateOf(0) }
+    var lastRunWasRetry by remember { mutableStateOf(false) }
+
+    fun refreshRetryStats() {
+        scope.launch {
+            val allPlants = viewModel.getAllPlantsForDownload()
+            val failedIds = ImageDownloader.getFailedPlantIds(context)
+            failedListCount = failedIds.size
+            retryPendingCount = allPlants.count { plant ->
+                plant.id in failedIds || !LocalImageCache.hasLocalImage(context, plant.id)
+            }
+        }
+    }
+
+    fun resetProgress() {
+        current = 0
+        total = 0
+        successCount = 0
+        failedCount = 0
+        currentPlant = ""
+    }
+
+    fun startDownload(onlyFailed: Boolean) {
+        isDownloading = true
+        isFinished = false
+        lastRunWasRetry = onlyFailed
+        resetProgress()
+
+        scope.launch {
+            val allPlants = viewModel.getAllPlantsForDownload()
+            val plants = if (onlyFailed) {
+                val failedIds = ImageDownloader.getFailedPlantIds(context)
+                allPlants.filter { plant ->
+                    plant.id in failedIds || !LocalImageCache.hasLocalImage(context, plant.id)
+                }
+            } else {
+                allPlants
+            }
+
+            total = plants.size
+            if (plants.isEmpty()) {
+                currentPlant = if (onlyFailed) "No hay imágenes fallidas pendientes" else "No hay plantas para descargar"
+                isDownloading = false
+                isFinished = true
+                refreshRetryStats()
+                return@launch
+            }
+
+            val result = ImageDownloader.downloadAll(
+                context = context,
+                plants = plants,
+                overwriteExisting = if (onlyFailed) false else replaceExisting,
+                onProgress = { progress ->
+                    current = progress.current
+                    currentPlant = progress.plantName
+                    successCount = progress.success
+                    failedCount = progress.failed
+                }
+            )
+
+            successCount = result.first
+            failedCount = result.second
+            refreshRetryStats()
+            isDownloading = false
+            isFinished = true
+        }
+    }
+
+    LaunchedEffect(Unit) { refreshRetryStats() }
 
     Scaffold(
         topBar = {
@@ -74,7 +145,55 @@ fun DownloadImagesScreen(
                 color = Color.Gray
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            if (retryPendingCount > 0 && !isDownloading && !isFinished) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFFFF3E0)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            "⚠️ $retryPendingCount plantas sin imagen / fallidas",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFE65100)
+                        )
+                        Text(
+                            "Incluye fallidas registradas y plantas que aún no tienen foto local. Puedes reintentar solo esas sin recorrer todo el catálogo.",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = { startDownload(onlyFailed = true) },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100))
+                            ) {
+                                Text("Reintentar", fontSize = 13.sp)
+                            }
+                            if (failedListCount > 0) {
+                                OutlinedButton(
+                                    onClick = {
+                                        ImageDownloader.clearFailedPlants(context)
+                                        refreshRetryStats()
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Limpiar fallidas ($failedListCount)", fontSize = 13.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (!isDownloading && !isFinished) {
                 Card(
@@ -109,30 +228,7 @@ fun DownloadImagesScreen(
                 }
 
                 Button(
-                    onClick = {
-                        isDownloading = true
-                        scope.launch {
-                            val plants = viewModel.getAllPlantsForDownload()
-                            total = plants.size
-
-                            val result = ImageDownloader.downloadAll(
-                                context = context,
-                                plants = plants,
-                                overwriteExisting = replaceExisting,
-                                onProgress = { progress ->
-                                    current = progress.current
-                                    currentPlant = progress.plantName
-                                    successCount = progress.success
-                                    failedCount = progress.failed
-                                }
-                            )
-
-                            successCount = result.first
-                            failedCount = result.second
-                            isDownloading = false
-                            isFinished = true
-                        }
-                    },
+                    onClick = { startDownload(onlyFailed = false) },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2E7D32)
                     ),
@@ -176,6 +272,8 @@ fun DownloadImagesScreen(
                         Text("OK: $successCount", color = Color(0xFF388E3C))
                         Text("Fallidas: $failedCount", color = Color(0xFFE65100))
                     }
+                } else if (currentPlant.isNotBlank()) {
+                    Text(currentPlant, fontSize = 14.sp, color = Color.Gray)
                 }
             }
 
@@ -191,7 +289,7 @@ fun DownloadImagesScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            "Descarga completada",
+                            if (lastRunWasRetry) "Reintento completado" else "Descarga completada",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF2E7D32)
@@ -199,17 +297,47 @@ fun DownloadImagesScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("Descargadas: $successCount", color = Color(0xFF388E3C))
                         Text("No encontradas: $failedCount", color = Color(0xFFE65100))
-                        Text("Total: $total")
+                        Text("Total procesadas: $total")
+                        if (retryPendingCount > 0) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Quedan $retryPendingCount sin imagen / fallidas",
+                                color = Color(0xFFE65100),
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (retryPendingCount > 0) {
+                    Button(
+                        onClick = { startDownload(onlyFailed = true) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Reintentar sin imagen / fallidas ($retryPendingCount)")
+                    }
+                }
+
+                OutlinedButton(
+                    onClick = {
+                        isFinished = false
+                        resetProgress()
+                        refreshRetryStats()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Nueva descarga")
+                }
 
                 Button(
                     onClick = onBack,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2E7D32)
-                    )
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Volver")
                 }

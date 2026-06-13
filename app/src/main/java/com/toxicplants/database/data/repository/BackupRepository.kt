@@ -48,6 +48,11 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
 
     private val gson = Gson()
 
+    // SharedPreferences usados por LethalDoseCalculatorScreen para preajustes LD50
+    // editados/añadidos manualmente. Guardamos el JSON crudo para no depender de la UI.
+    private val ld50PrefsName = "ld50_presets_prefs"
+    private val ld50UserPresetsKey = "user_presets_json"
+
     // ── Progreso ────────────────────────────────────────────────────────
 
     /** Reporte de progreso para la UI. Se invoca en el hilo IO. */
@@ -108,6 +113,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val sightings = SightingStore.load(context)
             val calendarEvents = db.toxicCalendarDao().getAllEventsSync()
             val psychotropicOverrides = PsychotropicUserStore.load(context)
+            val ld50UserPresets = loadLd50UserPresetsJson()
 
             val plantLocations = plants
                 .filter {
@@ -159,7 +165,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             finalOut.use { out ->
                 JsonWriter(OutputStreamWriter(out, Charsets.UTF_8)).use { w ->
                     w.beginObject()
-                    w.name("backupVersion").value(4)
+                    w.name("backupVersion").value(5)
                     w.name("backupType").value(if (incremental) "incremental" else "full")
                     w.name("exportedAt").value(
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
@@ -213,6 +219,11 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     // Capa editable de plantas psicotrópicas sobre el JSON fijo
                     w.name("psychotropicOverrides")
                     gson.toJson(psychotropicOverrides, PsychotropicOverrides::class.java, w)
+
+                    // Preajustes LD50 editados/añadidos manualmente por el usuario.
+                    // Se guarda como string JSON para mantener compatibilidad y evitar acoplar
+                    // BackupRepository con la pantalla de la calculadora.
+                    w.name("ld50UserPresets").value(ld50UserPresets)
 
                     // plantImages (todas o solo las cambiadas según incremental)
                     val phaseImg = if (incremental) "Fotos modificadas…" else "Fotos de plantas…"
@@ -314,6 +325,21 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 onItem(idx + 1)
             }
         }
+    }
+
+    private fun loadLd50UserPresetsJson(): String {
+        val raw = context.getSharedPreferences(ld50PrefsName, Context.MODE_PRIVATE)
+            .getString(ld50UserPresetsKey, "[]")
+            ?: "[]"
+        return raw.trim().takeIf { it.startsWith("[") && it.endsWith("]") } ?: "[]"
+    }
+
+    private fun saveLd50UserPresetsJson(rawJson: String) {
+        val safeJson = rawJson.trim().takeIf { it.startsWith("[") && it.endsWith("]") } ?: "[]"
+        context.getSharedPreferences(ld50PrefsName, Context.MODE_PRIVATE)
+            .edit()
+            .putString(ld50UserPresetsKey, safeJson)
+            .apply()
     }
 
     // ── RECOMPRESIÓN IN-PLACE de las fotos del móvil ────────────────────
@@ -570,6 +596,13 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     if (overrides != null) {
                         PsychotropicUserStore.save(context, overrides)
                     }
+                }
+
+                "ld50UserPresets" -> {
+                    progress?.onProgress("Restaurando preajustes LD50…", 0, 1)
+                    val rawJson = if (r.peek() == JsonToken.STRING) r.nextString() else null
+                    if (rawJson != null) saveLd50UserPresetsJson(rawJson)
+                    else r.skipValue()
                 }
 
                 "plantImages" -> {

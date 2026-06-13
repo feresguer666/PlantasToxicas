@@ -1,16 +1,18 @@
 package com.toxicplants.database.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -63,7 +65,6 @@ fun DownloadImagesScreen(
         isFinished = false
         lastRunWasRetry = onlyFailed
         resetProgress()
-
         scope.launch {
             val allPlants = viewModel.getAllPlantsForDownload()
             val plants = if (onlyFailed) {
@@ -74,7 +75,6 @@ fun DownloadImagesScreen(
             } else {
                 allPlants
             }
-
             total = plants.size
             if (plants.isEmpty()) {
                 currentPlant = if (onlyFailed) "No hay imágenes fallidas pendientes" else "No hay plantas para descargar"
@@ -128,22 +128,23 @@ fun DownloadImagesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
-
             Text(
                 "Descarga de imágenes",
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
 
             Text(
                 "Descarga las fotos de todas las plantas para verlas sin conexión.",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = Color.Gray,
+                textAlign = TextAlign.Center
             )
 
             if (retryPendingCount > 0 && !isDownloading && !isFinished) {
@@ -194,8 +195,6 @@ fun DownloadImagesScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             if (!isDownloading && !isFinished) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -221,6 +220,7 @@ fun DownloadImagesScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Switch(
                             checked = replaceExisting,
                             onCheckedChange = { replaceExisting = it }
@@ -246,26 +246,23 @@ fun DownloadImagesScreen(
 
             if (isDownloading) {
                 CircularProgressIndicator(color = Color(0xFF2E7D32))
-
                 if (total > 0) {
                     LinearProgressIndicator(
                         progress = { current.toFloat() / total.toFloat() },
                         modifier = Modifier.fillMaxWidth(),
                         color = Color(0xFF2E7D32)
                     )
-
                     Text(
                         "$current / $total",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
-
                     Text(
                         currentPlant,
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
                     )
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -274,7 +271,7 @@ fun DownloadImagesScreen(
                         Text("Fallidas: $failedCount", color = Color(0xFFE65100))
                     }
                 } else if (currentPlant.isNotBlank()) {
-                    Text(currentPlant, fontSize = 14.sp, color = Color.Gray)
+                    Text(currentPlant, fontSize = 14.sp, color = Color.Gray, textAlign = TextAlign.Center)
                 }
             }
 
@@ -299,18 +296,18 @@ fun DownloadImagesScreen(
                         Text("Descargadas: $successCount", color = Color(0xFF388E3C))
                         Text("No encontradas: $failedCount", color = Color(0xFFE65100))
                         Text("Total procesadas: $total")
+
                         if (retryPendingCount > 0) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 "Quedan $retryPendingCount sin imagen / fallidas",
                                 color = Color(0xFFE65100),
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
 
                 if (retryPendingCount > 0) {
                     Button(
@@ -343,6 +340,9 @@ fun DownloadImagesScreen(
                     Text("Volver")
                 }
             }
+
+            // Espacio inferior para que el último botón no quede pegado al borde
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

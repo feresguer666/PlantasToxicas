@@ -44,6 +44,7 @@ import com.toxicplants.database.ui.viewmodel.MushroomViewModel
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import com.toxicplants.database.ui.viewmodel.SightingViewModel
 import com.toxicplants.database.ui.viewmodel.ToxicCalendarViewModel
+import com.toxicplants.database.ui.gbif.GBIFEnrichmentScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,17 +114,25 @@ fun MainApp() {
                 onNavigateToMap              = { navController.navigate("sightings_history") },
                 onNavigateToColorSearch      = { navController.navigate("color_search") },
                 onNavigateToGlossary         = { navController.navigate("glossary") },
-                onNavigateToToxicParts      = { navController.navigate("toxic_parts") },
-                onNavigateToIntoxication    = { navController.navigate("intoxication") },
-                onNavigateToGlobalSearch    = { query ->
+                onNavigateToToxicParts       = { navController.navigate("toxic_parts") },
+                onNavigateToIntoxication     = { navController.navigate("intoxication") },
+                onNavigateToGlobalSearch     = { query ->
                     if (query.isBlank()) navController.navigate("global_search")
                     else navController.navigate("global_search/${Uri.encode(query)}")
                 },
-                onNavigateToCalendar        = { navController.navigate("toxic_calendar") },
+                onNavigateToCalendar         = { navController.navigate("toxic_calendar") },
+                onNavigateToGBIF             = { navController.navigate("gbif_enrichment") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail")
                 }
+            )
+        }
+
+        // ── GBIF ENRICHMENT ─────────────────────────────────────────
+        composable("gbif_enrichment") {
+            GBIFEnrichmentScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -151,11 +160,11 @@ fun MainApp() {
         }
 
         // ── EMERGENCIA ───────────────────────────────────────────────
-                composable("myths") {
+        composable("myths") {
             MythsScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
-                onPlantClick = { id -> 
+                onPlantClick = { id ->
                     val plant = viewModel.allPlants.value?.find { it.id == id }
                     if (plant != null) {
                         viewModel.selectPlant(plant)
@@ -607,8 +616,7 @@ fun MainApp() {
             )
         }
 
-
-        // ── HISTORIAL DE AVISTAMIENTOS ───────────────────────────────────
+        // ── HISTORIAL DE AVISTAMIENTOS ───────────────────────────────
         composable("sightings_history") {
             val sightingViewModel: SightingViewModel = viewModel()
             SightingsHistoryScreen(
@@ -622,7 +630,7 @@ fun MainApp() {
             )
         }
 
-        // ── MASCOTAS ─────────────────────────────────────────────────────
+        // ── MASCOTAS ─────────────────────────────────────────────────
         composable("pet_safety") {
             PetSafetyScreen(
                 viewModel    = viewModel,
@@ -633,7 +641,7 @@ fun MainApp() {
             )
         }
 
-        // ── INFANTIL ─────────────────────────────────────────────────────
+        // ── INFANTIL ─────────────────────────────────────────────────
         composable("child_safety") {
             ChildSafetyScreen(
                 viewModel    = viewModel,
@@ -644,7 +652,7 @@ fun MainApp() {
             )
         }
 
-        // ── GANADO ───────────────────────────────────────────────────────
+        // ── GANADO ───────────────────────────────────────────────────
         composable("livestock_safety") {
             LivestockSafetyScreen(
                 viewModel    = viewModel,
@@ -655,7 +663,7 @@ fun MainApp() {
             )
         }
 
-        // ── PLANTAS CONFUNDIBLES ─────────────────────────────────────────
+        // ── PLANTAS CONFUNDIBLES ─────────────────────────────────────
         composable("confusable_plants") {
             ConfusablePlantsScreen(
                 viewModel    = viewModel,
@@ -666,7 +674,7 @@ fun MainApp() {
             )
         }
 
-        // ── MAPA DE AVISTAMIENTOS ────────────────────────────────────────
+        // ── MAPA DE AVISTAMIENTOS ────────────────────────────────────
         composable("sightings_map") {
             SightingsMapScreen(
                 viewModel    = viewModel,
@@ -693,7 +701,7 @@ fun MainApp() {
             )
         }
 
-        // ── CALENDARIO DE TÓXICOS ───────────────────────────────────────
+        // ── CALENDARIO DE TÓXICOS ────────────────────────────────────
         composable("toxic_calendar") {
             val calendarViewModel: ToxicCalendarViewModel = viewModel()
             ToxicCalendarScreen(
@@ -707,7 +715,7 @@ fun MainApp() {
             )
         }
 
-        // ── AÑADIR PLANTA A EXTRA ────────────────────────────────────────
+        // ── AÑADIR PLANTA A EXTRA ────────────────────────────────────
         composable(
             route     = "add_plant_extra/{mode}?color={color}",
             arguments = listOf(

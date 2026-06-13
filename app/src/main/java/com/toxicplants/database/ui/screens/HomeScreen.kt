@@ -103,6 +103,7 @@ fun HomeScreen(
     onNavigateToIntoxication: () -> Unit = {},
     onNavigateToGlobalSearch: (String) -> Unit = {},
     onNavigateToCalendar: () -> Unit = {},
+    onNavigateToGBIF: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
     val context = LocalContext.current
@@ -226,13 +227,11 @@ fun HomeScreen(
                 }
             }
 
-            // Fila Glosario + Recurso + Calendario
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    // ── GLOSARIO (compacto cuadrado) ──
                     Box(
                         modifier = Modifier
                             .width(82.dp)
@@ -258,7 +257,6 @@ fun HomeScreen(
                         }
                     }
 
-                    // ── RECURSO (reducido) ──
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -300,7 +298,6 @@ fun HomeScreen(
                         }
                     }
 
-                    // ── CALENDARIO DE TÓXICOS (compacto, como Calculadora) ──
                     Box(
                         modifier = Modifier
                             .width(86.dp)
@@ -360,7 +357,8 @@ fun HomeScreen(
                     onNavigateToConfusable     = onNavigateToConfusable,
                     onNavigateToIntoxication   = onNavigateToIntoxication,
                     onNavigateToGlobalSearch   = { onNavigateToGlobalSearch("") },
-                    onNavigateToAssistant      = onNavigateToAssistant
+                    onNavigateToAssistant      = onNavigateToAssistant,
+                    onNavigateToGBIF          = onNavigateToGBIF
                 )
             }
         }
@@ -380,7 +378,8 @@ fun HomeScreen(
             onSearchByConfusable = { showSearchDialog = false; onNavigateToConfusable() },
             onSearchByToxicParts = { showSearchDialog = false; onNavigateToToxicParts() },
             onSearchByBerries    = { showSearchDialog = false; onNavigateToBerries() },
-            onIntoxication       = { showSearchDialog = false; onNavigateToIntoxication() }
+            onIntoxication       = { showSearchDialog = false; onNavigateToIntoxication() },
+            onNavigateToGBIF     = { showSearchDialog = false; onNavigateToGBIF() }
         )
     }
 
@@ -401,7 +400,6 @@ fun HomeScreen(
         )
     }
 
-    
     if (showEmergencyDialog) {
         AlertDialog(
             onDismissRequest = { showEmergencyDialog = false },
@@ -558,7 +556,8 @@ fun NavigationGrid(
     onNavigateToConfusable: () -> Unit = {},
     onNavigateToIntoxication: () -> Unit = {},
     onNavigateToGlobalSearch: () -> Unit = {},
-    onNavigateToAssistant: () -> Unit = {}
+    onNavigateToAssistant: () -> Unit = {},
+    onNavigateToGBIF: () -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -687,25 +686,70 @@ fun StatCard(emoji: String, value: String, label: String, color: Color) {
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
-fun SearchTypeDialog(onDismiss: () -> Unit, onSearchByName: () -> Unit, onSearchBySymptoms: () -> Unit, onSearchByFamily: () -> Unit, onSearchByPets: () -> Unit, onSearchByChildren: () -> Unit, onSearchByLivestock: () -> Unit, onSearchByCompanions: () -> Unit = {}, onSearchByColor: () -> Unit = {}, onSearchByConfusable: () -> Unit = {}, onSearchByToxicParts: () -> Unit = {}, onSearchByBerries: () -> Unit = {}, onIntoxication: () -> Unit = {}) {
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("🔍 ¿Cómo quieres buscar?", fontWeight = FontWeight.Bold) }, text  = {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+fun SearchTypeDialog(
+    onDismiss: () -> Unit,
+    onSearchByName: () -> Unit,
+    onSearchBySymptoms: () -> Unit,
+    onSearchByFamily: () -> Unit,
+    onSearchByPets: () -> Unit,
+    onSearchByChildren: () -> Unit,
+    onSearchByLivestock: () -> Unit,
+    onSearchByCompanions: () -> Unit = {},
+    onSearchByColor: () -> Unit = {},
+    onSearchByConfusable: () -> Unit = {},
+    onSearchByToxicParts: () -> Unit = {},
+    onSearchByBerries: () -> Unit = {},
+    onIntoxication: () -> Unit = {},
+    onNavigateToGBIF: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("🔍 ¿Cómo quieres buscar?", fontWeight = FontWeight.Bold) },
+        text  = {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF1565C0), Color(0xFF1976D2))), icon = "📚", title = "Familias", onClick = onSearchByFamily)
-                SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF1B5E20), Color(0xFF2E7D32))), icon = "🔤", title = "Nombres", onClick = onSearchByName)
-            }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF880E4F), Color(0xFFAD1457))), icon = "🌸", title = "Colores", onClick = onSearchByColor)
-                SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFFBF360C), Color(0xFFD84315))), icon = "⚠️", title = "Confundibles", onClick = onSearchByConfusable)
-            }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF338034), Color(0xFF4A9E4C))), icon = "🫐", title = "Bayas", onClick = onSearchByBerries)
-                SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF4A148C), Color(0xFF6A1B9A))), icon = "☠️", title = "Parte tóxica", onClick = onSearchByToxicParts)
-            }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF1565C0), Color(0xFF1976D2))), icon = "📚", title = "Familias", onClick = onSearchByFamily)
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF1B5E20), Color(0xFF2E7D32))), icon = "🔤", title = "Nombres", onClick = onSearchByName)
+                }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF880E4F), Color(0xFFAD1457))), icon = "🌸", title = "Colores", onClick = onSearchByColor)
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFFBF360C), Color(0xFFD84315))), icon = "⚠️", title = "Confundibles", onClick = onSearchByConfusable)
+                }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF338034), Color(0xFF4A9E4C))), icon = "🫐", title = "Bayas", onClick = onSearchByBerries)
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF4A148C), Color(0xFF6A1B9A))), icon = "☠️", title = "Parte tóxica", onClick = onSearchByToxicParts)
+                }
 
-        }
-    }, confirmButton = {}, dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } })
+                // ── NUEVA FILA: GBIF ───────────────────────────────────
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SearchOptionSquare(
+                        modifier = Modifier.weight(1f),
+                        gradient = Brush.verticalGradient(listOf(Color(0xFF0D47A1), Color(0xFF1565C0))),
+                        icon = "🌍",
+                        title = "GBIF",
+                        onClick = {
+                            onDismiss()
+                            onNavigateToGBIF()
+                        }
+                    )
+                    SearchOptionSquare(
+                        modifier = Modifier.weight(1f),
+                        gradient = Brush.verticalGradient(listOf(Color(0xFF00695C), Color(0xFF00897B))),
+                        icon = "📱",
+                        title = "Local",
+                        onClick = {
+                            onDismiss()
+                            onSearchByName()
+                        }
+                    )
+                }
+
+            }
+        },
+        confirmButton = {},
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
+    )
 }
 
 @Composable
@@ -824,13 +868,19 @@ fun CalculatorsTypeDialog(
 
 @Composable
 fun IdentifyTypeDialog(onDismiss: () -> Unit, onIdentifyByCamera: () -> Unit, onIdentifyByNature: () -> Unit = {}, onIdentifyByAR: () -> Unit, onConfusable: () -> Unit = {}) {
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("📷 ¿Cómo quieres identificar?", fontWeight = FontWeight.Bold) }, text  = {
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF388E3C))), icon = "📷", title = "Identificar plantas", subtitle = "Cámara o galería con Pl@ntNet", onClick  = onIdentifyByCamera)
-            DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF4E342E), Color(0xFF795548))), icon = "🍄", title = "Identificar setas y líquenes", subtitle = "Foto orientativa con iNaturalist + catálogo local", onClick  = onIdentifyByNature)
-            DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF33691E), Color(0xFF558B2F))), icon = "🎯", title = "AR Detección", subtitle = "Realidad aumentada en tiempo real", onClick  = onIdentifyByAR)
-        }
-    }, confirmButton  = {}, dismissButton  = { TextButton(onClick = onDismiss) { Text("Cancelar") } })
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("📷 ¿Cómo quieres identificar?", fontWeight = FontWeight.Bold) },
+        text  = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF388E3C))), icon = "📷", title = "Identificar plantas", subtitle = "Cámara o galería con Pl@ntNet", onClick  = onIdentifyByCamera)
+                DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF4E342E), Color(0xFF795548))), icon = "🍄", title = "Identificar setas y líquenes", subtitle = "Foto orientativa con iNaturalist + catálogo local", onClick  = onIdentifyByNature)
+                DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF33691E), Color(0xFF558B2F))), icon = "🎯", title = "AR Detección", subtitle = "Realidad aumentada en tiempo real", onClick  = onIdentifyByAR)
+            }
+        },
+        confirmButton  = {},
+        dismissButton  = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
+    )
 }
 
 @Composable

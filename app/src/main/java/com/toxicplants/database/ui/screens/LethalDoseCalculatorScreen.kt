@@ -351,7 +351,7 @@ fun LethalDoseCalculatorScreen(
         ) {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                 Text(
-                    "AVISO: Los valores (LD50) y las concentraciones son promedios educativos. La toxicidad real varía enormemente por la planta, época del año y metabolismo. Ante ingestión, contacta urgencias inmediatamente.",
+                    "AVISO: Los valores (LD50) y las concentraciones son promedios.",
                     color = Color.Black,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,

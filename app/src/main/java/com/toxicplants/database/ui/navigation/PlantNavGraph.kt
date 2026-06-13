@@ -11,6 +11,7 @@ import com.toxicplants.database.CompoundEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import com.toxicplants.database.ui.viewmodel.CompoundViewModel
 import com.toxicplants.database.ui.screens.*
+import com.toxicplants.database.ui.gbif.GBIFEnrichmentScreen
 
 sealed class Screen(val route: String) {
     object Home              : Screen("home")
@@ -57,18 +58,13 @@ sealed class Screen(val route: String) {
     object CategoryList      : Screen("category/{category}") {
         fun createRoute(category: String) = "category/$category"
     }
-    // ── NUEVAS RUTAS: Familias ──────────────────────────────────────
     object FamilyList        : Screen("family_list")
     object PlantsByFamily    : Screen("plants_by_family/{family}") {
         fun createRoute(family: String) = "plants_by_family/$family"
     }
+    object GBIFEnrichment    : Screen("gbif_enrichment")
 }
 
-/**
- * ⚠️ NOTA: Esta función NO se usa actualmente.
- * La navegación activa está en `MainActivity.kt` → `MainApp()`.
- * Si decides usar esta función, reemplaza la navegación de MainActivity.kt por esta.
- */
 @Composable
 fun PlantNavGraph(
     viewModel: PlantViewModel,
@@ -98,12 +94,18 @@ fun PlantNavGraph(
                 onNavigateToAR               = { navController.navigate(Screen.AR.route) },
                 onNavigateToBerries          = { navController.navigate(Screen.BerriesGuide.route) },
                 onNavigateToNotes            = { navController.navigate(Screen.Notes.route) },
-                // ── NUEVO ──
                 onNavigateToFamilies         = { navController.navigate(Screen.FamilyList.route) },
+                onNavigateToGBIF             = { navController.navigate(Screen.GBIFEnrichment.route) },
                 onPlantClick = { plant: PlantEntity ->
                     viewModel.selectPlant(plant)
                     navController.navigate(Screen.PlantDetail.createRoute(plant.id))
                 }
+            )
+        }
+
+        composable(Screen.GBIFEnrichment.route) {
+            GBIFEnrichmentScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -153,7 +155,6 @@ fun PlantNavGraph(
             navController.navigate(Screen.PlantList.route)
         }
 
-        
         composable(Screen.Myths.route) {
             MythsScreen(
                 viewModel = viewModel,
@@ -374,10 +375,6 @@ fun PlantNavGraph(
                 )
             }
         }
-
-        // ══════════════════════════════════════════════════════════════
-        // NUEVAS RUTAS — Filtro por familia botánica
-        // ══════════════════════════════════════════════════════════════
 
         composable(Screen.FamilyList.route) {
             FamilyListScreen(

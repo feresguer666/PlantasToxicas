@@ -42,3 +42,12 @@ Actualmente el proyecto declara `PlantDatabase` en versión 9. Para que los test
 de migración sean fiables, conviene conservar todos los esquemas intermedios
 (`1.json`, `2.json`, ..., `9.json`). Si falta alguno, regenera esquemas desde
 Android Studio/Gradle y commitea el JSON resultante.
+
+
+Puedes ejecutar también:
+
+```bash
+python3 tools/check_room_schemas.py --warn-only
+```
+
+para detectar esquemas faltantes sin modificar archivos.

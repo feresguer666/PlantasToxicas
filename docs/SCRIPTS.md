@@ -22,6 +22,7 @@ y copias de seguridad. Antes de ejecutarlos sobre datos importantes, se recomien
 | `fix_dark_mode_contrast.py` | Ajustes de contraste para modo oscuro. |
 | `fix_reagents_local.py` | Correcciones locales de reactivos químicos. |
 | `sync_backup_a_proyecto.py` | Sincroniza datos desde una copia de seguridad completa al proyecto. |
+| `tools/check_room_schemas.py` | Comprueba que los esquemas Room exportados existan y sean JSON válidos. |
 
 ## Ejemplos de comandos que había en la raíz
 

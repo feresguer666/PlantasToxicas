@@ -28,6 +28,19 @@ como manifiestos de fotos:
 python3 tools/check_assets_json.py --top-level-only
 ```
 
+Para revisar además campos mínimos de las plantas:
+
+```bash
+python3 tools/check_assets_json.py --top-level-only --validate-plants
+```
+
+Por defecto, los campos presentes pero vacíos se informan como **avisos** para no bloquear
+catálogos en curso de mejora. Si quieres que esos avisos hagan fallar el comando, usa:
+
+```bash
+python3 tools/check_assets_json.py --top-level-only --validate-plants --strict-plants
+```
+
 ## Qué comprueba
 
 - Que todos los `.json` encontrados sean JSON válidos.
@@ -35,14 +48,15 @@ python3 tools/check_assets_json.py --top-level-only
 - El tipo de dato principal de cada archivo: lista, diccionario, etc.
 - El número de elementos de cada catálogo principal.
 - La secuencia `plants_N.json`, avisando si falta algún número intermedio.
+- Con `--validate-plants`, campos mínimos de cada planta, IDs duplicados y niveles de toxicidad conocidos.
 
 ## Qué no hace
 
 El script **no modifica archivos**. Solo lee y muestra un informe.
 
-Tampoco valida todavía el esquema interno de cada planta/campo toxicológico. Eso podría añadirse
-en un paso posterior si se quiere comprobar campos obligatorios como `commonName`,
-`scientificName`, `toxicityLevel`, `imageUrl`, etc.
+La validación interna de plantas es básica: comprueba presencia de campos obligatorios,
+IDs y campos vacíos. No corrige datos ni valida todavía todos los campos específicos de
+cada pantalla.
 
 ## Cuándo ejecutarlo
 

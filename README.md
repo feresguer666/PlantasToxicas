@@ -47,18 +47,18 @@ El proyecto ha evolucionado masivamente y ahora incluye:
 
 > Generadas a partir de la colección en `app/src/main/assets/`.
 
-- **Plantas (General)**: Más de 10.000 especies divididas en 22 archivos JSON.
-- **Plantas Psicotrópicas**: 772 especies (`psychotropic_plants.json`).
-- **Hongos Tóxicos**: 328 especies (`mushrooms.json`).
-- **Líquenes**: 107 especies (`lichens.json`).
-- **Compuestos Fitoquímicos**: 246 componentes (`compounds.json`).
+- **Plantas (General)**: **10.065 especies** divididas en **23 archivos JSON** (`plants_1.json` a `plants_23.json`).
+- **Plantas Psicotrópicas**: **789 especies** (`psychotropic_plants.json`).
+- **Hongos Tóxicos**: **328 especies** (`mushrooms.json`).
+- **Líquenes**: **119 especies** (`lichens.json`).
+- **Compuestos Fitoquímicos**: **312 componentes** (`compounds.json`).
 - **Claves Dicotómicas & Glosario**: Contenido botánico estructurado y guiado con recursos fotográficos.
 
 ---
 
 ## 🏗 Arquitectura y Novedades
 
-La aplicación sigue el patrón **MVVM** clásico con Single Source of Truth basado en Room, pero ha expandido su alcance para abarcar más de 45 pantallas creadas en Jetpack Compose (`app/src/main/java/com/toxicplants/database/ui/screens/`).
+La aplicación sigue el patrón **MVVM** clásico con Single Source of Truth basado en Room, pero ha expandido su alcance para abarcar más de 50 pantallas creadas en Jetpack Compose (`app/src/main/java/com/toxicplants/database/ui/screens/`).
 
 Nuevas áreas de la arquitectura:
 - Integración de **Modelos LLM (IA)**: Módulos configurados para Groq y Gemini.
@@ -103,6 +103,8 @@ El directorio de pantallas (`app/src/main/java/com/toxicplants/database/ui/scree
 
 ### Requisitos
 - Android Studio Ladybug (2024.2) o superior.
+- Android SDK instalado y configurado por Android Studio o mediante `sdk.dir`/`ANDROID_HOME`.
+- JDK 17 o superior (el proyecto compila con Java 17).
 - Dispositivo físico o emulador con **Android 8.0 (API 26)** o superior.
 
 ### Pasos
@@ -118,12 +120,15 @@ La aplicación ahora depende de tres servicios externos que requieren sus propia
 Crea (o edita) un archivo llamado `local.properties` en la raíz del proyecto (este archivo se ignora en Git por seguridad):
 
 ```properties
+sdk.dir=/ruta/a/tu/Android/Sdk
 PLANTNET_API_KEY=tu_api_key_de_plantnet_aqui
 GROQ_API_KEY=tu_api_key_de_groq_aqui
 GEMINI_API_KEY=tu_api_key_de_gemini_aqui
 ```
 
 *Si no dispones de todas, puedes dejarlas en blanco, pero las funciones que dependan de ellas (como el asistente IA o la identificación de fotos) no funcionarán.*
+
+> ⚠️ **Nota de seguridad**: en Android, cualquier clave inyectada en `BuildConfig` puede extraerse del APK. Para distribución pública se recomienda usar un backend/proxy propio para Groq/Gemini y limitar/restringir las claves de servicios externos. Ver [`SECURITY.md`](SECURITY.md).
 
 El script `build.gradle.kts` inyectará estas variables como `BuildConfig` durante la compilación.
 
@@ -133,7 +138,7 @@ El script `build.gradle.kts` inyectará estas variables como `BuildConfig` duran
 
 El inmenso repositorio de datos reside en la carpeta `app/src/main/assets/`. Debido a la escala del proyecto, la información ya no se guarda en un solo JSON. En su lugar se emplean:
 
-- `plants_1.json` a `plants_22.json`
+- `plants_1.json` a `plants_23.json`
 - `mushrooms.json`
 - `lichens.json`
 - `psychotropic_plants.json`

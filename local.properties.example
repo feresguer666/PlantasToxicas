@@ -2,8 +2,22 @@
 # `local.properties` está en .gitignore: NUNCA lo subas al repositorio.
 #
 # Ruta al SDK de Android (Android Studio la rellena automáticamente):
+# Linux/macOS: sdk.dir=/home/usuario/Android/Sdk
+# Windows:     sdk.dir=C\\:\\Users\\usuario\\AppData\\Local\\Android\\Sdk
+#
+# Alternativa: puedes definir ANDROID_HOME en tu entorno si no quieres usar sdk.dir.
 # sdk.dir=/home/usuario/Android/Sdk
 
 # API key gratuita de Pl@ntNet (https://my.plantnet.org/)
 # Necesaria para la pantalla "Identificar con foto".
-PLANTNET_API_KEY=tu_api_key_aqui
+PLANTNET_API_KEY=
+
+# Clave de Groq para el asistente IA.
+# ⚠️ No recomendado para builds públicos: una clave en BuildConfig puede extraerse del APK.
+# Para distribución pública, usa un backend/proxy propio.
+GROQ_API_KEY=
+
+# Clave de Gemini para funciones IA.
+# ⚠️ No recomendado para builds públicos: una clave en BuildConfig puede extraerse del APK.
+# Para distribución pública, usa un backend/proxy propio.
+GEMINI_API_KEY=

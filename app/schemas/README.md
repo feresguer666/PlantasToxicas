@@ -35,3 +35,10 @@ Si modificas `PlantEntity`, recuerda:
 2. Añadir un `Migration(N-1, N)` en `PlantDatabase.kt`.
 3. Buildear → KSP genera `N.json`.
 4. Añadir un test en `MigrationTest.kt`.
+
+## Comprobación rápida
+
+Actualmente el proyecto declara `PlantDatabase` en versión 9. Para que los tests
+de migración sean fiables, conviene conservar todos los esquemas intermedios
+(`1.json`, `2.json`, ..., `9.json`). Si falta alguno, regenera esquemas desde
+Android Studio/Gradle y commitea el JSON resultante.

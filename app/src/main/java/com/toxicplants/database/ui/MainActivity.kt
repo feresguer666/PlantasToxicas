@@ -153,7 +153,7 @@ fun MainApp() {
             CategoriesScreen(
                 viewModel       = viewModel,
                 onCategoryClick = { categoryName ->
-                    navController.navigate("category/$categoryName")
+                    navController.navigate("category/${Uri.encode(categoryName)}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -238,7 +238,7 @@ fun MainApp() {
                 viewModel = keyViewModel,
                 plantViewModel = viewModel,
                 onBack = { navController.popBackStack() },
-                onKeyClick = { keyId -> navController.navigate("dichotomous_key/$keyId") }
+                onKeyClick = { keyId -> navController.navigate("dichotomous_key/${Uri.encode(keyId)}") }
             )
         }
 
@@ -309,7 +309,7 @@ fun MainApp() {
         composable("berries") {
             BerriesScreen(
                 onBack     = { navController.popBackStack() },
-                onAddPlant = { color -> navController.navigate("add_plant_extra/fruitColor?color=$color") }
+                onAddPlant = { color -> navController.navigate("add_plant_extra/fruitColor?color=${Uri.encode(color)}") }
             )
         }
 
@@ -327,7 +327,7 @@ fun MainApp() {
                     navController.navigate("plant_detail")
                 },
                 onNavigateToPlantNetResult = { name, scientificName ->
-                    navController.navigate("plantnet_result/$name/$scientificName")
+                    navController.navigate("plantnet_result/${Uri.encode(name)}/${Uri.encode(scientificName)}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -511,7 +511,7 @@ fun MainApp() {
         composable("phytochemistry") {
             PhytochemistryScreen(
                 viewModel          = compoundViewModel,
-                onGroupClick        = { group -> navController.navigate("compound_group/$group") },
+                onGroupClick        = { group -> navController.navigate("compound_group/${Uri.encode(group)}") },
                 onAddCompoundClick  = { navController.navigate("edit_compound/0") },
                 onInteractionsClick = { navController.navigate("compound_interactions") },
                 onCompoundClick     = { c -> navController.navigate("compound_detail/${c.id}") },
@@ -595,7 +595,7 @@ fun MainApp() {
                 viewModel     = viewModel,
                 onBack        = { navController.popBackStack() },
                 onFamilyClick = { family ->
-                    navController.navigate("plants_by_family/$family")
+                    navController.navigate("plants_by_family/${Uri.encode(family)}")
                 }
             )
         }
@@ -688,7 +688,7 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
                 onBack       = { navController.popBackStack() },
-                onAddPlant   = { mode: String, color: String -> navController.navigate("add_plant_extra/$mode?color=$color") },
+                onAddPlant   = { mode: String, color: String -> navController.navigate("add_plant_extra/${Uri.encode(mode)}?color=${Uri.encode(color)}") },
                 onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
             )
         }

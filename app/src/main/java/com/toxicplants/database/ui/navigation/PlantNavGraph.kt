@@ -1,5 +1,6 @@
 package com.toxicplants.database.ui.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -34,7 +35,7 @@ sealed class Screen(val route: String) {
     }
     object CameraIdentify    : Screen("camera_identify")
     object PlantNetResult    : Screen("plantnet_result/{name}/{scientificName}") {
-        fun createRoute(name: String, scientificName: String) = "plantnet_result/$name/$scientificName"
+        fun createRoute(name: String, scientificName: String) = "plantnet_result/${Uri.encode(name)}/${Uri.encode(scientificName)}"
     }
     object AR                : Screen("ar")
     object BerriesGuide      : Screen("berries_guide")
@@ -44,7 +45,7 @@ sealed class Screen(val route: String) {
     object Settings          : Screen("settings")
     object CompoundInteractions : Screen("compound_interactions")
     object CompoundGroup     : Screen("compound_group/{group}") {
-        fun createRoute(group: String) = "compound_group/$group"
+        fun createRoute(group: String) = "compound_group/${Uri.encode(group)}"
     }
     object CompoundDetail    : Screen("compound_detail/{id}") {
         fun createRoute(id: Int) = "compound_detail/$id"
@@ -56,11 +57,11 @@ sealed class Screen(val route: String) {
         fun createRoute(plantId: Int) = "location/$plantId"
     }
     object CategoryList      : Screen("category/{category}") {
-        fun createRoute(category: String) = "category/$category"
+        fun createRoute(category: String) = "category/${Uri.encode(category)}"
     }
     object FamilyList        : Screen("family_list")
     object PlantsByFamily    : Screen("plants_by_family/{family}") {
-        fun createRoute(family: String) = "plants_by_family/$family"
+        fun createRoute(family: String) = "plants_by_family/${Uri.encode(family)}"
     }
     object GBIFEnrichment    : Screen("gbif_enrichment")
 }

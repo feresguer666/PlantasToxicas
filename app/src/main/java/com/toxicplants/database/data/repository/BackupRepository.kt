@@ -554,7 +554,9 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     r.beginArray()
                     while (r.hasNext()) list += gson.fromJson<MushroomEntity>(r, MushroomEntity::class.java)
                     r.endArray()
-                    if (list.isNotEmpty()) MushroomUserStore.save(context, list)
+                    // Guardar incluso si la lista viene vacía: un array vacío en el backup
+                    // significa "sin cambios/elementos de usuario" y debe limpiar el store local.
+                    MushroomUserStore.save(context, list)
                 }
 
                 "lichens" -> {
@@ -562,7 +564,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     r.beginArray()
                     while (r.hasNext()) list += gson.fromJson<LichenEntity>(r, LichenEntity::class.java)
                     r.endArray()
-                    if (list.isNotEmpty()) LichenUserStore.save(context, list)
+                    // Guardar incluso si la lista viene vacía para limpiar favoritos/notas/custom locales.
+                    LichenUserStore.save(context, list)
                 }
 
                 "plantLocations" -> {
@@ -589,14 +592,14 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     r.beginArray()
                     while (r.hasNext()) list += gson.fromJson<SightingEntity>(r, SightingEntity::class.java)
                     r.endArray()
-                    if (list.isNotEmpty()) {
-                        val photoDir = SightingStore.photoDir(context)
-                        val restored = list.map { s ->
-                            if (s.photoPath.isBlank()) s
-                            else s.copy(photoPath = File(photoDir, File(s.photoPath).name).absolutePath)
-                        }
-                        SightingStore.save(context, restored)
+                    // Guardar también listas vacías: si el backup no tiene avistamientos,
+                    // el dispositivo restaurado tampoco debe conservar avistamientos antiguos.
+                    val photoDir = SightingStore.photoDir(context)
+                    val restored = list.map { s ->
+                        if (s.photoPath.isBlank()) s
+                        else s.copy(photoPath = File(photoDir, File(s.photoPath).name).absolutePath)
                     }
+                    SightingStore.save(context, restored)
                 }
 
                 "calendarEvents" -> {

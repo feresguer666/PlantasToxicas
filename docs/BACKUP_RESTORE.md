@@ -62,3 +62,13 @@ Las fichas de plantas eliminadas por el usuario se guardan como una lista de IDs
 dentro del backup. Esto es necesario porque el catálogo base vive en `assets/plants_N.json` y la app
 puede resembrar datos al arrancar. Al restaurar en otro móvil, esta lista evita que esas fichas
 borradas reaparezcan desde los JSON base.
+
+## Restauración fiel de listas vacías
+
+Al importar un backup, los arrays vacíos también se aplican. Por ejemplo:
+
+- `mushrooms: []` limpia favoritos/notas/custom locales de setas y vuelve al catálogo base.
+- `lichens: []` limpia favoritos/notas/custom locales de líquenes y vuelve al catálogo base.
+- `sightings: []` borra el historial de avistamientos restaurado, dejando la lista vacía.
+
+Esto evita que datos antiguos del dispositivo queden mezclados cuando el backup indica una lista vacía.

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.PlantUserEditStore
 import com.toxicplants.database.PlantDataSource
 import com.toxicplants.database.PlantDeletionStore
 import com.toxicplants.database.CompoundDataSource
@@ -63,6 +64,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             // sin sobrescribir las existentes ni sus favoritos/ubicaciones/notas.
             val seedPlants = PlantDataSource.loadAll(application)
             val deletedSeedIds = PlantDeletionStore.load(application)
+            val userEditedIds = PlantUserEditStore.load(application)
             if (repository.getPlantCount() == 0) {
                 repository.insertAll(seedPlants.filter { it.id !in deletedSeedIds })
             } else {
@@ -80,7 +82,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
                 val updatedList = existingList.map { p ->
                     val seed = seedMap[p.id]
-                    if (seed != null && p.mythsAndLegends != seed.mythsAndLegends) {
+                    if (seed != null && p.id !in userEditedIds && p.mythsAndLegends != seed.mythsAndLegends) {
                         needsUpdate = true
                         p.copy(mythsAndLegends = seed.mythsAndLegends)
                     } else {
@@ -180,6 +182,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(plant)
             PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
+            PlantUserEditStore.markEdited(getApplication(), plant.id)
         }
     }
 
@@ -228,6 +231,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         withContext(Dispatchers.IO) {
             repository.insert(plant)
             PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
+            PlantUserEditStore.markEdited(getApplication(), plant.id)
         }
     }
 

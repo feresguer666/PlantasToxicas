@@ -79,3 +79,10 @@ Después de restaurar la lista de avistamientos, la app limpia las fotos interna
 `files/sighting_photos/` que ya no están referenciadas por ningún avistamiento restaurado.
 Esto evita que imágenes antiguas sigan ocupando espacio tras importar un backup con menos
 avistamientos o con `sightings: []`.
+
+## Plantas editadas manualmente
+
+Las fichas de plantas editadas por el usuario se guardan como una lista de IDs (`editedPlantIds`)
+dentro del backup. Esta lista protege esas fichas frente a actualizaciones automáticas del catálogo
+base desde `assets`. Por ejemplo, si has editado una planta, el smart-merge de arranque no debe
+sobrescribir campos como `mythsAndLegends` con el valor del JSON base.

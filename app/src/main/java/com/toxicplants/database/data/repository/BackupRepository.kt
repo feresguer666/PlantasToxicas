@@ -17,6 +17,7 @@ import com.toxicplants.database.MushroomUserStore
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantDeletionStore
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.PlantUserEditStore
 import com.toxicplants.database.PsychotropicOverrides
 import com.toxicplants.database.PsychotropicUserStore
 import com.toxicplants.database.SightingEntity
@@ -116,6 +117,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val psychotropicOverrides = PsychotropicUserStore.load(context)
             val ld50UserPresets = loadLd50UserPresetsJson()
             val deletedPlantIds = PlantDeletionStore.load(context).sorted()
+            val editedPlantIds = PlantUserEditStore.load(context).sorted()
 
             val plantLocations = plants
                 .filter {
@@ -225,6 +227,12 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     // reinyecten desde assets en el siguiente arranque.
                     w.name("deletedPlantIds").beginArray()
                     for (id in deletedPlantIds) w.value(id)
+                    w.endArray()
+
+                    // IDs de plantas editadas manualmente por el usuario. Protege esas fichas
+                    // frente a smart-merges automáticos desde assets después de restaurar.
+                    w.name("editedPlantIds").beginArray()
+                    for (id in editedPlantIds) w.value(id)
                     w.endArray()
 
                     // plantImages: solo en backup completo. En incremental se escribe array vacío.
@@ -498,6 +506,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         // al importar un incremental se mezclan imágenes y nunca se borra la carpeta.
         var backupType = "full"
         var restoredDeletedPlantIds = false
+        var restoredEditedPlantIds = false
 
         r.beginObject()
         while (r.hasNext()) {
@@ -644,6 +653,22 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     restoredDeletedPlantIds = true
                 }
 
+                "editedPlantIds" -> {
+                    progress?.onProgress("Restaurando plantas editadas…", 0, 1)
+                    val ids = LinkedHashSet<Int>()
+                    r.beginArray()
+                    while (r.hasNext()) {
+                        when (r.peek()) {
+                            JsonToken.NUMBER -> ids += r.nextInt()
+                            JsonToken.STRING -> r.nextString().toIntOrNull()?.let { ids += it }
+                            else -> r.skipValue()
+                        }
+                    }
+                    r.endArray()
+                    PlantUserEditStore.replaceAll(context, ids)
+                    restoredEditedPlantIds = true
+                }
+
                 "plantImages" -> {
                     val incremental = backupType.equals("incremental", ignoreCase = true)
                     val dir = prepareImageRestoreDir(
@@ -689,6 +714,9 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         // local para evitar que borrados previos del dispositivo oculten plantas tras restaurar.
         if (!restoredDeletedPlantIds) {
             PlantDeletionStore.clear(context)
+        }
+        if (!restoredEditedPlantIds) {
+            PlantUserEditStore.clear(context)
         }
 
         if (!cleaned) {

@@ -147,6 +147,7 @@ El inmenso repositorio de datos reside en la carpeta `app/src/main/assets/`. Deb
 
 Para agregar, modificar o arreglar registros, edita los archivos JSON directamente. 
 > Puedes usar los scripts Python (ej. `arreglar_imagenes_json.py`, `rellenar_imagenes_json.py` o `convert_screens.py`) incluidos en la raíz del repositorio para mantenimiento masivo de enlaces e imágenes.
+> Antes y después de cambios masivos, puedes validar todos los JSON con `python3 tools/check_assets_json.py`.
 
 ---
 

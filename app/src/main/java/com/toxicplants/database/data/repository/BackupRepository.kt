@@ -15,6 +15,7 @@ import com.toxicplants.database.MushroomDataSource
 import com.toxicplants.database.MushroomEntity
 import com.toxicplants.database.MushroomUserStore
 import com.toxicplants.database.PlantDatabase
+import com.toxicplants.database.PlantDeletionStore
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.PsychotropicOverrides
 import com.toxicplants.database.PsychotropicUserStore
@@ -114,6 +115,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val calendarEvents = db.toxicCalendarDao().getAllEventsSync()
             val psychotropicOverrides = PsychotropicUserStore.load(context)
             val ld50UserPresets = loadLd50UserPresetsJson()
+            val deletedPlantIds = PlantDeletionStore.load(context).sorted()
 
             val plantLocations = plants
                 .filter {
@@ -158,7 +160,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             finalOut.use { out ->
                 JsonWriter(OutputStreamWriter(out, Charsets.UTF_8)).use { w ->
                     w.beginObject()
-                    w.name("backupVersion").value(5)
+                    w.name("backupVersion").value(6)
                     w.name("backupType").value(if (incremental) "incremental" else "full")
                     w.name("exportedAt").value(
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
@@ -217,6 +219,13 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     // Se guarda como string JSON para mantener compatibilidad y evitar acoplar
                     // BackupRepository con la pantalla de la calculadora.
                     w.name("ld50UserPresets").value(ld50UserPresets)
+
+                    // IDs de plantas del catálogo base borradas manualmente por el usuario.
+                    // Es necesario guardarlos para que, al restaurar en otro móvil, no se
+                    // reinyecten desde assets en el siguiente arranque.
+                    w.name("deletedPlantIds").beginArray()
+                    for (id in deletedPlantIds) w.value(id)
+                    w.endArray()
 
                     // plantImages: solo en backup completo. En incremental se escribe array vacío.
                     val phaseImg = if (incremental) "Omitiendo fotos (incremental solo datos)…" else "Fotos de plantas…"
@@ -488,6 +497,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         // Por compatibilidad con incrementales antiguos que pudieran traer alguna foto,
         // al importar un incremental se mezclan imágenes y nunca se borra la carpeta.
         var backupType = "full"
+        var restoredDeletedPlantIds = false
 
         r.beginObject()
         while (r.hasNext()) {
@@ -614,13 +624,29 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     else r.skipValue()
                 }
 
+                "deletedPlantIds" -> {
+                    progress?.onProgress("Restaurando plantas borradas…", 0, 1)
+                    val ids = LinkedHashSet<Int>()
+                    r.beginArray()
+                    while (r.hasNext()) {
+                        when (r.peek()) {
+                            JsonToken.NUMBER -> ids += r.nextInt()
+                            JsonToken.STRING -> r.nextString().toIntOrNull()?.let { ids += it }
+                            else -> r.skipValue()
+                        }
+                    }
+                    r.endArray()
+                    PlantDeletionStore.replaceAll(context, ids)
+                    restoredDeletedPlantIds = true
+                }
+
                 "plantImages" -> {
                     val incremental = backupType.equals("incremental", ignoreCase = true)
                     val dir = prepareImageRestoreDir(
                         dir = File(context.filesDir, "plant_images"),
                         mergeOnly = incremental
                     )
-                    val phase = if (incremental) "Fotos modificadas de plantas…" else "Fotos de plantas…"
+                    val phase = if (incremental) "Fotos de incremental antiguo…" else "Fotos de plantas…"
                     progress?.onProgress(phase, 0, 1)
                     streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
@@ -631,7 +657,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         dir = File(context.filesDir, "mushroom_images"),
                         mergeOnly = incremental
                     )
-                    val phase = if (incremental) "Fotos modificadas de setas…" else "Fotos de setas…"
+                    val phase = if (incremental) "Fotos de incremental antiguo…" else "Fotos de setas…"
                     progress?.onProgress(phase, 0, 1)
                     streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
@@ -642,7 +668,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         dir = SightingStore.photoDir(context),
                         mergeOnly = incremental
                     )
-                    val phase = if (incremental) "Fotos modificadas de avistamientos…" else "Fotos de avistamientos…"
+                    val phase = if (incremental) "Fotos de incremental antiguo…" else "Fotos de avistamientos…"
                     progress?.onProgress(phase, 0, 1)
                     streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
@@ -654,6 +680,12 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             }
         }
         r.endObject()
+
+        // Backups antiguos no tenían deletedPlantIds. En ese caso limpiamos la lista
+        // local para evitar que borrados previos del dispositivo oculten plantas tras restaurar.
+        if (!restoredDeletedPlantIds) {
+            PlantDeletionStore.clear(context)
+        }
 
         if (!cleaned) {
             // Si el fichero no tenía "plants" ni "compounds", al menos limpiamos

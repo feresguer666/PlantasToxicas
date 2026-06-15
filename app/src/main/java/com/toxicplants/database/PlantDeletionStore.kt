@@ -42,6 +42,18 @@ object PlantDeletionStore {
         prefs.edit().putStringSet(KEY_DELETED_IDS, updated).apply()
     }
 
+    /** Sustituye la lista completa de IDs borrados. Se usa al restaurar backups. */
+    fun replaceAll(context: Context, ids: Set<Int>) {
+        val safeIds = ids
+            .filter { it != 0 }
+            .map { it.toString() }
+            .toSet()
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putStringSet(KEY_DELETED_IDS, safeIds)
+            .apply()
+    }
+
     fun clear(context: Context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()

@@ -26,6 +26,7 @@ un incremental no representa el estado completo de fotos.
 ### Crear copia incremental
 
 - Incluye datos/textos editables.
+- Incluye la lista de fichas de plantas borradas manualmente.
 - No incluye fotos de plantas, setas ni avistamientos.
 - Debe pesar mucho menos que la completa.
 
@@ -38,6 +39,7 @@ un incremental no representa el estado completo de fotos.
 ### Restaurar copia incremental
 
 - Restaura datos textuales incluidos.
+- Restaura la lista de plantas borradas para que no reaparezcan al reiniciar.
 - No borra fotos existentes.
 - Si se importase una incremental antigua que trajera alguna foto, la mezclaría sin borrar el resto.
 
@@ -53,3 +55,10 @@ un incremental no representa el estado completo de fotos.
 
 Durante la restauración de datos principales se limpia también la tabla de eventos del calendario
 para evitar que queden eventos antiguos mezclados con los restaurados.
+
+## Plantas borradas manualmente
+
+Las fichas de plantas eliminadas por el usuario se guardan como una lista de IDs (`deletedPlantIds`)
+dentro del backup. Esto es necesario porque el catálogo base vive en `assets/plants_N.json` y la app
+puede resembrar datos al arrancar. Al restaurar en otro móvil, esta lista evita que esas fichas
+borradas reaparezcan desde los JSON base.

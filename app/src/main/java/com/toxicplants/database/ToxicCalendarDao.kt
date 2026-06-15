@@ -41,4 +41,7 @@ interface ToxicCalendarDao {
 
     @Query("DELETE FROM calendar_events WHERE id = :id")
     suspend fun deleteById(id: Int)
+
+    @Query("DELETE FROM calendar_events")
+    suspend fun deleteAllEvents()
 }

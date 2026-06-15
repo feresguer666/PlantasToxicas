@@ -308,8 +308,8 @@ fun SettingsScreen(
                 Column {
                     if (!preview.hasPreviousBackup) {
                         Text(
-                            "⚠️ No hay copia anterior registrada en el móvil. " +
-                                    "La primera vez se hará una copia completa de las fotos.",
+                            "⚠️ No hay copia completa registrada en el móvil. " +
+                                    "La incremental solo guarda datos; haz una copia completa si quieres respaldar fotos.",
                             color = MaterialTheme.colorScheme.error,
                             fontSize = 13.sp
                         )
@@ -325,15 +325,12 @@ fun SettingsScreen(
                     Text("• Todos los textos: ${preview.totalPlantsCount} plantas",
                         fontSize = 13.sp)
                     Text(
-                        "• Fotos a incluir: ${preview.changedPhotosCount} de ${preview.totalPhotosCount} " +
-                                if (preview.totalPhotosCount > 0)
-                                    "(${(100 * preview.changedPhotosCount / preview.totalPhotosCount.coerceAtLeast(1))}%)"
-                                else "",
+                        "• Fotos: no se incluyen en la incremental (${preview.totalPhotosCount} fotos quedan cubiertas por copias completas)",
                         fontSize = 13.sp
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Calidad de fotos: ${photoPreset.label}",
+                        "Esta copia será mucho más pequeña: guarda datos editables y deja las fotos para la copia completa.",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -667,7 +664,7 @@ fun SettingsScreen(
                             Text("⚡ Copia INCREMENTAL",
                                 fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             Text(
-                                "Todos los textos + solo fotos modificadas desde la última copia. Mucho más rápida.",
+                                "Solo datos/textos editables, sin fotos. Mucho más pequeña.",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

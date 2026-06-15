@@ -136,20 +136,13 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val mushroomImagesDir = File(context.filesDir, "mushroom_images")
             val sightingImagesDir = SightingStore.photoDir(context)
 
-            // 2. Si es incremental, calcular qué fotos cambiaron vs. el manifiesto.
-            val manifestBefore = if (incremental) BackupManifest.load(context) else null
-            val (_, changedPlantPhotos) = if (incremental) {
-                manifestBefore!!.diff(plants, plantImagesDir)
-            } else {
-                emptySet<Int>() to emptySet()
-            }
-            // Para sighting photos no usamos manifest (son pocas); enviamos solo si es completo.
-            val plantPhotoFilter: (File) -> Boolean = when {
-                incremental -> { f -> f.name in changedPlantPhotos }
-                else -> { _ -> true }
-            }
+            // 2. Política de fotos:
+            //    - Backup COMPLETO: incluye todas las fotos.
+            //    - Backup INCREMENTAL: SOLO DATOS, sin fotos. Las fotos ya quedan cubiertas
+            //      por las copias completas y así el incremental no vuelve a pesar cientos de MB.
+            val plantPhotoFilter: (File) -> Boolean = if (incremental) { _ -> false } else { _ -> true }
 
-            val nPlantImg = countImagesFiltered(plantImagesDir, plantPhotoFilter)
+            val nPlantImg = if (incremental) 0 else countImagesFiltered(plantImagesDir, plantPhotoFilter)
             val nMushroomImg = if (incremental) 0 else countImages(mushroomImagesDir)
             val nSightImg = if (incremental) 0 else countImages(sightingImagesDir)
             val totalSteps = plants.size + compounds.size + nPlantImg + nMushroomImg + nSightImg + 10
@@ -225,13 +218,15 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     // BackupRepository con la pantalla de la calculadora.
                     w.name("ld50UserPresets").value(ld50UserPresets)
 
-                    // plantImages (todas o solo las cambiadas según incremental)
-                    val phaseImg = if (incremental) "Fotos modificadas…" else "Fotos de plantas…"
+                    // plantImages: solo en backup completo. En incremental se escribe array vacío.
+                    val phaseImg = if (incremental) "Omitiendo fotos (incremental solo datos)…" else "Fotos de plantas…"
                     progress?.onProgress(phaseImg, step, totalSteps)
                     w.name("plantImages").beginArray()
-                    writeImagesStreaming(plantImagesDir, w, plantPhotoFilter, recompression) { current ->
-                        step = plants.size + compounds.size + current
-                        progress?.onProgress("$phaseImg ($current/$nPlantImg)", step, totalSteps)
+                    if (!incremental) {
+                        writeImagesStreaming(plantImagesDir, w, plantPhotoFilter, recompression) { current ->
+                            step = plants.size + compounds.size + current
+                            progress?.onProgress("$phaseImg ($current/$nPlantImg)", step, totalSteps)
+                        }
                     }
                     w.endArray()
 
@@ -429,12 +424,13 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         val manifest = BackupManifest.load(context)
         val plants = db.plantDao().getAllPlantsSync()
         val dir = File(context.filesDir, "plant_images")
-        val (changedPlants, changedPhotos) = manifest.diff(plants, dir)
+        val (changedPlants, _) = manifest.diff(plants, dir)
         IncrementalPreview(
             hasPreviousBackup = manifest.timestamp > 0L,
             previousBackupAt = manifest.timestamp,
             changedPlantsCount = changedPlants.size,
-            changedPhotosCount = changedPhotos.size,
+            // La copia incremental actual es SOLO DATOS: no incluye fotos.
+            changedPhotosCount = 0,
             totalPlantsCount = plants.size,
             totalPhotosCount = dir.listFiles()?.count { it.isFile && it.length() > 0L } ?: 0
         )
@@ -488,11 +484,24 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         // borrar la BD si el fichero está corrupto.
         var cleaned = false
 
+        // Los backups incrementales actuales son SOLO DATOS (sin fotos).
+        // Por compatibilidad con incrementales antiguos que pudieran traer alguna foto,
+        // al importar un incremental se mezclan imágenes y nunca se borra la carpeta.
+        var backupType = "full"
+
         r.beginObject()
         while (r.hasNext()) {
             val fieldName = r.nextName()
             when (fieldName) {
-                "backupVersion", "exportedAt" -> r.skipValue()
+                "backupVersion", "exportedAt", "photoRecompression" -> r.skipValue()
+
+                "backupType" -> {
+                    backupType = if (r.peek() == JsonToken.STRING) r.nextString().lowercase(Locale.ROOT)
+                    else {
+                        r.skipValue()
+                        "full"
+                    }
+                }
 
                 "plants" -> {
                     if (!cleaned) { cleanAllDb(); cleaned = true }
@@ -606,25 +615,36 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 }
 
                 "plantImages" -> {
-                    val dir = File(context.filesDir, "plant_images").apply { if (!exists()) mkdirs() }
-                    // Borrar todas las imágenes existentes antes de restaurar
-                    dir.listFiles()?.filter { it.isFile }?.forEach { it.delete() }
-                    progress?.onProgress("Fotos de plantas…", 0, 1)
-                    streamImageArray(r, dir) { i -> progress?.onProgress("Fotos de plantas… ($i)", i, i) }
+                    val incremental = backupType.equals("incremental", ignoreCase = true)
+                    val dir = prepareImageRestoreDir(
+                        dir = File(context.filesDir, "plant_images"),
+                        mergeOnly = incremental
+                    )
+                    val phase = if (incremental) "Fotos modificadas de plantas…" else "Fotos de plantas…"
+                    progress?.onProgress(phase, 0, 1)
+                    streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
 
                 "mushroomImages" -> {
-                    val dir = File(context.filesDir, "mushroom_images").apply { if (!exists()) mkdirs() }
-                    dir.listFiles()?.filter { it.isFile }?.forEach { it.delete() }
-                    progress?.onProgress("Fotos de setas…", 0, 1)
-                    streamImageArray(r, dir) { i -> progress?.onProgress("Fotos de setas… ($i)", i, i) }
+                    val incremental = backupType.equals("incremental", ignoreCase = true)
+                    val dir = prepareImageRestoreDir(
+                        dir = File(context.filesDir, "mushroom_images"),
+                        mergeOnly = incremental
+                    )
+                    val phase = if (incremental) "Fotos modificadas de setas…" else "Fotos de setas…"
+                    progress?.onProgress(phase, 0, 1)
+                    streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
 
                 "sightingImages" -> {
-                    val dir = SightingStore.photoDir(context).apply { if (!exists()) mkdirs() }
-                    dir.listFiles()?.filter { it.isFile }?.forEach { it.delete() }
-                    progress?.onProgress("Fotos de avistamientos…", 0, 1)
-                    streamImageArray(r, dir) { i -> progress?.onProgress("Fotos de avistamientos… ($i)", i, i) }
+                    val incremental = backupType.equals("incremental", ignoreCase = true)
+                    val dir = prepareImageRestoreDir(
+                        dir = SightingStore.photoDir(context),
+                        mergeOnly = incremental
+                    )
+                    val phase = if (incremental) "Fotos modificadas de avistamientos…" else "Fotos de avistamientos…"
+                    progress?.onProgress(phase, 0, 1)
+                    streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
 
                 else -> {
@@ -640,6 +660,21 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             // para evitar mezclas raras.
             cleanAllDb()
         }
+    }
+
+    /**
+     * Prepara la carpeta de imágenes antes de restaurar.
+     *
+     * - Backup completo: borra lo anterior para que el estado restaurado sea exacto.
+     * - Backup incremental: NO borra nada, porque el fichero es solo datos
+     *   (o, en versiones antiguas, podía traer únicamente algunas fotos modificadas).
+     */
+    private fun prepareImageRestoreDir(dir: File, mergeOnly: Boolean): File {
+        if (!dir.exists()) dir.mkdirs()
+        if (!mergeOnly) {
+            dir.listFiles()?.filter { it.isFile }?.forEach { it.delete() }
+        }
+        return dir
     }
 
     private fun streamImageArray(r: JsonReader, dir: File, onItem: (Int) -> Unit) {
@@ -681,6 +716,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
     private suspend fun cleanAllDb() {
         runCatching { db.plantDao().deleteAllPlants() }
         runCatching { db.compoundDao().deleteAllCompounds() }
+        runCatching { db.toxicCalendarDao().deleteAllEvents() }
     }
 
     private suspend fun insertPlantsSafe(batch: List<PlantEntity>) {

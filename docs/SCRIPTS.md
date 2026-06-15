@@ -52,3 +52,7 @@ Opciones útiles de `sync_backup_a_proyecto.py`:
 | `--solo-fotos` | Sincroniza únicamente imágenes. |
 | `--no-nuevas` | No crea nuevos `plants_N.json` para IDs nuevos. |
 | `--proyecto RUTA` | Ejecuta indicando otra carpeta de proyecto. |
+
+## Documentación relacionada
+
+- [`BACKUP_RESTORE.md`](BACKUP_RESTORE.md): notas sobre copias completas/incrementales y restauración segura.

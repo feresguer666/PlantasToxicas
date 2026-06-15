@@ -86,3 +86,13 @@ Las fichas de plantas editadas por el usuario se guardan como una lista de IDs (
 dentro del backup. Esta lista protege esas fichas frente a actualizaciones automáticas del catálogo
 base desde `assets`. Por ejemplo, si has editado una planta, el smart-merge de arranque no debe
 sobrescribir campos como `mythsAndLegends` con el valor del JSON base.
+
+## Compuestos borrados y editados
+
+Los compuestos fitoquímicos también se protegen frente a la siembra automática desde
+`assets/compounds.json`:
+
+- `deletedCompoundIds`: compuestos del catálogo base borrados manualmente para que no reaparezcan.
+- `editedCompoundIds`: compuestos editados manualmente para evitar que actualizaciones automáticas, como `pubchemCid`, sobrescriban cambios del usuario.
+
+Estas listas viajan en el backup junto con `deletedPlantIds` y `editedPlantIds`.

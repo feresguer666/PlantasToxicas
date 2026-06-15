@@ -8,6 +8,7 @@ import com.toxicplants.database.PlantUserEditStore
 import com.toxicplants.database.PlantDataSource
 import com.toxicplants.database.PlantDeletionStore
 import com.toxicplants.database.CompoundDataSource
+import com.toxicplants.database.CompoundUserStateStore
 import com.toxicplants.database.data.repository.PlantRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,18 +96,20 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             val seedCompounds = CompoundDataSource.loadAll(application)
+            val deletedCompoundIds = CompoundUserStateStore.loadDeleted(application)
+            val editedCompoundIds = CompoundUserStateStore.loadEdited(application)
             if (compoundDao.count() == 0) {
-                compoundDao.insertAll(seedCompounds)
+                compoundDao.insertAll(seedCompounds.filter { it.id !in deletedCompoundIds })
             } else {
-                // Añade compuestos nuevos del JSON sin tocar los existentes.
+                // Añade compuestos nuevos del JSON sin tocar los existentes ni los borrados por el usuario.
                 val existingCompoundIds = compoundDao.getAllSync().map { it.id }.toHashSet()
-                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds }
+                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds && it.id !in deletedCompoundIds }
                 if (missingCompounds.isNotEmpty()) {
                     compoundDao.insertAll(missingCompounds)
                 }
-                // Actualiza los pubchemCid desde el JSON para compuestos que aún tengan CID = 0
+                // Actualiza pubchemCid desde el JSON solo para compuestos no editados manualmente.
                 for (c in seedCompounds) {
-                    if (c.pubchemCid != 0) {
+                    if (c.pubchemCid != 0 && c.id !in editedCompoundIds && c.id !in deletedCompoundIds) {
                         compoundDao.updatePubchemCid(c.id, c.pubchemCid)
                     }
                 }
@@ -210,12 +213,13 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
             val compoundDao = PlantDatabase.getDatabase(app).compoundDao()
             val seedCompounds = CompoundDataSource.loadAll(app)
+            val deletedCompoundIds = CompoundUserStateStore.loadDeleted(app)
             val existingCompounds = compoundDao.getAllSync()
             if (existingCompounds.isEmpty()) {
-                compoundDao.insertAll(seedCompounds)
+                compoundDao.insertAll(seedCompounds.filter { it.id !in deletedCompoundIds })
             } else {
                 val existingCompoundIds = existingCompounds.map { it.id }.toHashSet()
-                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds }
+                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds && it.id !in deletedCompoundIds }
                 if (missingCompounds.isNotEmpty()) {
                     compoundDao.insertAll(missingCompounds)
                 }

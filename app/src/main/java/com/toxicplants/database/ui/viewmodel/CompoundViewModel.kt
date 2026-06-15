@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.toxicplants.database.CompoundEntity
+import com.toxicplants.database.CompoundUserStateStore
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.data.repository.CompoundRepository
 import kotlinx.coroutines.Dispatchers
@@ -50,19 +51,26 @@ class CompoundViewModel(application: Application) : AndroidViewModel(application
 
     fun addCompound(compound: CompoundEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.insert(compound)
+            val newId = repository.insert(compound).toInt()
+            if (compound.id != 0) {
+                CompoundUserStateStore.markEdited(getApplication(), compound.id)
+            } else if (newId != 0) {
+                CompoundUserStateStore.markEdited(getApplication(), newId)
+            }
         }
     }
 
     fun updateCompound(compound: CompoundEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.update(compound)
+            CompoundUserStateStore.markEdited(getApplication(), compound.id)
         }
     }
 
     fun deleteCompound(compound: CompoundEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.delete(compound)
+            CompoundUserStateStore.markDeleted(getApplication(), compound.id)
         }
     }
 }

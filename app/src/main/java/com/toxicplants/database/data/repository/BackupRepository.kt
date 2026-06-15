@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import com.toxicplants.database.CompoundEntity
+import com.toxicplants.database.CompoundUserStateStore
 import com.toxicplants.database.LichenDataSource
 import com.toxicplants.database.LichenEntity
 import com.toxicplants.database.LichenUserStore
@@ -118,6 +119,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val ld50UserPresets = loadLd50UserPresetsJson()
             val deletedPlantIds = PlantDeletionStore.load(context).sorted()
             val editedPlantIds = PlantUserEditStore.load(context).sorted()
+            val deletedCompoundIds = CompoundUserStateStore.loadDeleted(context).sorted()
+            val editedCompoundIds = CompoundUserStateStore.loadEdited(context).sorted()
 
             val plantLocations = plants
                 .filter {
@@ -162,7 +165,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             finalOut.use { out ->
                 JsonWriter(OutputStreamWriter(out, Charsets.UTF_8)).use { w ->
                     w.beginObject()
-                    w.name("backupVersion").value(6)
+                    w.name("backupVersion").value(7)
                     w.name("backupType").value(if (incremental) "incremental" else "full")
                     w.name("exportedAt").value(
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
@@ -233,6 +236,14 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     // frente a smart-merges automáticos desde assets después de restaurar.
                     w.name("editedPlantIds").beginArray()
                     for (id in editedPlantIds) w.value(id)
+                    w.endArray()
+
+                    // IDs de compuestos borrados/editados manualmente por el usuario.
+                    w.name("deletedCompoundIds").beginArray()
+                    for (id in deletedCompoundIds) w.value(id)
+                    w.endArray()
+                    w.name("editedCompoundIds").beginArray()
+                    for (id in editedCompoundIds) w.value(id)
                     w.endArray()
 
                     // plantImages: solo en backup completo. En incremental se escribe array vacío.
@@ -507,6 +518,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         var backupType = "full"
         var restoredDeletedPlantIds = false
         var restoredEditedPlantIds = false
+        var restoredDeletedCompoundIds = false
+        var restoredEditedCompoundIds = false
 
         r.beginObject()
         while (r.hasNext()) {
@@ -669,6 +682,20 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     restoredEditedPlantIds = true
                 }
 
+                "deletedCompoundIds" -> {
+                    progress?.onProgress("Restaurando compuestos borrados…", 0, 1)
+                    val ids = readIntSet(r)
+                    CompoundUserStateStore.replaceDeleted(context, ids)
+                    restoredDeletedCompoundIds = true
+                }
+
+                "editedCompoundIds" -> {
+                    progress?.onProgress("Restaurando compuestos editados…", 0, 1)
+                    val ids = readIntSet(r)
+                    CompoundUserStateStore.replaceEdited(context, ids)
+                    restoredEditedCompoundIds = true
+                }
+
                 "plantImages" -> {
                     val incremental = backupType.equals("incremental", ignoreCase = true)
                     val dir = prepareImageRestoreDir(
@@ -718,6 +745,12 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         if (!restoredEditedPlantIds) {
             PlantUserEditStore.clear(context)
         }
+        if (!restoredDeletedCompoundIds && !restoredEditedCompoundIds) {
+            CompoundUserStateStore.clear(context)
+        } else {
+            if (!restoredDeletedCompoundIds) CompoundUserStateStore.replaceDeleted(context, emptySet())
+            if (!restoredEditedCompoundIds) CompoundUserStateStore.replaceEdited(context, emptySet())
+        }
 
         if (!cleaned) {
             // Si el fichero no tenía "plants" ni "compounds", al menos limpiamos
@@ -739,6 +772,20 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             dir.listFiles()?.filter { it.isFile }?.forEach { it.delete() }
         }
         return dir
+    }
+
+    private fun readIntSet(r: JsonReader): Set<Int> {
+        val ids = LinkedHashSet<Int>()
+        r.beginArray()
+        while (r.hasNext()) {
+            when (r.peek()) {
+                JsonToken.NUMBER -> ids += r.nextInt()
+                JsonToken.STRING -> r.nextString().toIntOrNull()?.let { ids += it }
+                else -> r.skipValue()
+            }
+        }
+        r.endArray()
+        return ids
     }
 
     private fun streamImageArray(r: JsonReader, dir: File, onItem: (Int) -> Unit) {

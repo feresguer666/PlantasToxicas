@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.PlantDataSource
+import com.toxicplants.database.PlantDeletionStore
 import com.toxicplants.database.CompoundDataSource
 import com.toxicplants.database.data.repository.PlantRepository
 import kotlinx.coroutines.Dispatchers
@@ -61,13 +62,14 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             // Si el usuario ya tenía la app instalada, añadimos las plantas nuevas del JSON
             // sin sobrescribir las existentes ni sus favoritos/ubicaciones/notas.
             val seedPlants = PlantDataSource.loadAll(application)
+            val deletedSeedIds = PlantDeletionStore.load(application)
             if (repository.getPlantCount() == 0) {
-                repository.insertAll(seedPlants)
+                repository.insertAll(seedPlants.filter { it.id !in deletedSeedIds })
             } else {
                 val existingList = repository.getAllPlantsSync()
                 val existingIds = existingList.map { it.id }.toHashSet()
 
-                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds }
+                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds && it.id !in deletedSeedIds }
                 if (missingPlants.isNotEmpty()) {
                     repository.insertAll(missingPlants)
                 }
@@ -177,6 +179,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     fun insertPlant(plant: PlantEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(plant)
+            PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
         }
     }
 
@@ -190,12 +193,13 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             val app = getApplication<Application>()
 
             val seedPlants = PlantDataSource.loadAll(app)
+            val deletedSeedIds = PlantDeletionStore.load(app)
             val existingPlants = repository.getAllPlantsSync()
             if (existingPlants.isEmpty()) {
-                repository.insertAll(seedPlants)
+                repository.insertAll(seedPlants.filter { it.id !in deletedSeedIds })
             } else {
                 val existingIds = existingPlants.map { it.id }.toHashSet()
-                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds }
+                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds && it.id !in deletedSeedIds }
                 if (missingPlants.isNotEmpty()) {
                     repository.insertAll(missingPlants)
                 }
@@ -223,12 +227,16 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun insertPlantSync(plant: PlantEntity) {
         withContext(Dispatchers.IO) {
             repository.insert(plant)
+            PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
         }
     }
 
     fun deletePlant(plant: PlantEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.delete(plant)
+            PlantDeletionStore.markDeleted(getApplication(), plant.id)
+            if (selectedPlant.value?.id == plant.id) selectedPlant.value = null
+            plants.value = repository.getAllPlantsSync()
         }
     }
 

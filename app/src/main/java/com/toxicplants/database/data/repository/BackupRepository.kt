@@ -480,19 +480,23 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         progress: ProgressListener? = null
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
+            progress?.onProgress("Validando copia…", 0, 1)
+
+            // Preflight: antes de borrar o reemplazar datos locales, recorremos el backup
+            // completo una vez para detectar JSON/GZIP corrupto o estructura inválida.
+            // Es más lento en copias grandes, pero evita dejar la base a medias si el
+            // archivo está roto o incompleto.
+            val validation = validateBackupReadable(uri)
+            if (validation.isFailure) {
+                return@withContext Result.failure(
+                    validation.exceptionOrNull()
+                        ?: IllegalStateException("La copia no es válida")
+                )
+            }
+
             progress?.onProgress("Abriendo copia…", 0, 1)
-
-            val raw = context.contentResolver.openInputStream(uri)
+            val input = openBackupInputStream(uri)
                 ?: return@withContext Result.failure(IllegalStateException("No se pudo abrir el origen"))
-
-            // Sniff de los primeros 2 bytes para detectar GZIP. Usamos mark/reset.
-            val pushback = BufferedInputStream(raw, 64 * 1024)
-            pushback.mark(4)
-            val head = ByteArray(2)
-            val n = pushback.read(head, 0, 2)
-            pushback.reset()
-            val input: InputStream = if (n == 2 && isGzipStream(head)) GZIPInputStream(pushback)
-            else pushback
 
             input.use { stream ->
                 JsonReader(InputStreamReader(stream, Charsets.UTF_8)).use { r ->
@@ -504,6 +508,54 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         } catch (t: Throwable) {
             t.printStackTrace()
             Result.failure(t)
+        }
+    }
+
+
+    /** Abre un backup JSON o JSON.GZ detectando GZIP por cabecera mágica. */
+    private fun openBackupInputStream(uri: Uri): InputStream? {
+        val raw = context.contentResolver.openInputStream(uri) ?: return null
+        val buffered = BufferedInputStream(raw, 64 * 1024)
+        buffered.mark(4)
+        val head = ByteArray(2)
+        val n = buffered.read(head, 0, 2)
+        buffered.reset()
+        return if (n == 2 && isGzipStream(head)) GZIPInputStream(buffered) else buffered
+    }
+
+    /**
+     * Recorre el backup completo sin restaurarlo para comprobar que es legible.
+     *
+     * No materializa el contenido en memoria: usa JsonReader + skipValue().
+     */
+    private fun validateBackupReadable(uri: Uri): Result<Unit> = runCatching {
+        val input = openBackupInputStream(uri)
+            ?: throw IllegalStateException("No se pudo abrir el origen")
+        var hasPlants = false
+        var hasCompounds = false
+
+        input.use { stream ->
+            JsonReader(InputStreamReader(stream, Charsets.UTF_8)).use { r ->
+                r.beginObject()
+                while (r.hasNext()) {
+                    when (r.nextName()) {
+                        "plants" -> {
+                            hasPlants = true
+                            r.skipValue()
+                        }
+                        "compounds" -> {
+                            hasCompounds = true
+                            r.skipValue()
+                        }
+                        else -> r.skipValue()
+                    }
+                }
+                r.endObject()
+            }
+        }
+
+        if (!hasPlants && !hasCompounds) {
+            throw IllegalStateException("La copia no contiene datos principales (plants/compounds)")
         }
     }
 

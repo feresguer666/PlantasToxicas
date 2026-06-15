@@ -96,3 +96,14 @@ Los compuestos fitoquímicos también se protegen frente a la siembra automátic
 - `editedCompoundIds`: compuestos editados manualmente para evitar que actualizaciones automáticas, como `pubchemCid`, sobrescriban cambios del usuario.
 
 Estas listas viajan en el backup junto con `deletedPlantIds` y `editedPlantIds`.
+
+## Validación previa antes de restaurar
+
+Antes de reemplazar datos locales, la importación recorre el archivo de backup completo en modo
+streaming para comprobar que el JSON/GZIP es legible y que contiene datos principales (`plants` o
+`compounds`). Si la copia está corrupta o incompleta, la restauración se cancela antes de limpiar
+la base local.
+
+Esto puede hacer que importar una copia grande tarde algo más, porque se lee una vez para validar
+y otra para restaurar, pero evita dejar la app a medias con datos borrados si el archivo de backup
+está dañado.

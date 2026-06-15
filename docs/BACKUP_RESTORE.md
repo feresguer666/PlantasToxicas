@@ -72,3 +72,10 @@ Al importar un backup, los arrays vacíos también se aplican. Por ejemplo:
 - `sightings: []` borra el historial de avistamientos restaurado, dejando la lista vacía.
 
 Esto evita que datos antiguos del dispositivo queden mezclados cuando el backup indica una lista vacía.
+
+## Fotos huérfanas de avistamientos
+
+Después de restaurar la lista de avistamientos, la app limpia las fotos internas de
+`files/sighting_photos/` que ya no están referenciadas por ningún avistamiento restaurado.
+Esto evita que imágenes antiguas sigan ocupando espacio tras importar un backup con menos
+avistamientos o con `sightings: []`.

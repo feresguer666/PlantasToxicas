@@ -41,6 +41,31 @@ object SightingStore {
         if (path.isNotBlank()) runCatching { File(path).delete() }
     }
 
+    /**
+     * Elimina fotos internas de avistamientos que ya no están referenciadas.
+     *
+     * Es útil tras restaurar un backup: la lista de avistamientos puede haber cambiado,
+     * pero en files/sighting_photos/ podrían quedar imágenes antiguas ocupando espacio.
+     * Solo borra archivos dentro de la carpeta interna de avistamientos.
+     */
+    fun cleanupOrphanPhotos(context: Context, sightings: List<SightingEntity>): Int {
+        val dir = photoDir(context)
+        val referencedNames = sightings
+            .mapNotNull { it.photoPath.takeIf { path -> path.isNotBlank() } }
+            .map { File(it).name }
+            .toSet()
+
+        var deleted = 0
+        dir.listFiles()?.filter { it.isFile }?.forEach { file ->
+            if (file.name !in referencedNames) {
+                if (runCatching { file.delete() }.getOrDefault(false)) {
+                    deleted++
+                }
+            }
+        }
+        return deleted
+    }
+
     fun nowString(): String = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
 
     private fun parse(arr: JSONArray): List<SightingEntity> {

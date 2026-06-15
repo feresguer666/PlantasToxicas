@@ -600,6 +600,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         else s.copy(photoPath = File(photoDir, File(s.photoPath).name).absolutePath)
                     }
                     SightingStore.save(context, restored)
+                    SightingStore.cleanupOrphanPhotos(context, restored)
                 }
 
                 "calendarEvents" -> {

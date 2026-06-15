@@ -66,6 +66,18 @@ sealed class Screen(val route: String) {
     object GBIFEnrichment    : Screen("gbif_enrichment")
 }
 
+/**
+ * ⚠️ Nota de mantenimiento — navegación alternativa/parcial.
+ *
+ * La navegación que arranca actualmente la app está definida en
+ * `MainActivity.MainApp()` (`app/src/main/java/com/toxicplants/database/ui/MainActivity.kt`).
+ *
+ * Este `PlantNavGraph` no se referencia desde `MainActivity` y parece una versión anterior
+ * o parcial del grafo de navegación. Se mantiene para no perder trabajo previo, pero antes
+ * de usarlo o eliminarlo conviene unificar rutas y callbacks con el grafo activo.
+ *
+ * Ver `docs/NAVIGATION.md` para el plan de refactor seguro.
+ */
 @Composable
 fun PlantNavGraph(
     viewModel: PlantViewModel,

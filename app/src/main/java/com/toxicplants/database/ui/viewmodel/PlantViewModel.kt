@@ -48,6 +48,9 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     private val plants = MutableStateFlow<List<PlantEntity>>(emptyList())
     val plantsData: StateFlow<List<PlantEntity>> = plants
 
+    private val detailNavigationPlants = MutableStateFlow<List<PlantEntity>>(emptyList())
+    val detailNavigationPlantsData: StateFlow<List<PlantEntity>> = detailNavigationPlants
+
     init {
         val db = PlantDatabase.getDatabase(application)
         val plantDao = db.plantDao()
@@ -151,6 +154,14 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectPlant(plant: PlantEntity) {
         selectedPlant.value = plant
+    }
+
+    fun setDetailNavigationPlants(list: List<PlantEntity>) {
+        detailNavigationPlants.value = list.distinctBy { it.id }
+    }
+
+    fun clearDetailNavigationPlants() {
+        detailNavigationPlants.value = emptyList()
     }
 
     fun setCategory(category: String) {

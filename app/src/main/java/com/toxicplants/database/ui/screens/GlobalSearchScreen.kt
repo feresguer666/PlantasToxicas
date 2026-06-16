@@ -374,7 +374,7 @@ fun GlobalSearchScreen(
                         Text("🌿 Plantas (${visiblePlantResults.size})", fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp))
                     }
                     items(visiblePlantResults) { plant ->
-                        CompactPlantCard(plant = plant, query = query, onClick = { onPlantClick(plant) })
+                        CompactPlantCard(plant = plant, query = query, onClick = { plantViewModel.setDetailNavigationPlants(visiblePlantResults); onPlantClick(plant) })
                     }
                 }
 

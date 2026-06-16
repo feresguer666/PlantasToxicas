@@ -296,7 +296,7 @@ fun PlantListScreen(
                             items(plantsInGroup) { plant ->
                                 PlantCard(
                                     plant = plant,
-                                    onClick = { onPlantClick(plant) },
+                                    onClick = { viewModel.setDetailNavigationPlants(filtered); onPlantClick(plant) },
                                     onDeleteClick = { plantToDelete = plant }
                                 )
                             }
@@ -312,7 +312,7 @@ fun PlantListScreen(
                         items(filtered) { plant ->
                             PlantCard(
                                 plant = plant,
-                                onClick = { onPlantClick(plant) },
+                                onClick = { viewModel.setDetailNavigationPlants(filtered); onPlantClick(plant) },
                                 onDeleteClick = { plantToDelete = plant }
                             )
                         }

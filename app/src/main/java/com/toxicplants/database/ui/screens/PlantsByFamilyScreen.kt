@@ -88,7 +88,7 @@ fun PlantsByFamilyScreen(
                 items(plants) { plant ->
                     PlantCard(
                         plant         = plant,
-                        onClick       = { onPlantClick(plant) },
+                        onClick       = { viewModel.setDetailNavigationPlants(plants); onPlantClick(plant) },
                         onDeleteClick = { plantToDelete = plant }
                     )
                 }

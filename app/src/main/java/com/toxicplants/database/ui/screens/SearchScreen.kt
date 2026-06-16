@@ -109,7 +109,7 @@ fun SearchScreen(
             } else {
                 LazyColumn(contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(plants) { plant ->
-                        SearchPlantCard(plant = plant, onClick = { onPlantClick(plant) }, onDeleteClick = { plantToDelete = plant })
+                        SearchPlantCard(plant = plant, onClick = { viewModel.setDetailNavigationPlants(plants); onPlantClick(plant) }, onDeleteClick = { plantToDelete = plant })
                     }
                 }
             }

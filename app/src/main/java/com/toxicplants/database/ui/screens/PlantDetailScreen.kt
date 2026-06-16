@@ -62,18 +62,23 @@ fun PlantDetailScreen(
 
     val allPlants by viewModel.allPlants.observeAsState(initial = emptyList())
     val selectedPlant by viewModel.selectedPlantData.collectAsState()
+    val contextPlants by viewModel.detailNavigationPlantsData.collectAsState()
 
-    // Permite moverse entre fichas sin volver a la lista. `plantId` es la ficha
-    // con la que se abrió la pantalla; `currentPlantId` cambia al pulsar anterior/siguiente.
+    // Permite moverse entre fichas sin volver a la lista. Si se abrió desde una
+    // lista filtrada/búsqueda/familia, las flechas recorren ese contexto; si no,
+    // recorren el catálogo completo.
     var currentPlantId by remember(plantId) { mutableIntStateOf(plantId) }
-    val currentIndex = remember(allPlants, currentPlantId) {
-        allPlants.indexOfFirst { it.id == currentPlantId }
+    val navigationPlants = remember(allPlants, contextPlants, currentPlantId) {
+        if (contextPlants.any { it.id == currentPlantId }) contextPlants else allPlants
     }
-    val previousPlant = remember(allPlants, currentIndex) {
-        if (currentIndex > 0) allPlants[currentIndex - 1] else null
+    val currentIndex = remember(navigationPlants, currentPlantId) {
+        navigationPlants.indexOfFirst { it.id == currentPlantId }
     }
-    val nextPlant = remember(allPlants, currentIndex) {
-        if (currentIndex >= 0 && currentIndex < allPlants.lastIndex) allPlants[currentIndex + 1] else null
+    val previousPlant = remember(navigationPlants, currentIndex) {
+        if (currentIndex > 0) navigationPlants[currentIndex - 1] else null
+    }
+    val nextPlant = remember(navigationPlants, currentIndex) {
+        if (currentIndex >= 0 && currentIndex < navigationPlants.lastIndex) navigationPlants[currentIndex + 1] else null
     }
     val plant = remember(allPlants, currentPlantId, selectedPlant) {
         allPlants.firstOrNull { it.id == currentPlantId }
@@ -102,9 +107,9 @@ fun PlantDetailScreen(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        if (currentIndex >= 0 && allPlants.isNotEmpty()) {
+                        if (currentIndex >= 0 && navigationPlants.isNotEmpty()) {
                             Text(
-                                "${currentIndex + 1} de ${allPlants.size}",
+                                "${currentIndex + 1} de ${navigationPlants.size}",
                                 fontSize = 11.sp,
                                 color = Color.White.copy(alpha = 0.82f),
                                 maxLines = 1

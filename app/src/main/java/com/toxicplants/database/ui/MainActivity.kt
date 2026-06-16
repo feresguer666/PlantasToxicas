@@ -785,7 +785,7 @@ fun CategoryListScreen(
                     items(filteredPlants) { plant ->
                         CategoryPlantCard(
                             plant         = plant,
-                            onClick       = { onPlantClick(plant) },
+                            onClick       = { viewModel.setDetailNavigationPlants(filteredPlants); onPlantClick(plant) },
                             onDeleteClick = { plantToDelete = plant }
                         )
                     }

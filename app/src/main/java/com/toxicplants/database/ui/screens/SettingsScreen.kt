@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,10 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.LocalImageCache
 import kotlinx.coroutines.launch
 import com.toxicplants.database.ui.viewmodel.BackupStatus
 import com.toxicplants.database.ui.viewmodel.BackupViewModel
+import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +45,7 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val backupViewModel: BackupViewModel = viewModel()
+    val plantViewModel: PlantViewModel = viewModel()
 
     val themeMode by com.toxicplants.database.ui.theme.ThemeManager.themeMode.collectAsState()
     val darkModeEnabled = themeMode == "dark" || (themeMode == "system" && androidx.compose.foundation.isSystemInDarkTheme())
@@ -78,38 +82,30 @@ fun SettingsScreen(
     var localPhotosStats by remember { mutableStateOf<Pair<Int, Long>?>(null) }
     val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
 
+    var showDeletedPlantsDialog by remember { mutableStateOf(false) }
+    var deletedSeedPlants by remember { mutableStateOf<List<PlantEntity>>(emptyList()) }
+    var loadingDeletedPlants by remember { mutableStateOf(false) }
+
+    fun loadDeletedPlants(openDialog: Boolean = true) {
+        coroutineScope.launch {
+            loadingDeletedPlants = true
+            deletedSeedPlants = plantViewModel.getDeletedSeedPlants()
+            loadingDeletedPlants = false
+            if (openDialog) showDeletedPlantsDialog = true
+        }
+    }
+
     // Cargar stats de fotos locales al entrar
     LaunchedEffect(Unit) {
         localPhotosStats = backupViewModel.getLocalPhotosStats()
     }
 
-    // Launcher para exportar copia COMPLETA.
-    // Separado del incremental para evitar que el callback use por accidente un tipo anterior.
-    val exportFullLauncher = rememberLauncherForActivityResult(
+    // Launcher para exportar (MIME "*/*" para que Android respete la extensión .json.gz)
+    val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("*/*")
     ) { uri ->
         if (uri != null) {
-            backupViewModel.exportDatabase(
-                uri,
-                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL,
-                photoPreset
-            )
-        } else {
-            backupViewModel.resetStatus()
-        }
-    }
-
-    // Launcher para exportar copia INCREMENTAL.
-    // Fuerza siempre BackupType.INCREMENTAL: solo datos, sin fotos.
-    val exportIncrementalLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("*/*")
-    ) { uri ->
-        if (uri != null) {
-            backupViewModel.exportDatabase(
-                uri,
-                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL,
-                photoPreset
-            )
+            backupViewModel.exportDatabase(uri, pendingBackupType, photoPreset)
         } else {
             backupViewModel.resetStatus()
         }
@@ -362,7 +358,7 @@ fun SettingsScreen(
                     showIncrementalPreview = null
                     pendingBackupType =
                         com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL
-                    exportIncrementalLauncher.launch(
+                    exportLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType
@@ -372,6 +368,80 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showIncrementalPreview = null }) { Text("Cancelar") }
+            }
+        )
+    }
+
+    // ── Diálogo: papelera de plantas borradas ──────────────────────────────
+    if (showDeletedPlantsDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeletedPlantsDialog = false },
+            title = { Text("🗑️ Papelera de plantas") },
+            text = {
+                Column {
+                    Text(
+                        "Fichas del catálogo base que has eliminado manualmente. Puedes restaurarlas si las borraste por error.",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    if (loadingDeletedPlants) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Cargando…", fontSize = 13.sp)
+                        }
+                    } else if (deletedSeedPlants.isEmpty()) {
+                        Text("No hay plantas en la papelera.", fontSize = 14.sp)
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.heightIn(max = 360.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            items(deletedSeedPlants, key = { it.id }) { plant ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(plant.commonName, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                            Text(
+                                                "#${plant.id} · ${plant.scientificName}",
+                                                fontSize = 11.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                        TextButton(onClick = {
+                                            plantViewModel.restoreDeletedPlant(plant.id)
+                                            deletedSeedPlants = deletedSeedPlants.filter { it.id != plant.id }
+                                            Toast.makeText(context, "Restaurada: ${plant.commonName}", Toast.LENGTH_SHORT).show()
+                                        }) {
+                                            Text("Restaurar")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = deletedSeedPlants.isNotEmpty() && !loadingDeletedPlants,
+                    onClick = {
+                        plantViewModel.restoreAllDeletedPlants()
+                        Toast.makeText(context, "Plantas restauradas", Toast.LENGTH_SHORT).show()
+                        deletedSeedPlants = emptyList()
+                        showDeletedPlantsDialog = false
+                    }
+                ) { Text("Restaurar todas") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeletedPlantsDialog = false }) { Text("Cerrar") }
             }
         )
     }
@@ -626,7 +696,7 @@ fun SettingsScreen(
             item {
                 SettingsCard(modifier = Modifier.clickable {
                     pendingBackupType = com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL
-                    exportFullLauncher.launch(
+                    exportLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType
@@ -768,6 +838,42 @@ fun SettingsScreen(
                             Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint     = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Card: Papelera de plantas borradas ──────────────────
+            item {
+                SettingsCard(modifier = Modifier.clickable { loadDeletedPlants(openDialog = true) }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = null,
+                            tint = Color(0xFFD32F2F),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "🗑️ Papelera de plantas",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                "Restaurar fichas eliminadas manualmente",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }

@@ -259,6 +259,45 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
+    suspend fun getDeletedSeedPlants(): List<PlantEntity> = withContext(Dispatchers.IO) {
+        val app = getApplication<Application>()
+        val deletedIds = PlantDeletionStore.load(app)
+        if (deletedIds.isEmpty()) return@withContext emptyList()
+        PlantDataSource.loadAll(app)
+            .filter { it.id in deletedIds }
+            .sortedBy { it.commonName.lowercase() }
+    }
+
+    fun restoreDeletedPlant(plantId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val app = getApplication<Application>()
+            val seedPlant = PlantDataSource.loadAll(app).firstOrNull { it.id == plantId }
+            if (seedPlant != null) {
+                repository.insert(seedPlant)
+                PlantDeletionStore.unmarkDeleted(app, plantId)
+                PlantUserEditStore.unmarkEdited(app, plantId)
+                plants.value = repository.getAllPlantsSync()
+            }
+        }
+    }
+
+    fun restoreAllDeletedPlants() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val app = getApplication<Application>()
+            val deletedIds = PlantDeletionStore.load(app)
+            if (deletedIds.isEmpty()) return@launch
+            val seedPlants = PlantDataSource.loadAll(app).filter { it.id in deletedIds }
+            if (seedPlants.isNotEmpty()) {
+                repository.insertAll(seedPlants)
+            }
+            PlantDeletionStore.clear(app)
+            for (id in deletedIds) PlantUserEditStore.unmarkEdited(app, id)
+            plants.value = repository.getAllPlantsSync()
+        }
+    }
+
+
     suspend fun getAllPlantsForDownload(): List<PlantEntity> = withContext(Dispatchers.IO) {
         repository.getAllPlantsSync()
     }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
@@ -43,7 +44,8 @@ import com.toxicplants.database.ui.viewmodel.PlantViewModel
 fun SettingsScreen(
     onBack: () -> Unit,
     onNavigateToDownloadImages: () -> Unit = {},
-    onNavigateToIncompletePlants: () -> Unit = {}
+    onNavigateToIncompletePlants: () -> Unit = {},
+    onNavigateToPlantsWithNotes: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val backupViewModel: BackupViewModel = viewModel()
@@ -868,6 +870,42 @@ fun SettingsScreen(
                             )
                             Text(
                                 "Revisar fichas sin imagen, familia, síntomas o datos clave",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Card: Plantas con notas ───────────────────────────
+            item {
+                SettingsCard(modifier = Modifier.clickable { onNavigateToPlantsWithNotes() }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Notes,
+                            contentDescription = null,
+                            tint = Color(0xFF2E7D32),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "📝 Plantas con notas",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                "Ver fichas con notas personales",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

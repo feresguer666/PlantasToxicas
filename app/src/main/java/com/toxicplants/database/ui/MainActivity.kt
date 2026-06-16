@@ -455,7 +455,8 @@ fun MainApp() {
             SettingsScreen(
                 onBack                     = { navController.popBackStack() },
                 onNavigateToDownloadImages = { navController.navigate("download_images") },
-                onNavigateToIncompletePlants = { navController.navigate("incomplete_plants") }
+                onNavigateToIncompletePlants = { navController.navigate("incomplete_plants") },
+                onNavigateToPlantsWithNotes = { navController.navigate("plants_with_notes") }
             )
         }
 
@@ -468,6 +469,18 @@ fun MainApp() {
                     navController.navigate("plant_detail")
                 },
                 onEditPlant = { plantId -> navController.navigate("edit_plant/$plantId") },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── PLANTAS CON NOTAS ─────────────────────────────────────
+        composable("plants_with_notes") {
+            PlantsWithNotesScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                },
                 onBack = { navController.popBackStack() }
             )
         }

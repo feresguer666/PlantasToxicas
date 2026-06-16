@@ -40,12 +40,15 @@ import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlantDetailScreen(
     plantId: Int,
@@ -210,6 +213,17 @@ fun PlantDetailScreen(
             // ── Estado de imagen ────────────────────────────────────────
             var loadAttempts  by remember(p.id) { mutableIntStateOf(0) }
 
+            // ── Saltos rápidos dentro de la ficha ─────────────────────
+            val imageSectionRequester = remember { BringIntoViewRequester() }
+            val notesSectionRequester = remember { BringIntoViewRequester() }
+            val markersSectionRequester = remember { BringIntoViewRequester() }
+            val descriptionSectionRequester = remember { BringIntoViewRequester() }
+            val symptomsSectionRequester = remember { BringIntoViewRequester() }
+            val firstAidSectionRequester = remember { BringIntoViewRequester() }
+            val compoundsSectionRequester = remember { BringIntoViewRequester() }
+            val calendarSectionRequester = remember { BringIntoViewRequester() }
+            val infoSectionRequester = remember { BringIntoViewRequester() }
+
             // ── Estado de generación de IA ──────────────────────────
             var isGeneratingAiImg by remember { mutableStateOf(false) }
 
@@ -221,6 +235,10 @@ fun PlantDetailScreen(
             var isSavingUrl   by remember { mutableStateOf(false) }
             var noteDraft by remember(p.id, p.notes) { mutableStateOf(p.notes.orEmpty()) }
             var selectedMarkers by remember(p.id) { mutableStateOf(PlantMarkerStore.load(context, p.id)) }
+            var quickIndexExpanded by remember(p.id) { mutableStateOf(false) }
+            var notesExpanded by remember(p.id) { mutableStateOf(false) }
+            var markersExpanded by remember(p.id) { mutableStateOf(false) }
+            var wikiExpanded by remember(p.id) { mutableStateOf(false) }
 
             val galleryLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
@@ -443,10 +461,34 @@ fun PlantDetailScreen(
             ) {
 
                 // ══════════════════════════════════════════════════════════
+                // ÍNDICE RÁPIDO DE SECCIONES
+                // ══════════════════════════════════════════════════════════
+                ExpandableSectionCard(
+                    title = "Ir a sección",
+                    expanded = quickIndexExpanded,
+                    onExpandedChange = { quickIndexExpanded = it }
+                ) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        AssistChip(onClick = { scope.launch { imageSectionRequester.bringIntoView() } }, label = { Text("🖼️ Foto", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { notesSectionRequester.bringIntoView() } }, label = { Text("📝 Notas", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { markersSectionRequester.bringIntoView() } }, label = { Text("🏷️ Marcadores", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { descriptionSectionRequester.bringIntoView() } }, label = { Text("Descripción", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { symptomsSectionRequester.bringIntoView() } }, label = { Text("Síntomas", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { firstAidSectionRequester.bringIntoView() } }, label = { Text("Auxilios", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { compoundsSectionRequester.bringIntoView() } }, label = { Text("Compuestos", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { calendarSectionRequester.bringIntoView() } }, label = { Text("Calendario", fontSize = 12.sp) })
+                        AssistChip(onClick = { scope.launch { infoSectionRequester.bringIntoView() } }, label = { Text("Info", fontSize = 12.sp) })
+                    }
+                }
+
+                // ══════════════════════════════════════════════════════════
                 // TARJETA DE IMAGEN  — usa PlantImageCard + PlantImageHelper
                 // ══════════════════════════════════════════════════════════
                 Card(
-                    modifier  = Modifier.fillMaxWidth(),
+                    modifier  = Modifier.fillMaxWidth().bringIntoViewRequester(imageSectionRequester),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     // Imagen principal (280dp de alto)
@@ -589,30 +631,25 @@ fun PlantDetailScreen(
                 // ══════════════════════════════════════════════════════════
                 // NOTAS RÁPIDAS DEL USUARIO
                 // ══════════════════════════════════════════════════════════
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("📝 Mis notas", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.weight(1f))
-                            TextButton(onClick = {
-                                noteDraft = p.notes.orEmpty()
-                                showNotesDialog = true
-                            }) {
-                                Text(if (p.notes.isNullOrBlank()) "Añadir" else "Editar")
-                            }
-                        }
-                        if (p.notes.isNullOrBlank()) {
-                            Text(
-                                "Sin notas personales para esta ficha.",
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        } else {
-                            Text(
-                                p.notes.orEmpty(),
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                lineHeight = 20.sp
-                            )
+                ExpandableSectionCard(
+                    title = "📝 Mis notas" + if (!p.notes.isNullOrBlank()) " · con nota" else "",
+                    expanded = notesExpanded,
+                    onExpandedChange = { notesExpanded = it },
+                    modifier = Modifier.bringIntoViewRequester(notesSectionRequester)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            if (p.notes.isNullOrBlank()) "Sin notas personales para esta ficha." else p.notes.orEmpty(),
+                            fontSize = 14.sp,
+                            color = if (p.notes.isNullOrBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                            lineHeight = 20.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = {
+                            noteDraft = p.notes.orEmpty()
+                            showNotesDialog = true
+                        }) {
+                            Text(if (p.notes.isNullOrBlank()) "Añadir" else "Editar")
                         }
                     }
                 }
@@ -620,50 +657,43 @@ fun PlantDetailScreen(
                 // ══════════════════════════════════════════════════════════
                 // MARCADORES PERSONALES
                 // ══════════════════════════════════════════════════════════
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                "🏷️ Marcadores personales",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                modifier = Modifier.weight(1f)
-                            )
-                            if (selectedMarkers.isNotEmpty()) {
-                                TextButton(onClick = {
-                                    selectedMarkers = emptySet()
-                                    PlantMarkerStore.clear(context, p.id)
-                                }) {
-                                    Text("Limpiar", color = MaterialTheme.colorScheme.error)
-                                }
-                            }
-                        }
-                        Spacer(Modifier.height(6.dp))
+                ExpandableSectionCard(
+                    title = "🏷️ Marcadores personales" + if (selectedMarkers.isNotEmpty()) " · ${selectedMarkers.size}" else "",
+                    expanded = markersExpanded,
+                    onExpandedChange = { markersExpanded = it },
+                    modifier = Modifier.bringIntoViewRequester(markersSectionRequester)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             "Marca tareas o estados de revisión para esta ficha.",
                             fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(1f)
                         )
-                        Spacer(Modifier.height(10.dp))
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            PlantMarkerStore.DEFAULT_MARKERS.forEach { marker ->
-                                val selected = marker in selectedMarkers
-                                FilterChip(
-                                    selected = selected,
-                                    onClick = {
-                                        selectedMarkers = PlantMarkerStore.toggle(context, p.id, marker)
-                                    },
-                                    label = { Text(marker, fontSize = 12.sp) },
-                                    leadingIcon = if (selected) { { Text("✓", fontSize = 12.sp) } } else null,
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = Color(0xFF2E7D32),
-                                        selectedLabelColor = Color.White
-                                    )
+                        if (selectedMarkers.isNotEmpty()) {
+                            TextButton(onClick = {
+                                selectedMarkers = emptySet()
+                                PlantMarkerStore.clear(context, p.id)
+                            }) { Text("Limpiar", color = MaterialTheme.colorScheme.error) }
+                        }
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        PlantMarkerStore.DEFAULT_MARKERS.forEach { marker ->
+                            val selected = marker in selectedMarkers
+                            FilterChip(
+                                selected = selected,
+                                onClick = { selectedMarkers = PlantMarkerStore.toggle(context, p.id, marker) },
+                                label = { Text(marker, fontSize = 12.sp) },
+                                leadingIcon = if (selected) { { Text("✓", fontSize = 12.sp) } } else null,
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = Color(0xFF2E7D32),
+                                    selectedLabelColor = Color.White
                                 )
-                            }
+                            )
                         }
                     }
                 }
@@ -762,65 +792,62 @@ fun PlantDetailScreen(
                 // ══════════════════════════════════════════════════════════
                 // BOTONES DE WIKIPEDIA
                 // ══════════════════════════════════════════════════════════
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Wikipedia y Wikimedia Commons", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Spacer(modifier = Modifier.height(8.dp))
+                ExpandableSectionCard(
+                    title = "Wikipedia y Wikimedia Commons",
+                    expanded = wikiExpanded,
+                    onExpandedChange = { wikiExpanded = it }
+                ) {
+                    val wikiUrl = "https://es.wikipedia.org/wiki/" +
+                            Uri.encode(p.scientificName.takeIf { it.isNotBlank() } ?: p.commonName)
+                    val commonsScientificUrl = "https://commons.wikimedia.org/w/index.php" +
+                            "?search=${Uri.encode(p.scientificName.ifBlank { p.commonName })}" +
+                            "&title=Special:MediaSearch&type=image"
+                    val commonsCommonUrl = "https://commons.wikimedia.org/w/index.php" +
+                            "?search=${Uri.encode(p.commonName.ifBlank { p.scientificName })}" +
+                            "&title=Special:MediaSearch&type=image"
 
-                        val wikiUrl = "https://es.wikipedia.org/wiki/" +
-                                Uri.encode(p.scientificName.takeIf { it.isNotBlank() } ?: p.commonName)
-                        val commonsScientificUrl = "https://commons.wikimedia.org/w/index.php" +
-                                "?search=${Uri.encode(p.scientificName.ifBlank { p.commonName })}" +
-                                "&title=Special:MediaSearch&type=image"
-                        val commonsCommonUrl = "https://commons.wikimedia.org/w/index.php" +
-                                "?search=${Uri.encode(p.commonName.ifBlank { p.scientificName })}" +
-                                "&title=Special:MediaSearch&type=image"
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(wikiUrl))) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
+                        ) { Text("Artículo", fontSize = 12.sp) }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Button(
-                                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(wikiUrl))) },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
-                            ) { Text("Artículo", fontSize = 12.sp) }
-
-                            Button(
-                                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsScientificUrl))) },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
-                            ) { Text("Commons científico", fontSize = 11.sp) }
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-                        OutlinedButton(
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsCommonUrl))) },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Buscar fotos por nombre común en Commons", fontSize = 12.sp)
-                        }
+                        Button(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsScientificUrl))) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                        ) { Text("Commons científico", fontSize = 11.sp) }
                     }
+
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsCommonUrl))) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("Buscar fotos por nombre común en Commons", fontSize = 12.sp) }
                 }
 
                 // ══════════════════════════════════════════════════════════
                 // SECCIONES DE INFORMACIÓN
                 // ══════════════════════════════════════════════════════════
-                DetailSection(title = "Descripción",    content = p.description)
+                DetailSection(title = "Descripción",    content = p.description, modifier = Modifier.bringIntoViewRequester(descriptionSectionRequester))
                 AiFillButton(
                     label = "🤖 Generar descripción con IA",
                     plant = p,
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.DESCRIPTION,
                     viewModel = viewModel
                 )
-                DetailSection(title = "Síntomas",       content = p.symptoms)
+                DetailSection(title = "Síntomas",       content = p.symptoms, modifier = Modifier.bringIntoViewRequester(symptomsSectionRequester))
                 AiFillButton(
                     label = "🤖 Generar síntomas de intoxicación con IA",
                     plant = p,
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.SYMPTOMS,
                     viewModel = viewModel
                 )
-                DetailSection(title = "Primeros Auxilios", content = p.firstAid)
+                DetailSection(title = "Primeros Auxilios", content = p.firstAid, modifier = Modifier.bringIntoViewRequester(firstAidSectionRequester))
                 DetailSection(title = "Partes Tóxicas", content = p.toxicParts)
 
                 // ══════════════════════════════════════════════════════════
@@ -841,7 +868,7 @@ fun PlantDetailScreen(
                         }
                     }
                     if (relatedCompounds.isNotEmpty()) {
-                        Card(modifier = Modifier.fillMaxWidth()) {
+                        Card(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(compoundsSectionRequester)) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
                                     "🧪 Compuestos tóxicos (${relatedCompounds.size})",
@@ -943,7 +970,7 @@ fun PlantDetailScreen(
                 // CALENDARIO FENOLÓGICO
                 // ══════════════════════════════════════════════════════════
                 if (p.floweringMonths.isNotBlank() || p.fruitingMonths.isNotBlank() || p.maxToxicityMonths.isNotBlank()) {
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(calendarSectionRequester)) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 "📅 Calendario fenológico",
@@ -1133,9 +1160,9 @@ fun PlantDetailScreen(
                 // ══════════════════════════════════════════════════════════
                 // INFORMACIÓN ADICIONAL
                 // ══════════════════════════════════════════════════════════
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(infoSectionRequester)) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Información adicional", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("Información adicional", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = detailSectionTitleColor("Información adicional"))
                         Spacer(modifier = Modifier.height(8.dp))
                         InfoRow("Categoría", p.category)
                         InfoRow("Familia",   p.family)
@@ -1150,11 +1177,56 @@ fun PlantDetailScreen(
 
 // ── Composables auxiliares ────────────────────────────────────────────────
 
+
 @Composable
-fun DetailSection(title: String, content: String) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+private fun ExpandableSectionCard(
+    title: String,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onExpandedChange(!expanded) },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color(0xFF2E7D32),
+                    modifier = Modifier.weight(1f)
+                )
+                Text(if (expanded) "▲" else "▼", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            if (expanded) {
+                Spacer(Modifier.height(10.dp))
+                content()
+            }
+        }
+    }
+}
+
+private fun detailSectionTitleColor(title: String): Color = when (title.lowercase()) {
+    "descripción" -> Color(0xFF1565C0)
+    "síntomas" -> Color(0xFFE65100)
+    "primeros auxilios" -> Color(0xFF2E7D32)
+    "partes tóxicas" -> Color(0xFFC62828)
+    "hábitat" -> Color(0xFF00796B)
+    "distribución" -> Color(0xFF5E35B1)
+    "información adicional" -> Color(0xFF6A1B9A)
+    else -> Color(0xFF2E7D32)
+}
+
+@Composable
+fun DetailSection(title: String, content: String, modifier: Modifier = Modifier) {
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = detailSectionTitleColor(title))
             Spacer(modifier = Modifier.height(8.dp))
             // Texto con detección automática de términos botánicos:
             // las palabras del glosario (umbela, palmeada, látex…) se subrayan

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
@@ -45,7 +46,8 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onNavigateToDownloadImages: () -> Unit = {},
     onNavigateToIncompletePlants: () -> Unit = {},
-    onNavigateToPlantsWithNotes: () -> Unit = {}
+    onNavigateToPlantsWithNotes: () -> Unit = {},
+    onNavigateToPlantsWithMarkers: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val backupViewModel: BackupViewModel = viewModel()
@@ -906,6 +908,42 @@ fun SettingsScreen(
                             )
                             Text(
                                 "Ver fichas con notas personales",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Card: Plantas con marcadores ────────────────────
+            item {
+                SettingsCard(modifier = Modifier.clickable { onNavigateToPlantsWithMarkers() }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Label,
+                            contentDescription = null,
+                            tint = Color(0xFF2E7D32),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "🏷️ Plantas con marcadores",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                "Ver fichas marcadas como Revisar, Pendiente foto, etc.",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

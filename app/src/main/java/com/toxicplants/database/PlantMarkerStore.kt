@@ -30,6 +30,21 @@ object PlantMarkerStore {
             .toSet()
     }
 
+    fun loadAll(context: Context): Map<Int, Set<String>> {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.all.mapNotNull { (key, value) ->
+            if (!key.startsWith(KEY_PREFIX)) return@mapNotNull null
+            val plantId = key.removePrefix(KEY_PREFIX).toIntOrNull() ?: return@mapNotNull null
+            val markers = (value as? Set<*>)
+                .orEmpty()
+                .mapNotNull { it as? String }
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+                .toSet()
+            if (markers.isEmpty()) null else plantId to markers
+        }.toMap()
+    }
+
     fun save(context: Context, plantId: Int, markers: Set<String>) {
         if (plantId == 0) return
         val cleaned = markers

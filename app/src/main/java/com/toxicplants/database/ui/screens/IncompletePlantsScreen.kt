@@ -64,6 +64,7 @@ private fun PlantEntity.missingQualityLabels(): List<String> =
 fun IncompletePlantsScreen(
     viewModel: PlantViewModel,
     onPlantClick: (PlantEntity) -> Unit,
+    onEditPlant: (Int) -> Unit = {},
     onBack: () -> Unit
 ) {
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
@@ -177,7 +178,8 @@ fun IncompletePlantsScreen(
                             onClick = {
                                 viewModel.setDetailNavigationPlants(incompletePlants)
                                 onPlantClick(plant)
-                            }
+                            },
+                            onEdit = { onEditPlant(plant.id) }
                         )
                     }
                 }
@@ -189,7 +191,8 @@ fun IncompletePlantsScreen(
 @Composable
 private fun IncompletePlantCard(
     plant: PlantEntity,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEdit: () -> Unit
 ) {
     val missing = plant.missingQualityLabels()
     val severityColor = when {
@@ -257,6 +260,24 @@ private fun IncompletePlantCard(
                     }
                     if (missing.size > 5) {
                         Text("+${missing.size - 5}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = onClick,
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text("Ver", fontSize = 12.sp)
+                    }
+                    Button(
+                        onClick = onEdit,
+                        modifier = Modifier.weight(1f),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                    ) {
+                        Text("Editar", fontSize = 12.sp)
                     }
                 }
             }

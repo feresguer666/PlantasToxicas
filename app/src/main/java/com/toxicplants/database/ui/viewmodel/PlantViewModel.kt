@@ -309,6 +309,13 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updatePlantNotes(plantId: Int, notes: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateNotesOnly(plantId, notes?.trim()?.takeIf { it.isNotBlank() })
+            plants.value = repository.getAllPlantsSync()
+        }
+    }
+
     // ✅ FORZAR REGENERACIÓN DE IMAGEN IA
     suspend fun forceAiImageGeneration(plantId: Int, context: android.content.Context, plant: PlantEntity) {
         // 1. Descargamos la imagen de la IA y la guardamos en disco

@@ -86,6 +86,12 @@ class PlantRepository(private val plantDao: PlantDao) {
         }
     }
 
+    suspend fun updateNotesOnly(plantId: Int, notes: String?) {
+        withContext(Dispatchers.IO) {
+            plantDao.updateNotesOnly(plantId, notes)
+        }
+    }
+
     // ✅ OBTENER PLANTAS CON UBICACIÓN
     fun getPlantsWithLocation(): LiveData<List<PlantEntity>> = plantDao.getPlantsWithLocation()
 }

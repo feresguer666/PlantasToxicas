@@ -206,8 +206,10 @@ fun PlantDetailScreen(
             // ── Estado del diálogo de URL manual / cambio de imagen ─────
             var showUrlDialog by remember { mutableStateOf(false) }
             var showChangeImageDialog by remember { mutableStateOf(false) }
+            var showNotesDialog by remember { mutableStateOf(false) }
             var manualUrl     by remember { mutableStateOf("") }
             var isSavingUrl   by remember { mutableStateOf(false) }
+            var noteDraft by remember(p.id, p.notes) { mutableStateOf(p.notes.orEmpty()) }
 
             val galleryLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
@@ -374,6 +376,51 @@ fun PlantDetailScreen(
                 )
             }
 
+            // ── Diálogo: notas rápidas de usuario ───────────────────────
+            if (showNotesDialog) {
+                AlertDialog(
+                    onDismissRequest = { showNotesDialog = false },
+                    title = { Text("📝 Mis notas") },
+                    text = {
+                        Column {
+                            Text(
+                                "Notas privadas para esta ficha. Útil para marcar dudas, tareas pendientes o información local.",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = noteDraft,
+                                onValueChange = { noteDraft = it },
+                                label = { Text("Nota") },
+                                modifier = Modifier.fillMaxWidth(),
+                                minLines = 4
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(onClick = {
+                            viewModel.updatePlantNotes(p.id, noteDraft)
+                            showNotesDialog = false
+                            Toast.makeText(context, "Nota guardada", Toast.LENGTH_SHORT).show()
+                        }) { Text("Guardar") }
+                    },
+                    dismissButton = {
+                        Row {
+                            if (!p.notes.isNullOrBlank()) {
+                                TextButton(onClick = {
+                                    noteDraft = ""
+                                    viewModel.updatePlantNotes(p.id, null)
+                                    showNotesDialog = false
+                                    Toast.makeText(context, "Nota borrada", Toast.LENGTH_SHORT).show()
+                                }) { Text("Borrar", color = MaterialTheme.colorScheme.error) }
+                            }
+                            TextButton(onClick = { showNotesDialog = false }) { Text("Cancelar") }
+                        }
+                    }
+                )
+            }
+
             // ── Contenido principal ──────────────────────────────────────
             Column(
                 modifier = Modifier
@@ -524,6 +571,37 @@ fun PlantDetailScreen(
                             TextButton(onClick = { onNavigateToLocation?.invoke(p.id) }) {
                                 Text("Editar", fontSize = 12.sp)
                             }
+                        }
+                    }
+                }
+
+                // ══════════════════════════════════════════════════════════
+                // NOTAS RÁPIDAS DEL USUARIO
+                // ══════════════════════════════════════════════════════════
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("📝 Mis notas", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.weight(1f))
+                            TextButton(onClick = {
+                                noteDraft = p.notes.orEmpty()
+                                showNotesDialog = true
+                            }) {
+                                Text(if (p.notes.isNullOrBlank()) "Añadir" else "Editar")
+                            }
+                        }
+                        if (p.notes.isNullOrBlank()) {
+                            Text(
+                                "Sin notas personales para esta ficha.",
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            Text(
+                                p.notes.orEmpty(),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                lineHeight = 20.sp
+                            )
                         }
                     }
                 }

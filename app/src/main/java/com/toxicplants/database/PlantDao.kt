@@ -70,6 +70,9 @@ interface PlantDao {
     @Query("UPDATE plants SET latitude = :lat, longitude = :lng, locationName = :name, foundDate = :date, notes = :notes WHERE id = :plantId")
     suspend fun updateLocation(plantId: Int, lat: Double?, lng: Double?, name: String?, date: String?, notes: String?)
 
+    @Query("UPDATE plants SET notes = :notes WHERE id = :plantId")
+    suspend fun updateNotesOnly(plantId: Int, notes: String?)
+
     @Query("SELECT * FROM plants WHERE latitude IS NOT NULL AND longitude IS NOT NULL")
     fun getPlantsWithLocation(): LiveData<List<PlantEntity>>
 }

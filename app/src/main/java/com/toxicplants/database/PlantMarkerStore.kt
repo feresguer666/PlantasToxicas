@@ -1,0 +1,62 @@
+package com.toxicplants.database
+
+import android.content.Context
+
+/**
+ * Marcadores personales por planta, independientes de favoritos y notas.
+ *
+ * Se guardan en SharedPreferences para evitar migraciones Room.
+ */
+object PlantMarkerStore {
+    private const val PREFS_NAME = "plant_marker_store"
+    private const val KEY_PREFIX = "plant_markers_"
+
+    val DEFAULT_MARKERS = listOf(
+        "Revisar",
+        "Pendiente foto",
+        "Confirmar toxicidad",
+        "Interesante",
+        "Cultivada cerca",
+        "Dato dudoso",
+        "Fuente pendiente"
+    )
+
+    fun load(context: Context, plantId: Int): Set<String> {
+        if (plantId == 0) return emptySet()
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getStringSet(KEY_PREFIX + plantId, emptySet())
+            .orEmpty()
+            .filter { it.isNotBlank() }
+            .toSet()
+    }
+
+    fun save(context: Context, plantId: Int, markers: Set<String>) {
+        if (plantId == 0) return
+        val cleaned = markers
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .toSet()
+
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (cleaned.isEmpty()) {
+            prefs.edit().remove(KEY_PREFIX + plantId).apply()
+        } else {
+            prefs.edit().putStringSet(KEY_PREFIX + plantId, cleaned).apply()
+        }
+    }
+
+    fun toggle(context: Context, plantId: Int, marker: String): Set<String> {
+        val current = load(context, plantId).toMutableSet()
+        if (marker in current) current.remove(marker) else current.add(marker)
+        save(context, plantId, current)
+        return current
+    }
+
+    fun clear(context: Context, plantId: Int) {
+        if (plantId == 0) return
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .remove(KEY_PREFIX + plantId)
+            .apply()
+    }
+}

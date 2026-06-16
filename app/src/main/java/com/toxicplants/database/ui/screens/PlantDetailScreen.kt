@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.CompoundEntity
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.ui.theme.carbonEffectSubtle
 import com.toxicplants.database.ui.LocalImageCache
 import com.toxicplants.database.ui.viewmodel.CompoundViewModel
@@ -210,6 +211,7 @@ fun PlantDetailScreen(
             var manualUrl     by remember { mutableStateOf("") }
             var isSavingUrl   by remember { mutableStateOf(false) }
             var noteDraft by remember(p.id, p.notes) { mutableStateOf(p.notes.orEmpty()) }
+            var selectedMarkers by remember(p.id) { mutableStateOf(PlantMarkerStore.load(context, p.id)) }
 
             val galleryLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
@@ -602,6 +604,57 @@ fun PlantDetailScreen(
                                 color = MaterialTheme.colorScheme.onSurface,
                                 lineHeight = 20.sp
                             )
+                        }
+                    }
+                }
+
+                // ══════════════════════════════════════════════════════════
+                // MARCADORES PERSONALES
+                // ══════════════════════════════════════════════════════════
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                "🏷️ Marcadores personales",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                modifier = Modifier.weight(1f)
+                            )
+                            if (selectedMarkers.isNotEmpty()) {
+                                TextButton(onClick = {
+                                    selectedMarkers = emptySet()
+                                    PlantMarkerStore.clear(context, p.id)
+                                }) {
+                                    Text("Limpiar", color = MaterialTheme.colorScheme.error)
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "Marca tareas o estados de revisión para esta ficha.",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(10.dp))
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            PlantMarkerStore.DEFAULT_MARKERS.forEach { marker ->
+                                val selected = marker in selectedMarkers
+                                FilterChip(
+                                    selected = selected,
+                                    onClick = {
+                                        selectedMarkers = PlantMarkerStore.toggle(context, p.id, marker)
+                                    },
+                                    label = { Text(marker, fontSize = 12.sp) },
+                                    leadingIcon = if (selected) { { Text("✓", fontSize = 12.sp) } } else null,
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = Color(0xFF2E7D32),
+                                        selectedLabelColor = Color.White
+                                    )
+                                )
+                            }
                         }
                     }
                 }

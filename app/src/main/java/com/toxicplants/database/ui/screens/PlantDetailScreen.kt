@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -60,19 +62,55 @@ fun PlantDetailScreen(
 
     val allPlants by viewModel.allPlants.observeAsState(initial = emptyList())
     val selectedPlant by viewModel.selectedPlantData.collectAsState()
-    val plant = remember(allPlants, plantId, selectedPlant) {
-        allPlants.firstOrNull { it.id == plantId }
-            ?: selectedPlant?.takeIf { it.id == plantId }
+
+    // Permite moverse entre fichas sin volver a la lista. `plantId` es la ficha
+    // con la que se abrió la pantalla; `currentPlantId` cambia al pulsar anterior/siguiente.
+    var currentPlantId by remember(plantId) { mutableIntStateOf(plantId) }
+    val currentIndex = remember(allPlants, currentPlantId) {
+        allPlants.indexOfFirst { it.id == currentPlantId }
+    }
+    val previousPlant = remember(allPlants, currentIndex) {
+        if (currentIndex > 0) allPlants[currentIndex - 1] else null
+    }
+    val nextPlant = remember(allPlants, currentIndex) {
+        if (currentIndex >= 0 && currentIndex < allPlants.lastIndex) allPlants[currentIndex + 1] else null
+    }
+    val plant = remember(allPlants, currentPlantId, selectedPlant) {
+        allPlants.firstOrNull { it.id == currentPlantId }
+            ?: selectedPlant?.takeIf { it.id == currentPlantId }
+    }
+    val detailScrollState = rememberScrollState()
+
+    fun goToPlant(target: PlantEntity?) {
+        if (target == null) return
+        currentPlantId = target.id
+        viewModel.selectPlant(target)
     }
 
     // Sembrar datos fenológicos si faltan
     LaunchedEffect(Unit) { viewModel.seedPhenologyIfNeeded() }
+    LaunchedEffect(currentPlantId) { detailScrollState.scrollTo(0) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(plant?.commonName ?: "Detalle", fontWeight = FontWeight.Bold)
+                    Column {
+                        Text(
+                            plant?.commonName ?: "Detalle",
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (currentIndex >= 0 && allPlants.isNotEmpty()) {
+                            Text(
+                                "${currentIndex + 1} de ${allPlants.size}",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.82f),
+                                maxLines = 1
+                            )
+                        }
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -86,6 +124,27 @@ fun PlantDetailScreen(
                 ),
                 actions = {
                     plant?.let { p ->
+                        // Navegación directa entre fichas sin volver a la lista.
+                        IconButton(
+                            enabled = previousPlant != null,
+                            onClick = { goToPlant(previousPlant) }
+                        ) {
+                            Icon(
+                                Icons.Default.KeyboardArrowLeft,
+                                contentDescription = "Planta anterior",
+                                tint = if (previousPlant != null) Color.White else Color.White.copy(alpha = 0.35f)
+                            )
+                        }
+                        IconButton(
+                            enabled = nextPlant != null,
+                            onClick = { goToPlant(nextPlant) }
+                        ) {
+                            Icon(
+                                Icons.Default.KeyboardArrowRight,
+                                contentDescription = "Planta siguiente",
+                                tint = if (nextPlant != null) Color.White else Color.White.copy(alpha = 0.35f)
+                            )
+                        }
                         // Botón de ubicación
                         IconButton(onClick = { onNavigateToLocation?.invoke(p.id) }) {
                             Icon(
@@ -315,7 +374,7 @@ fun PlantDetailScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(detailScrollState)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {

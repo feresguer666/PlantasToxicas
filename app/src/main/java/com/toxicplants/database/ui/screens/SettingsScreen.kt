@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -41,7 +42,8 @@ import com.toxicplants.database.ui.viewmodel.PlantViewModel
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    onNavigateToDownloadImages: () -> Unit = {}
+    onNavigateToDownloadImages: () -> Unit = {},
+    onNavigateToIncompletePlants: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val backupViewModel: BackupViewModel = viewModel()
@@ -838,6 +840,42 @@ fun SettingsScreen(
                             Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint     = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Card: Calidad del catálogo / plantas incompletas ─────
+            item {
+                SettingsCard(modifier = Modifier.clickable { onNavigateToIncompletePlants() }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Warning,
+                            contentDescription = null,
+                            tint = Color(0xFFF57C00),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "🧹 Plantas incompletas",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                "Revisar fichas sin imagen, familia, síntomas o datos clave",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }

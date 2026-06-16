@@ -448,7 +448,20 @@ fun MainApp() {
         composable("settings") {
             SettingsScreen(
                 onBack                     = { navController.popBackStack() },
-                onNavigateToDownloadImages = { navController.navigate("download_images") }
+                onNavigateToDownloadImages = { navController.navigate("download_images") },
+                onNavigateToIncompletePlants = { navController.navigate("incomplete_plants") }
+            )
+        }
+
+        // ── PLANTAS INCOMPLETAS / CALIDAD DE CATÁLOGO ─────────────
+        composable("incomplete_plants") {
+            IncompletePlantsScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 

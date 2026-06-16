@@ -405,7 +405,13 @@ fun MainApp() {
             EditPlantScreen(
                 plantId   = plantId,
                 viewModel = viewModel,
-                onBack    = { navController.popBackStack() }
+                onBack    = { navController.popBackStack() },
+                onSaveAndNext = { nextPlantId ->
+                    navController.navigate("edit_plant/$nextPlantId") {
+                        popUpTo("edit_plant/$plantId") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 

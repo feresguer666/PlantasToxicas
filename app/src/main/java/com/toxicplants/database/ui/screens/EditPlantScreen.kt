@@ -16,18 +16,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPlantScreen(
     plantId: Int?,
     viewModel: PlantViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onSaveAndNext: ((Int) -> Unit)? = null
 ) {
     val isNew = plantId == null || plantId == 0
     val existingPlant = if (!isNew) {
         viewModel.getPlantById(plantId!!).observeAsState().value
     } else null
+    val saveScope = rememberCoroutineScope()
+    val navigationPlants by viewModel.detailNavigationPlantsData.collectAsState()
+    val currentIndexInContext = remember(navigationPlants, existingPlant?.id, plantId) {
+        val currentId = existingPlant?.id ?: plantId ?: 0
+        navigationPlants.indexOfFirst { it.id == currentId }
+    }
+    val nextPlantInContext = remember(navigationPlants, currentIndexInContext) {
+        if (currentIndexInContext >= 0 && currentIndexInContext < navigationPlants.lastIndex) {
+            navigationPlants[currentIndexInContext + 1]
+        } else null
+    }
+    val canSaveAndNext = !isNew && onSaveAndNext != null && nextPlantInContext != null
 
     var commonName by remember(existingPlant) { mutableStateOf(existingPlant?.commonName ?: "") }
     var commonNames by remember(existingPlant) { mutableStateOf(existingPlant?.commonNames ?: "") }
@@ -45,6 +59,34 @@ fun EditPlantScreen(
     var floweringMonths by remember(existingPlant) { mutableStateOf(existingPlant?.floweringMonths ?: "") }
     var fruitingMonths by remember(existingPlant) { mutableStateOf(existingPlant?.fruitingMonths ?: "") }
     var maxToxicityMonths by remember(existingPlant) { mutableStateOf(existingPlant?.maxToxicityMonths ?: "") }
+
+    fun buildPlantForSave(): PlantEntity = PlantEntity(
+        id = existingPlant?.id ?: 0,
+        commonName = commonName,
+        commonNames = commonNames,
+        scientificName = scientificName,
+        family = family,
+        toxicityLevel = toxicityLevel,
+        toxicParts = toxicParts,
+        symptoms = symptoms,
+        description = description,
+        habitat = habitat,
+        geographicDistribution = geographicDistribution,
+        firstAid = firstAid,
+        imageUrl = imageUrl,
+        isFavorite = existingPlant?.isFavorite ?: false,
+        category = category,
+        latitude = existingPlant?.latitude,
+        longitude = existingPlant?.longitude,
+        locationName = existingPlant?.locationName,
+        foundDate = existingPlant?.foundDate,
+        notes = existingPlant?.notes,
+        floweringMonths = floweringMonths,
+        fruitingMonths = fruitingMonths,
+        maxToxicityMonths = maxToxicityMonths,
+        mythsAndLegends = existingPlant?.mythsAndLegends ?: ""
+    )
+
 
     var expanded by remember { mutableStateOf(false) }
     val toxicityOptions = listOf("Mortal", "Alto", "Moderado", "Bajo")
@@ -84,31 +126,7 @@ fun EditPlantScreen(
                     IconButton(
                         onClick = {
                             if (commonName.isNotBlank()) {
-                                val plant = PlantEntity(
-                                    id = existingPlant?.id ?: 0,
-                                    commonName = commonName,
-                                    commonNames = commonNames,
-                                    scientificName = scientificName,
-                                    family = family,
-                                    toxicityLevel = toxicityLevel,
-                                    toxicParts = toxicParts,
-                                    symptoms = symptoms,
-                                    description = description,
-                                    habitat = habitat,
-                                    geographicDistribution = geographicDistribution,
-                                    firstAid = firstAid,
-                                    imageUrl = imageUrl,
-                                    isFavorite = existingPlant?.isFavorite ?: false,
-                                    category = category,
-                                    latitude = existingPlant?.latitude,
-                                    longitude = existingPlant?.longitude,
-                                    locationName = existingPlant?.locationName,
-                                    foundDate = existingPlant?.foundDate,
-                                    notes = existingPlant?.notes,
-                                    floweringMonths = floweringMonths,
-                                    fruitingMonths = fruitingMonths,
-                                    maxToxicityMonths = maxToxicityMonths
-                                )
+                                val plant = buildPlantForSave()
                                 viewModel.insertPlant(plant)
                                 onBack()
                             }
@@ -329,31 +347,7 @@ fun EditPlantScreen(
             Button(
                 onClick = {
                     if (commonName.isNotBlank()) {
-                        val plant = PlantEntity(
-                            id = existingPlant?.id ?: 0,
-                            commonName = commonName,
-                            commonNames = commonNames,
-                            scientificName = scientificName,
-                            family = family,
-                            toxicityLevel = toxicityLevel,
-                            toxicParts = toxicParts,
-                            symptoms = symptoms,
-                            description = description,
-                            habitat = habitat,
-                            geographicDistribution = geographicDistribution,
-                            firstAid = firstAid,
-                            imageUrl = imageUrl,
-                            isFavorite = existingPlant?.isFavorite ?: false,
-                            category = category,
-                            latitude = existingPlant?.latitude,
-                            longitude = existingPlant?.longitude,
-                            locationName = existingPlant?.locationName,
-                            foundDate = existingPlant?.foundDate,
-                            notes = existingPlant?.notes,
-                            floweringMonths = floweringMonths,
-                            fruitingMonths = fruitingMonths,
-                            maxToxicityMonths = maxToxicityMonths
-                        )
+                        val plant = buildPlantForSave()
                         viewModel.insertPlant(plant)
                         onBack()
                     }
@@ -369,6 +363,26 @@ fun EditPlantScreen(
                     if (isNew) "Crear planta" else "Guardar cambios",
                     fontSize = 18.sp
                 )
+            }
+
+            if (canSaveAndNext) {
+                OutlinedButton(
+                    onClick = {
+                        val nextId = nextPlantInContext?.id ?: return@OutlinedButton
+                        if (commonName.isNotBlank()) {
+                            val plant = buildPlantForSave()
+                            saveScope.launch {
+                                viewModel.insertPlantSync(plant)
+                                onSaveAndNext?.invoke(nextId)
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                ) {
+                    Text("Guardar y siguiente", fontSize = 16.sp)
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))

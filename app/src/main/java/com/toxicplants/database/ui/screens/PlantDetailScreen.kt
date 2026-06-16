@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.CompoundEntity
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.RecentPlantStore
 import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.ui.theme.carbonEffectSubtle
 import com.toxicplants.database.ui.LocalImageCache
@@ -95,7 +96,10 @@ fun PlantDetailScreen(
 
     // Sembrar datos fenológicos si faltan
     LaunchedEffect(Unit) { viewModel.seedPhenologyIfNeeded() }
-    LaunchedEffect(currentPlantId) { detailScrollState.scrollTo(0) }
+    LaunchedEffect(currentPlantId) {
+        detailScrollState.scrollTo(0)
+        RecentPlantStore.add(context, currentPlantId)
+    }
 
     Scaffold(
         topBar = {

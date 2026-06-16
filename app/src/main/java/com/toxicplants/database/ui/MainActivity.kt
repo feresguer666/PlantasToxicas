@@ -456,8 +456,8 @@ fun MainApp() {
                 onBack                     = { navController.popBackStack() },
                 onNavigateToDownloadImages = { navController.navigate("download_images") },
                 onNavigateToIncompletePlants = { navController.navigate("incomplete_plants") },
-                onNavigateToPlantsWithNotes = { navController.navigate("plants_with_notes") },
-                onNavigateToPlantsWithMarkers = { navController.navigate("plants_with_markers") }
+                onNavigateToPlantsWithMarkers = { navController.navigate("plants_with_markers") },
+                onNavigateToRecentPlants = { navController.navigate("recent_plants") }
             )
         }
 
@@ -474,9 +474,9 @@ fun MainApp() {
             )
         }
 
-        // ── PLANTAS CON NOTAS ─────────────────────────────────────
-        composable("plants_with_notes") {
-            PlantsWithNotesScreen(
+        // ── PLANTAS CON MARCADORES ────────────────────────────────
+        composable("plants_with_markers") {
+            PlantsWithMarkersScreen(
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
@@ -486,9 +486,9 @@ fun MainApp() {
             )
         }
 
-        // ── PLANTAS CON MARCADORES ────────────────────────────────
-        composable("plants_with_markers") {
-            PlantsWithMarkersScreen(
+        // ── PLANTAS VISTAS RECIENTEMENTE ───────────────────────
+        composable("recent_plants") {
+            RecentPlantsScreen(
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)

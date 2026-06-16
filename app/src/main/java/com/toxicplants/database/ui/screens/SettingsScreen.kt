@@ -12,13 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Label
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Warning
@@ -46,8 +46,8 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onNavigateToDownloadImages: () -> Unit = {},
     onNavigateToIncompletePlants: () -> Unit = {},
-    onNavigateToPlantsWithNotes: () -> Unit = {},
-    onNavigateToPlantsWithMarkers: () -> Unit = {}
+    onNavigateToPlantsWithMarkers: () -> Unit = {},
+    onNavigateToRecentPlants: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val backupViewModel: BackupViewModel = viewModel()
@@ -106,33 +106,12 @@ fun SettingsScreen(
         localPhotosStats = backupViewModel.getLocalPhotosStats()
     }
 
-    // Launcher para exportar copia COMPLETA.
-    // Separado del incremental para evitar que el callback use por accidente un tipo anterior.
-    val exportFullLauncher = rememberLauncherForActivityResult(
+    // Launcher para exportar (MIME "*/*" para que Android respete la extensión .json.gz)
+    val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("*/*")
     ) { uri ->
         if (uri != null) {
-            backupViewModel.exportDatabase(
-                uri,
-                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL,
-                photoPreset
-            )
-        } else {
-            backupViewModel.resetStatus()
-        }
-    }
-
-    // Launcher para exportar copia INCREMENTAL.
-    // Fuerza siempre BackupType.INCREMENTAL: solo datos, sin fotos.
-    val exportIncrementalLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("*/*")
-    ) { uri ->
-        if (uri != null) {
-            backupViewModel.exportDatabase(
-                uri,
-                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL,
-                photoPreset
-            )
+            backupViewModel.exportDatabase(uri, pendingBackupType, photoPreset)
         } else {
             backupViewModel.resetStatus()
         }
@@ -385,7 +364,7 @@ fun SettingsScreen(
                     showIncrementalPreview = null
                     pendingBackupType =
                         com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL
-                    exportIncrementalLauncher.launch(
+                    exportLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType
@@ -723,7 +702,7 @@ fun SettingsScreen(
             item {
                 SettingsCard(modifier = Modifier.clickable {
                     pendingBackupType = com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL
-                    exportFullLauncher.launch(
+                    exportLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType
@@ -907,28 +886,28 @@ fun SettingsScreen(
                 }
             }
 
-            // Card: Plantas con notas ───────────────────────────
+            // Card: Historial de plantas vistas ────────────────
             item {
-                SettingsCard(modifier = Modifier.clickable { onNavigateToPlantsWithNotes() }) {
+                SettingsCard(modifier = Modifier.clickable { onNavigateToRecentPlants() }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            Icons.AutoMirrored.Filled.Notes,
+                            Icons.Default.History,
                             contentDescription = null,
-                            tint = Color(0xFF2E7D32),
+                            tint = Color(0xFF1565C0),
                             modifier = Modifier.size(28.dp)
                         )
                         Spacer(Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "📝 Plantas con notas",
+                                "🕘 Vistas recientemente",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )
                             Text(
-                                "Ver fichas con notas personales",
+                                "Volver rápido a las últimas fichas abiertas",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

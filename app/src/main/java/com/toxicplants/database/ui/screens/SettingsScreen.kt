@@ -106,12 +106,33 @@ fun SettingsScreen(
         localPhotosStats = backupViewModel.getLocalPhotosStats()
     }
 
-    // Launcher para exportar (MIME "*/*" para que Android respete la extensión .json.gz)
-    val exportLauncher = rememberLauncherForActivityResult(
+    // Launcher para exportar copia COMPLETA.
+    // Separado del incremental para evitar que el callback use por accidente un tipo anterior.
+    val exportFullLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("*/*")
     ) { uri ->
         if (uri != null) {
-            backupViewModel.exportDatabase(uri, pendingBackupType, photoPreset)
+            backupViewModel.exportDatabase(
+                uri,
+                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL,
+                photoPreset
+            )
+        } else {
+            backupViewModel.resetStatus()
+        }
+    }
+
+    // Launcher para exportar copia INCREMENTAL.
+    // Fuerza siempre BackupType.INCREMENTAL: solo datos, sin fotos.
+    val exportIncrementalLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("*/*")
+    ) { uri ->
+        if (uri != null) {
+            backupViewModel.exportDatabase(
+                uri,
+                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL,
+                photoPreset
+            )
         } else {
             backupViewModel.resetStatus()
         }
@@ -364,7 +385,7 @@ fun SettingsScreen(
                     showIncrementalPreview = null
                     pendingBackupType =
                         com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL
-                    exportLauncher.launch(
+                    exportIncrementalLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType
@@ -702,7 +723,7 @@ fun SettingsScreen(
             item {
                 SettingsCard(modifier = Modifier.clickable {
                     pendingBackupType = com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL
-                    exportLauncher.launch(
+                    exportFullLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType

@@ -18,6 +18,7 @@ import com.toxicplants.database.MushroomUserStore
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantDeletionStore
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.PlantUserEditStore
 import com.toxicplants.database.PsychotropicOverrides
 import com.toxicplants.database.PsychotropicUserStore
@@ -121,6 +122,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val editedPlantIds = PlantUserEditStore.load(context).sorted()
             val deletedCompoundIds = CompoundUserStateStore.loadDeleted(context).sorted()
             val editedCompoundIds = CompoundUserStateStore.loadEdited(context).sorted()
+            val plantMarkers = PlantMarkerStore.loadAll(context).toSortedMap()
 
             val plantLocations = plants
                 .filter {
@@ -165,7 +167,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             finalOut.use { out ->
                 JsonWriter(OutputStreamWriter(out, Charsets.UTF_8)).use { w ->
                     w.beginObject()
-                    w.name("backupVersion").value(7)
+                    w.name("backupVersion").value(8)
                     w.name("backupType").value(if (incremental) "incremental" else "full")
                     w.name("exportedAt").value(
                         SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
@@ -245,6 +247,15 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     w.name("editedCompoundIds").beginArray()
                     for (id in editedCompoundIds) w.value(id)
                     w.endArray()
+
+                    // Marcadores personales por planta.
+                    w.name("plantMarkers").beginObject()
+                    for ((plantId, markers) in plantMarkers) {
+                        w.name(plantId.toString()).beginArray()
+                        for (marker in markers.sorted()) w.value(marker)
+                        w.endArray()
+                    }
+                    w.endObject()
 
                     // plantImages: solo en backup completo. En incremental se escribe array vacío.
                     val phaseImg = if (incremental) "Omitiendo fotos (incremental solo datos)…" else "Fotos de plantas…"
@@ -572,6 +583,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         var restoredEditedPlantIds = false
         var restoredDeletedCompoundIds = false
         var restoredEditedCompoundIds = false
+        var restoredPlantMarkers = false
 
         r.beginObject()
         while (r.hasNext()) {
@@ -748,6 +760,32 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     restoredEditedCompoundIds = true
                 }
 
+                "plantMarkers" -> {
+                    progress?.onProgress("Restaurando marcadores…", 0, 1)
+                    val restoredMarkers = LinkedHashMap<Int, Set<String>>()
+                    r.beginObject()
+                    while (r.hasNext()) {
+                        val plantId = r.nextName().toIntOrNull()
+                        val markers = LinkedHashSet<String>()
+                        if (r.peek() == JsonToken.BEGIN_ARRAY) {
+                            r.beginArray()
+                            while (r.hasNext()) {
+                                when (r.peek()) {
+                                    JsonToken.STRING -> r.nextString().trim().takeIf { it.isNotBlank() }?.let { markers += it }
+                                    else -> r.skipValue()
+                                }
+                            }
+                            r.endArray()
+                        } else {
+                            r.skipValue()
+                        }
+                        if (plantId != null && markers.isNotEmpty()) restoredMarkers[plantId] = markers
+                    }
+                    r.endObject()
+                    PlantMarkerStore.replaceAll(context, restoredMarkers)
+                    restoredPlantMarkers = true
+                }
+
                 "plantImages" -> {
                     val incremental = backupType.equals("incremental", ignoreCase = true)
                     val dir = prepareImageRestoreDir(
@@ -802,6 +840,9 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         } else {
             if (!restoredDeletedCompoundIds) CompoundUserStateStore.replaceDeleted(context, emptySet())
             if (!restoredEditedCompoundIds) CompoundUserStateStore.replaceEdited(context, emptySet())
+        }
+        if (!restoredPlantMarkers) {
+            PlantMarkerStore.clearAll(context)
         }
 
         if (!cleaned) {

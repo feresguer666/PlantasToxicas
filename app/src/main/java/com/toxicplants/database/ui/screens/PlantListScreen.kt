@@ -15,10 +15,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.PlantEntity
+import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
 /**
@@ -80,9 +82,13 @@ fun PlantListScreen(
     onPlantClick: (PlantEntity) -> Unit,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
     val plants by viewModel.allPlants.observeAsState(emptyList())
     var plantToDelete by remember { mutableStateOf<PlantEntity?>(null) }
     var selectedRegion by remember { mutableStateOf(REGIONS.first()) }
+    var showOnlyWithNotes by remember { mutableStateOf(false) }
+    var showOnlyWithMarkers by remember { mutableStateOf(false) }
+    val markerMap = if (showOnlyWithMarkers) PlantMarkerStore.loadAll(context) else emptyMap()
 
     // ── NUEVOS FILTROS ──────────────────────────────────────
     var nameMode by remember { mutableStateOf(NameMode.All) }
@@ -95,8 +101,15 @@ fun PlantListScreen(
     }
 
     // Filtrado alfabético + ordenamiento
-    val filtered = remember(regionFiltered, alphabetFilter, nameMode) {
+    val filtered = remember(regionFiltered, alphabetFilter, nameMode, showOnlyWithNotes, showOnlyWithMarkers, markerMap) {
         var result = regionFiltered
+
+        if (showOnlyWithNotes) {
+            result = result.filter { !it.notes.isNullOrBlank() }
+        }
+        if (showOnlyWithMarkers) {
+            result = result.filter { markerMap[it.id].orEmpty().isNotEmpty() }
+        }
 
         // Filtrar por letra
         if (alphabetFilter != AlphabetFilter.All) {
@@ -130,6 +143,8 @@ fun PlantListScreen(
                         val subTitle = buildString {
                             if (alphabetFilter != AlphabetFilter.All) append("${alphabetFilter.label} · ")
                             if (nameMode != NameMode.All) append("${nameMode.label} · ")
+                            if (showOnlyWithNotes) append("Con notas · ")
+                            if (showOnlyWithMarkers) append("Con marcadores · ")
                             if (selectedRegion.keywords.isNotEmpty()) append(selectedRegion.label)
                         }.trimEnd(' ', '·')
                         if (subTitle.isNotEmpty()) {
@@ -230,6 +245,41 @@ fun PlantListScreen(
                 onSelect = { selectedRegion = it }
             )
 
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    item { Text("Filtros rápidos:", fontSize = 12.sp, fontWeight = FontWeight.Medium) }
+                    item {
+                        FilterChip(
+                            selected = showOnlyWithNotes,
+                            onClick = { showOnlyWithNotes = !showOnlyWithNotes },
+                            label = { Text("📝 Con notas", fontSize = 12.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = Color(0xFF2E7D32),
+                                selectedLabelColor = Color.White
+                            )
+                        )
+                    }
+                    item {
+                        FilterChip(
+                            selected = showOnlyWithMarkers,
+                            onClick = { showOnlyWithMarkers = !showOnlyWithMarkers },
+                            label = { Text("🏷️ Con marcadores", fontSize = 12.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = Color(0xFF2E7D32),
+                                selectedLabelColor = Color.White
+                            )
+                        )
+                    }
+                }
+            }
+
             if (plants.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Color(0xFF2E7D32))
@@ -258,6 +308,8 @@ fun PlantListScreen(
                         "📋 ${filtered.size} plantas" +
                                 (if (alphabetFilter != AlphabetFilter.All) " · $alphabetFilter" else "") +
                                 (if (nameMode != NameMode.All) " · ordenar por ${nameMode.label}" else "") +
+                                (if (showOnlyWithNotes) " · con notas" else "") +
+                                (if (showOnlyWithMarkers) " · con marcadores" else "") +
                                 (if (selectedRegion.keywords.isNotEmpty()) " · ${selectedRegion.label}" else ""),
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                         fontSize = 13.sp,

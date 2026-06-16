@@ -127,7 +127,7 @@ private fun buildAnnotated(
 private fun TermPopupDialog(term: GlossaryTerm, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
-    val scope = rememberCoroutineScope()
+    rememberCoroutineScope()
 
     var photos by remember(term.id) {
         mutableStateOf<List<GlossaryPhotoRepository.GlossaryPhoto>>(emptyList())

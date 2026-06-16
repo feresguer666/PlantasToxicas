@@ -83,7 +83,7 @@ fun PhytochemistryScreen(
     }
 
     // Si hay filtro de peligrosidad activo, ocultar los grupos
-    val showGroups = selectedDanger == null
+    selectedDanger == null
 
     val countByGroup = remember(all) { all.groupingBy { it.groupName }.eachCount() }
     val colorByGroup = remember(all) { all.associate { it.groupName to it.groupColor } }

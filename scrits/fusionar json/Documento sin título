@@ -1,0 +1,152 @@
+1. Si tienes estos dos JSON
+Por ejemplo:
+
+Bash
+
+plants.json
+plants_online_5000.json
+ejecuta:
+
+Bash
+
+python3 fusionar_json_plantas.py plants.json plants_online_5000.json --output plants_fusionado.json
+Eso genera:
+
+Bash
+
+plants_fusionado.json
+con IDs:
+
+text
+
+1, 2, 3, 4, 5...
+sin duplicados.
+
+2. Si estás dentro del proyecto Android
+Si tu catálogo principal está aquí:
+
+Bash
+
+app/src/main/assets/plants.json
+y el nuevo JSON está aquí:
+
+Bash
+
+plants_online_5000.json
+usa:
+
+Bash
+
+python3 fusionar_json_plantas.py app/src/main/assets/plants.json plants_online_5000.json --output app/src/main/assets/plants_fusionado.json
+Luego revisas el resultado.
+
+Si está bien, puedes reemplazar el original:
+
+Bash
+
+cp app/src/main/assets/plants_fusionado.json app/src/main/assets/plants.json
+3. Fusionar directamente sobre plants.json
+También puedes hacerlo directo:
+
+Bash
+
+python3 fusionar_json_plantas.py app/src/main/assets/plants.json plants_online_5000.json --output app/src/main/assets/plants.json
+El script creará backup automático tipo:
+
+Bash
+
+app/src/main/assets/plants.json.bak-20260527-030000
+4. Si los archivos están en tu carpeta actual
+Por ejemplo en:
+
+Bash
+
+/home/fer/Downloads/scrit online 500 plantas
+y tienes:
+
+Bash
+
+generar_plantas_toxicas_online.py
+fusionar_json_plantas.py
+plants.json
+plants_online_5000.json
+ejecuta:
+
+Bash
+
+python3 fusionar_json_plantas.py plants.json plants_online_5000.json --output plants_fusionado.json
+5. Si quieres que empiece por otro ID
+Por defecto empieza en 1.
+
+Si quieres que empiece en 1000:
+
+Bash
+
+python3 fusionar_json_plantas.py plants.json plants_online_5000.json --output plants_fusionado.json --start-id 1000
+6. Si quieres conservar la ficha más completa
+Por defecto, si hay duplicado, manda el primer JSON.
+
+Ejemplo:
+
+Bash
+
+python3 fusionar_json_plantas.py plants.json plants_online_5000.json --output plants_fusionado.json
+En ese caso, si una planta existe en ambos, se conserva principalmente la de plants.json.
+
+Si quieres que el script conserve la ficha con más datos:
+
+Bash
+
+python3 fusionar_json_plantas.py plants.json plants_online_5000.json --output plants_fusionado.json --prefer-complete
+7. Comprobar cuántas plantas quedaron
+Después de fusionar:
+
+Bash
+
+python3 -c "import json; d=json.load(open('plants_fusionado.json')); print(len(d)); print(d[0]['id'], d[-1]['id'])"
+Debería salir algo como:
+
+text
+
+4500
+1 4500
+8. Comando recomendado para ti
+Primero genera el fusionado sin tocar el original:
+
+Bash
+
+python3 fusionar_json_plantas.py plants.json plants_online_5000.json --output plants_fusionado.json --prefer-complete
+Comprueba:
+
+Bash
+
+python3 -c "import json; d=json.load(open('plants_fusionado.json')); print(len(d)); print(d[0]['id'], d[-1]['id'])"
+Y si está bien:
+
+Bash
+
+cp plants_fusionado.json plants.json
+Cómo detecta duplicados
+El script detecta duplicados principalmente por:
+
+JSON
+
+"scientificName"
+Normaliza nombres como:
+
+text
+
+Nerium oleander
+Nerium oleander L.
+Nerium oleander Mill.
+y los considera la misma planta.
+
+Si no hay scientificName, usa:
+
+JSON
+
+"commonName"
+como alternativa.
+
+
+

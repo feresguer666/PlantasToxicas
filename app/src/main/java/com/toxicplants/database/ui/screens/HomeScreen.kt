@@ -106,7 +106,7 @@ fun HomeScreen(
     onNavigateToGBIF: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
-    val context = LocalContext.current
+    LocalContext.current
     val allPlants   by viewModel.allPlants.observeAsState(emptyList())
     val allFamilies by viewModel.allFamilies.observeAsState(emptyList())
 

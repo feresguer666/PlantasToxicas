@@ -341,7 +341,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             val needsSeed = all.any { it.floweringMonths.isBlank() && it.toxicityLevel in listOf("Mortal", "Muy alto", "Alto") }
             if (!needsSeed) return@launch
 
-            val phenologyMap = com.toxicplants.database.ui.viewmodel.ToxicCalendarViewModel.getPhenologySeedData()
+            val phenologyMap = ToxicCalendarViewModel.getPhenologySeedData()
             var updated = 0
             for (plant in all) {
                 if (plant.floweringMonths.isNotBlank()) continue

@@ -74,4 +74,29 @@ object PlantMarkerStore {
             .remove(KEY_PREFIX + plantId)
             .apply()
     }
+
+    /** Sustituye todos los marcadores. Se usa al restaurar backups. */
+    fun replaceAll(context: Context, markersByPlant: Map<Int, Set<String>>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val editor = prefs.edit().clear()
+        markersByPlant.forEach { (plantId, markers) ->
+            if (plantId != 0) {
+                val cleaned = markers
+                    .map { it.trim() }
+                    .filter { it.isNotBlank() }
+                    .toSet()
+                if (cleaned.isNotEmpty()) {
+                    editor.putStringSet(KEY_PREFIX + plantId, cleaned)
+                }
+            }
+        }
+        editor.apply()
+    }
+
+    fun clearAll(context: Context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply()
+    }
 }

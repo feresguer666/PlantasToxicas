@@ -267,7 +267,7 @@ private fun PartFilterButton(
         Brush.verticalGradient(listOf(filter.color.copy(alpha = 0.15f), filter.color.copy(alpha = 0.08f)))
 
     val textColor   = if (selected) Color.White else filter.color
-    val borderColor = if (selected) Color.Transparent else filter.color.copy(alpha = 0.3f)
+    if (selected) Color.Transparent else filter.color.copy(alpha = 0.3f)
 
     Box(
         modifier = modifier
@@ -314,7 +314,7 @@ private fun ToxicPartPlantCard(
     }
 
     // Extrae qué keyword coincidió en toxicParts para mostrarla resaltada
-    val matchedPart = filterKeywords.firstOrNull { kw ->
+    filterKeywords.firstOrNull { kw ->
         plant.toxicParts.contains(kw, ignoreCase = true)
     }
 

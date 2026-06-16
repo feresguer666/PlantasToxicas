@@ -63,7 +63,7 @@ fun LivestockSafetyScreen(
     }
     val tabs = listOf("🐴 Caballos", "🐄 Vacas/Ovejas", "🐑 Todo")
 
-    var refreshKey by remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    var refreshKey by remember { mutableIntStateOf(0) }
     val filteredPlants = remember(allPlants, extraMap, selectedTab) {
         allPlants.filter { plant ->
             val extra = extraMap[plant.scientificName] ?: return@filter false

@@ -1,0 +1,14 @@
+# Vista previa de qué cambiaría (recomendado la primera vez)
+python3 sync_backup_a_proyecto.py "/home/fer/AndroidStudioProjects/PlantasToxicas/PlantasToxicas_Backup_Completo_20260605_2052.json" --dry-run
+
+
+# Aplicar de verdad
+python3 sync_backup_a_proyecto.py "/home/fer/AndroidStudioProjects/PlantasToxicas/PlantasToxicas_Backup_Completo_20260605_2052.json"
+
+
+
+Flag	Para qué
+--dry-run	Solo informa, no escribe
+--solo-fotos	Únicamente imágenes
+--no-nuevas	No crear plants_N.json para IDs nuevos
+--proyecto RUTA	Ejecutar desde otra carpeta

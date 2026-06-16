@@ -75,7 +75,7 @@ fun SettingsScreen(
 
     // Estado del tipo de backup que el usuario eligió antes de abrir el SAF
     var pendingBackupType by remember {
-        mutableStateOf(com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL)
+        mutableStateOf(BackupViewModel.BackupType.FULL)
     }
     var photoPreset by remember {
         mutableStateOf(com.toxicplants.database.data.repository.PhotoCompressor.Preset.LOW)
@@ -86,7 +86,7 @@ fun SettingsScreen(
         mutableStateOf<com.toxicplants.database.data.repository.BackupRepository.IncrementalPreview?>(null)
     }
     var localPhotosStats by remember { mutableStateOf<Pair<Int, Long>?>(null) }
-    val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     var showDeletedPlantsDialog by remember { mutableStateOf(false) }
     var deletedSeedPlants by remember { mutableStateOf<List<PlantEntity>>(emptyList()) }
@@ -106,12 +106,33 @@ fun SettingsScreen(
         localPhotosStats = backupViewModel.getLocalPhotosStats()
     }
 
-    // Launcher para exportar (MIME "*/*" para que Android respete la extensión .json.gz)
-    val exportLauncher = rememberLauncherForActivityResult(
+    // Launcher para exportar copia COMPLETA.
+    // Separado del incremental para evitar que el callback use por accidente un tipo anterior.
+    val exportFullLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("*/*")
     ) { uri ->
         if (uri != null) {
-            backupViewModel.exportDatabase(uri, pendingBackupType, photoPreset)
+            backupViewModel.exportDatabase(
+                uri,
+                BackupViewModel.BackupType.FULL,
+                photoPreset
+            )
+        } else {
+            backupViewModel.resetStatus()
+        }
+    }
+
+    // Launcher para exportar copia INCREMENTAL.
+    // Fuerza siempre BackupType.INCREMENTAL: solo datos, sin fotos.
+    val exportIncrementalLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("*/*")
+    ) { uri ->
+        if (uri != null) {
+            backupViewModel.exportDatabase(
+                uri,
+                BackupViewModel.BackupType.INCREMENTAL,
+                photoPreset
+            )
         } else {
             backupViewModel.resetStatus()
         }
@@ -363,8 +384,8 @@ fun SettingsScreen(
                 TextButton(onClick = {
                     showIncrementalPreview = null
                     pendingBackupType =
-                        com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL
-                    exportLauncher.launch(
+                        BackupViewModel.BackupType.INCREMENTAL
+                    exportIncrementalLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType
@@ -701,8 +722,8 @@ fun SettingsScreen(
             // Card: Copia COMPLETA
             item {
                 SettingsCard(modifier = Modifier.clickable {
-                    pendingBackupType = com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL
-                    exportLauncher.launch(
+                    pendingBackupType = BackupViewModel.BackupType.FULL
+                    exportFullLauncher.launch(
                         backupViewModel.getSuggestedFileName(
                             compressed = true,
                             type = pendingBackupType

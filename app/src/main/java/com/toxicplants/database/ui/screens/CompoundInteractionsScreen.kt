@@ -576,7 +576,7 @@ private fun InfoBlock(label: String, value: String, color: Color) {
 
 @Composable
 private fun SeverityChip(severity: String) {
-    val color = severityColor(severity)
+    severityColor(severity)
     AssistChip(
         onClick = {},
         label = { Text(severity, fontSize = 11.sp, fontWeight = FontWeight.Bold) },

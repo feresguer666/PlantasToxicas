@@ -42,7 +42,7 @@ fun ChildSafetyScreen(
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
     val extraMap  = remember { PlantExtraDataSource.loadAll(context).toMutableMap() }
 
-    var refreshKey by remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    var refreshKey by remember { mutableIntStateOf(0) }
     val filteredPlants = remember(allPlants, extraMap, refreshKey) {
         allPlants.filter { extraMap[it.scientificName]?.toxicChildren == true }
             .sortedByDescending { when (it.toxicityLevel) { "Mortal" -> 5; "Muy alto" -> 4; "Alto" -> 3; "Moderado" -> 2; "Bajo" -> 1; else -> 0 } }

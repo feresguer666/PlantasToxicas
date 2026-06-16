@@ -466,7 +466,7 @@ private fun PhotoCard(
     photo: GlossaryPhotoRepository.GlossaryPhoto,
     onDelete: () -> Unit
 ) {
-    val colors = MaterialTheme.colorScheme
+    MaterialTheme.colorScheme
     val bmp = remember(photo.file.absolutePath, photo.file.lastModified()) {
         runCatching { BitmapFactory.decodeFile(photo.file.absolutePath) }.getOrNull()
     }

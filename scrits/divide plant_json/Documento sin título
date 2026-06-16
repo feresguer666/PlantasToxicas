@@ -1,0 +1,5 @@
+python3 divide_catalogo.py app/src/main/assets/plants.json 1200
+
+
+
+tiene que esta en carpeta plantas toxicas

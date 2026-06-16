@@ -95,7 +95,7 @@ fun SightingsHistoryScreen(
     onPlantClick: (PlantEntity) -> Unit,
     onBack: () -> Unit
 ) {
-    val context = LocalContext.current
+    LocalContext.current
     val sightings by viewModel.sightings.observeAsState(emptyList())
     val allPlants by plantViewModel.allPlants.observeAsState(emptyList())
 

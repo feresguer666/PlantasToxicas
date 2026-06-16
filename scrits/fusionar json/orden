@@ -1,0 +1,1 @@
+python3 fusionar_json_plantas.py a.json b.json --output plants.json

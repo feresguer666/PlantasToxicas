@@ -1005,7 +1005,7 @@ fun PlantDetailScreen(
                                         fontSize = 10.sp,
                                         color = Color.Gray,
                                         fontWeight = FontWeight.Medium,
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                        textAlign = TextAlign.Center,
                                         modifier = Modifier.weight(1f)
                                     )
                                 }

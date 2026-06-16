@@ -50,7 +50,7 @@ fun ToxicCalendarScreen(
     onBack: () -> Unit,
     onPlantClick: (PlantEntity) -> Unit = {}
 ) {
-    val pvm = plantViewModel as com.toxicplants.database.ui.viewmodel.PlantViewModel
+    plantViewModel as com.toxicplants.database.ui.viewmodel.PlantViewModel
     val allPlants by viewModel.allPlants.collectAsState()
     val seasonalData by viewModel.seasonalPlants.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
@@ -797,7 +797,8 @@ fun AlertsTab(
     // Diálogo: Añadir evento
     if (showAddDialog) {
         AddOrEditEventDialog(
-            initialDate = selectedDate ?: String.format("%04d-%02d-%02d", currentYear, currentMonth, java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH)),
+            initialDate = selectedDate ?: String.format("%04d-%02d-%02d", currentYear, currentMonth, Calendar.getInstance().get(
+                Calendar.DAY_OF_MONTH)),
             allPlants = allPlants,
             onDismiss = { showAddDialog = false },
             onSave = { event ->

@@ -143,18 +143,18 @@ fun BerriesScreen(onBack: () -> Unit, onAddPlant: (String) -> Unit = {}) {
     if (showColorDialog) {
         AlertDialog(
             onDismissRequest = { showColorDialog = false },
-            title = { Text("🍒 ¿Color del fruto?", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold) },
+            title = { Text("🍒 ¿Color del fruto?", fontWeight = FontWeight.Bold) },
             text  = {
-                androidx.compose.foundation.lazy.LazyColumn {
+                LazyColumn {
                     items(fruitColors) { color ->
                         val emoji = when(color) {
                             "rojo" -> "🔴"; "negro" -> "⚫"; "naranja" -> "🟠"
                             "amarillo" -> "🟡"; "verde" -> "🟢"; "azul" -> "🔵"
                             "blanco" -> "⚪"; else -> "🚫"
                         }
-                        androidx.compose.material3.TextButton(
+                        TextButton(
                             onClick = { showColorDialog = false; onAddPlant(color) },
-                            modifier = androidx.compose.ui.Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Text("$emoji $color", fontSize = 16.sp)
                         }
@@ -162,7 +162,7 @@ fun BerriesScreen(onBack: () -> Unit, onAddPlant: (String) -> Unit = {}) {
                 }
             },
             confirmButton = {},
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { showColorDialog = false }) { Text("Cancelar") } }
+            dismissButton = { TextButton(onClick = { showColorDialog = false }) { Text("Cancelar") } }
         )
     }
     var searchQuery by remember { mutableStateOf("") }

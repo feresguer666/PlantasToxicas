@@ -124,7 +124,7 @@ fun MainApp() {
                 onNavigateToGBIF             = { navController.navigate("gbif_enrichment") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 }
             )
         }
@@ -142,7 +142,7 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -168,7 +168,7 @@ fun MainApp() {
                     val plant = viewModel.allPlants.value?.find { it.id == id }
                     if (plant != null) {
                         viewModel.selectPlant(plant)
-                        navController.navigate("plant_detail")
+                        navController.navigate("plant_detail/${plant.id}")
                     }
                 }
             )
@@ -179,7 +179,7 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -212,7 +212,7 @@ fun MainApp() {
                 onBack = { navController.popBackStack() },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 }
             )
         }
@@ -223,7 +223,7 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() },
                 onIntoxicationClick = { navController.navigate("intoxication") },
@@ -256,7 +256,7 @@ fun MainApp() {
                 onBack = { navController.popBackStack() },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 }
             )
         }
@@ -268,7 +268,7 @@ fun MainApp() {
                 compoundViewModel = compoundViewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onCompoundClick = { compound ->
                     navController.navigate("compound_detail/${compound.id}")
@@ -299,7 +299,7 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -324,7 +324,7 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onNavigateToPlantNetResult = { name, scientificName ->
                     navController.navigate("plantnet_result/${Uri.encode(name)}/${Uri.encode(scientificName)}")
@@ -344,11 +344,27 @@ fun MainApp() {
             )
         }
 
+        // ── DETALLE DE PLANTA por ID — estable al volver de navegador/Wikipedia ─────
+        composable(
+            route = "plant_detail/{plantId}",
+            arguments = listOf(navArgument("plantId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val routePlantId = backStackEntry.arguments?.getInt("plantId") ?: 0
+            PlantDetailScreen(
+                plantId              = routePlantId,
+                viewModel            = viewModel,
+                compoundViewModel    = compoundViewModel,
+                onBack               = { navController.popBackStack() },
+                onEdit               = { id -> navController.navigate("edit_plant/$id") },
+                onNavigateToLocation = { id -> navController.navigate("location/$id") },
+                onCompoundClick      = { compound -> navController.navigate("compound_detail/${compound.id}") }
+            )
+        }
+
         // ── DETALLE DE PLANTA ────────────────────────────────────────
         composable("plant_detail") {
             val selectedPlant by viewModel.selectedPlantData.collectAsState()
-            val allPlants     by viewModel.allPlants.observeAsState(emptyList())
-            val plantToShow    = selectedPlant ?: allPlants.firstOrNull()
+            val plantToShow    = selectedPlant
 
             if (plantToShow != null) {
                 PlantDetailScreen(
@@ -423,7 +439,7 @@ fun MainApp() {
                 categoryName = categoryName,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -467,7 +483,7 @@ fun MainApp() {
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onEditPlant = { plantId -> navController.navigate("edit_plant/$plantId") },
                 onBack = { navController.popBackStack() }
@@ -480,7 +496,7 @@ fun MainApp() {
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -492,7 +508,7 @@ fun MainApp() {
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -507,7 +523,7 @@ fun MainApp() {
                 initialQuery      = initialQuery,
                 onPlantClick      = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onCompoundClick   = { compound ->
                     navController.navigate("compound_detail/${compound.id}")
@@ -523,7 +539,7 @@ fun MainApp() {
                 initialQuery      = "",
                 onPlantClick      = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onCompoundClick   = { compound ->
                     navController.navigate("compound_detail/${compound.id}")
@@ -539,7 +555,7 @@ fun MainApp() {
                 compoundViewModel = compoundViewModel,
                 onPlantClick      = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack            = { navController.popBackStack() }
             )
@@ -609,7 +625,7 @@ fun MainApp() {
                 onBack            = { navController.popBackStack() },
                 onPlantClick      = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 }
             )
         }
@@ -656,7 +672,7 @@ fun MainApp() {
                 viewModel    = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -670,7 +686,7 @@ fun MainApp() {
                 plantViewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -680,7 +696,7 @@ fun MainApp() {
         composable("pet_safety") {
             PetSafetyScreen(
                 viewModel    = viewModel,
-                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
+                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
                 onBack       = { navController.popBackStack() },
                 onAddPlant   = { navController.navigate("add_plant_extra/dogs") },
                 onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
@@ -691,7 +707,7 @@ fun MainApp() {
         composable("child_safety") {
             ChildSafetyScreen(
                 viewModel    = viewModel,
-                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
+                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
                 onBack       = { navController.popBackStack() },
                 onAddPlant   = { navController.navigate("add_plant_extra/children") },
                 onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
@@ -702,7 +718,7 @@ fun MainApp() {
         composable("livestock_safety") {
             LivestockSafetyScreen(
                 viewModel    = viewModel,
-                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
+                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
                 onBack       = { navController.popBackStack() },
                 onAddPlant   = { navController.navigate("add_plant_extra/horses") },
                 onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
@@ -713,7 +729,7 @@ fun MainApp() {
         composable("confusable_plants") {
             ConfusablePlantsScreen(
                 viewModel    = viewModel,
-                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
+                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
                 onBack       = { navController.popBackStack() },
                 onAddPlant   = { navController.navigate("add_plant_extra/dogs") },
                 onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
@@ -724,7 +740,7 @@ fun MainApp() {
         composable("sightings_map") {
             SightingsMapScreen(
                 viewModel    = viewModel,
-                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
+                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
                 onBack       = { navController.popBackStack() }
             )
         }
@@ -732,7 +748,7 @@ fun MainApp() {
         composable("color_search") {
             ColorSearchScreen(
                 viewModel    = viewModel,
-                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
+                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
                 onBack       = { navController.popBackStack() },
                 onAddPlant   = { mode: String, color: String -> navController.navigate("add_plant_extra/${Uri.encode(mode)}?color=${Uri.encode(color)}") },
                 onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
@@ -742,7 +758,7 @@ fun MainApp() {
         composable("toxic_parts") {
             ToxicPartsScreen(
                 viewModel    = viewModel,
-                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail") },
+                onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
                 onBack       = { navController.popBackStack() }
             )
         }
@@ -756,7 +772,7 @@ fun MainApp() {
                 onBack = { navController.popBackStack() },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 }
             )
         }

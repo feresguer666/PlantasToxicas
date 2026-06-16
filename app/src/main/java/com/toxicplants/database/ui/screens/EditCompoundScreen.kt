@@ -23,7 +23,7 @@ fun EditCompoundScreen(
     viewModel: CompoundViewModel,
     onBack: () -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    rememberCoroutineScope()
     var compound by remember { mutableStateOf<CompoundEntity?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 

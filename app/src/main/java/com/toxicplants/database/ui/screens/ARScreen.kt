@@ -145,7 +145,7 @@ fun ARScreen(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
+    LocalLifecycleOwner.current
 
     var hasCameraPermission by remember {
         mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
@@ -369,7 +369,7 @@ fun CameraPreviewWithCapture(
     modifier: Modifier = Modifier,
     onImageCaptureReady: (ImageCapture) -> Unit
 ) {
-    val context = LocalContext.current
+    LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(

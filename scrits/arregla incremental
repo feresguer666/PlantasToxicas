@@ -1,0 +1,133 @@
+python3 <<'PY'
+from pathlib import Path
+
+# ─────────────────────────────────────────────
+# 1) Blindar BackupRepository: incremental SIN fotos
+# ─────────────────────────────────────────────
+
+p = Path("app/src/main/java/com/toxicplants/database/data/repository/BackupRepository.kt")
+s = p.read_text(encoding="utf-8")
+
+old = '''            // 2. Si es incremental, calcular qué fotos cambiaron vs. el manifiesto.
+            val manifestBefore = if (incremental) BackupManifest.load(context) else null
+            val (_, changedPlantPhotos) = if (incremental) {
+                manifestBefore!!.diff(plants, plantImagesDir)
+            } else {
+                emptySet<Int>() to emptySet()
+            }
+            // Para sighting photos no usamos manifest (son pocas); enviamos solo si es completo.
+            val plantPhotoFilter: (File) -> Boolean = when {
+                incremental -> { f -> f.name in changedPlantPhotos }
+                else -> { _ -> true }
+            }
+
+            val nPlantImg = countImagesFiltered(plantImagesDir, plantPhotoFilter)
+'''
+new = '''            // 2. Política de fotos:
+            //    - Backup COMPLETO: incluye todas las fotos.
+            //    - Backup INCREMENTAL: SOLO DATOS, sin fotos.
+            val plantPhotoFilter: (File) -> Boolean = if (incremental) { _ -> false } else { _ -> true }
+
+            val nPlantImg = if (incremental) 0 else countImagesFiltered(plantImagesDir, plantPhotoFilter)
+'''
+if old in s:
+    s = s.replace(old, new)
+
+old = '''                    // plantImages (todas o solo las cambiadas según incremental)
+                    val phaseImg = if (incremental) "Fotos modificadas…" else "Fotos de plantas…"
+                    progress?.onProgress(phaseImg, step, totalSteps)
+                    w.name("plantImages").beginArray()
+                    writeImagesStreaming(plantImagesDir, w, plantPhotoFilter, recompression) { current ->
+                        step = plants.size + compounds.size + current
+                        progress?.onProgress("$phaseImg ($current/$nPlantImg)", step, totalSteps)
+                    }
+                    w.endArray()
+'''
+new = '''                    // plantImages: solo en backup completo. En incremental se escribe array vacío.
+                    val phaseImg = if (incremental) "Omitiendo fotos (incremental solo datos)…" else "Fotos de plantas…"
+                    progress?.onProgress(phaseImg, step, totalSteps)
+                    w.name("plantImages").beginArray()
+                    if (!incremental) {
+                        writeImagesStreaming(plantImagesDir, w, plantPhotoFilter, recompression) { current ->
+                            step = plants.size + compounds.size + current
+                            progress?.onProgress("$phaseImg ($current/$nPlantImg)", step, totalSteps)
+                        }
+                    }
+                    w.endArray()
+'''
+if old in s:
+    s = s.replace(old, new)
+
+p.write_text(s, encoding="utf-8")
+
+
+# ─────────────────────────────────────────────
+# 2) Blindar SettingsScreen: launchers separados
+# ─────────────────────────────────────────────
+
+p = Path("app/src/main/java/com/toxicplants/database/ui/screens/SettingsScreen.kt")
+s = p.read_text(encoding="utf-8")
+
+old = '''    // Launcher para exportar (MIME "*/*" para que Android respete la extensión .json.gz)
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("*/*")
+    ) { uri ->
+        if (uri != null) {
+            backupViewModel.exportDatabase(uri, pendingBackupType, photoPreset)
+        } else {
+            backupViewModel.resetStatus()
+        }
+    }
+'''
+
+new = '''    // Launcher para exportar copia COMPLETA.
+    // Separado del incremental para evitar que el callback use por accidente un tipo anterior.
+    val exportFullLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("*/*")
+    ) { uri ->
+        if (uri != null) {
+            backupViewModel.exportDatabase(
+                uri,
+                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.FULL,
+                photoPreset
+            )
+        } else {
+            backupViewModel.resetStatus()
+        }
+    }
+
+    // Launcher para exportar copia INCREMENTAL.
+    // Fuerza siempre BackupType.INCREMENTAL: solo datos, sin fotos.
+    val exportIncrementalLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("*/*")
+    ) { uri ->
+        if (uri != null) {
+            backupViewModel.exportDatabase(
+                uri,
+                com.toxicplants.database.ui.viewmodel.BackupViewModel.BackupType.INCREMENTAL,
+                photoPreset
+            )
+        } else {
+            backupViewModel.resetStatus()
+        }
+    }
+'''
+
+if old in s:
+    s = s.replace(old, new)
+else:
+    print("AVISO: no encontré el bloque exportLauncher antiguo. Puede que ya estuviera cambiado.")
+
+# Reemplazar llamadas antiguas si existen.
+# Normalmente la primera exportLauncher.launch está en la incremental
+# y la segunda en la completa.
+count = s.count("exportLauncher.launch(")
+if count >= 1:
+    s = s.replace("exportLauncher.launch(", "exportIncrementalLauncher.launch(", 1)
+if count >= 2:
+    s = s.replace("exportLauncher.launch(", "exportFullLauncher.launch(", 1)
+
+p.write_text(s, encoding="utf-8")
+
+print("OK: incremental blindada como solo datos.")
+PY

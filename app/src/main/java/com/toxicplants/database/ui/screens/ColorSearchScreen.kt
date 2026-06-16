@@ -261,7 +261,7 @@ private fun ColorChip(
 ) {
     val bgColor  = if (selected) info.color else info.color.copy(alpha = 0.15f)
     val txtColor = if (selected) Color.White else info.color.copy(alpha = 0.8f)
-    val border   = if (selected) 3.dp else 0.dp
+    if (selected) 3.dp else 0.dp
 
     Box(
         modifier = modifier

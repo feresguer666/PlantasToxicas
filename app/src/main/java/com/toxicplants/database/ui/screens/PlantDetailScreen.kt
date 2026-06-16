@@ -186,15 +186,20 @@ fun PlantDetailScreen(
     ) { paddingValues ->
 
         if (plant == null) {
-            // ── Planta no encontrada ────────────────────────────────────
             Box(
                 modifier = Modifier.fillMaxSize().carbonEffectSubtle().padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("❌", fontSize = 48.sp)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Planta no encontrada", color = Color.Gray)
+                    if (allPlants.isEmpty()) {
+                        CircularProgressIndicator(color = Color(0xFF2E7D32))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Cargando planta…", color = Color.Gray)
+                    } else {
+                        Text("❌", fontSize = 48.sp)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Planta no encontrada", color = Color.Gray)
+                    }
                 }
             }
 

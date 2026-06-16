@@ -764,43 +764,41 @@ fun PlantDetailScreen(
                 // ══════════════════════════════════════════════════════════
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Ver en Wikipedia", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text("Wikipedia y Wikimedia Commons", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         Spacer(modifier = Modifier.height(8.dp))
+
+                        val wikiUrl = "https://es.wikipedia.org/wiki/" +
+                                Uri.encode(p.scientificName.takeIf { it.isNotBlank() } ?: p.commonName)
+                        val commonsScientificUrl = "https://commons.wikimedia.org/w/index.php" +
+                                "?search=${Uri.encode(p.scientificName.ifBlank { p.commonName })}" +
+                                "&title=Special:MediaSearch&type=image"
+                        val commonsCommonUrl = "https://commons.wikimedia.org/w/index.php" +
+                                "?search=${Uri.encode(p.commonName.ifBlank { p.scientificName })}" +
+                                "&title=Special:MediaSearch&type=image"
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val wikiUrl = "https://es.wikipedia.org/wiki/" +
-                                    Uri.encode(
-                                        p.scientificName.takeIf { it.isNotBlank() } ?: p.commonName
-                                    )
-                            val commonsUrl = "https://commons.wikimedia.org/w/index.php" +
-                                    "?search=${Uri.encode(p.scientificName)}" +
-                                    "&title=Special:MediaSearch&type=image"
-
                             Button(
-                                onClick = {
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse(wikiUrl))
-                                    )
-                                },
+                                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(wikiUrl))) },
                                 modifier = Modifier.weight(1f),
-                                colors   = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF1565C0)
-                                )
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
                             ) { Text("Artículo", fontSize = 12.sp) }
 
                             Button(
-                                onClick = {
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse(commonsUrl))
-                                    )
-                                },
+                                onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsScientificUrl))) },
                                 modifier = Modifier.weight(1f),
-                                colors   = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF2E7D32)
-                                )
-                            ) { Text("Fotos", fontSize = 12.sp) }
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                            ) { Text("Commons científico", fontSize = 11.sp) }
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsCommonUrl))) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Buscar fotos por nombre común en Commons", fontSize = 12.sp)
                         }
                     }
                 }

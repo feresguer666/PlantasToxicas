@@ -485,6 +485,19 @@ fun MainApp() {
                 onPlantsWithMarkers = { navController.navigate("plants_with_markers") },
                 onRecentPlants = { navController.navigate("recent_plants") },
                 onDeletedPlants = { navController.navigate("deleted_plants") },
+                onDuplicatePlants = { navController.navigate("duplicate_plants") },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── POSIBLES DUPLICADOS ────────────────────────────────
+        composable("duplicate_plants") {
+            DuplicatePlantsScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                },
                 onBack = { navController.popBackStack() }
             )
         }

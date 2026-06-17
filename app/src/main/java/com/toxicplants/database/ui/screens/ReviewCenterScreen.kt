@@ -43,6 +43,7 @@ fun ReviewCenterScreen(
     onPlantsWithMarkers: () -> Unit,
     onRecentPlants: () -> Unit,
     onDeletedPlants: () -> Unit,
+    onDuplicatePlants: () -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -130,6 +131,14 @@ fun ReviewCenterScreen(
                 subtitle = "Volver rápido a las últimas fichas abiertas",
                 color = Color(0xFF1565C0),
                 onClick = onRecentPlants
+            )
+
+            ReviewToolCard(
+                icon = "🔁",
+                title = "Posibles duplicados",
+                subtitle = "Detectar nombres científicos o comunes repetidos",
+                color = Color(0xFF5E35B1),
+                onClick = onDuplicatePlants
             )
 
             ReviewToolCard(

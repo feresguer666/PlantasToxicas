@@ -96,6 +96,7 @@ fun HomeScreen(
     onNavigateToChildSafety: () -> Unit = {},
     onNavigateToLivestockSafety: () -> Unit = {},
     onNavigateToConfusable: () -> Unit = {},
+    onNavigateToPlantCompare: () -> Unit = {},
     onNavigateToMap: () -> Unit = {},
     onNavigateToColorSearch: () -> Unit = {},
     onNavigateToGlossary: () -> Unit = {},
@@ -376,6 +377,7 @@ fun HomeScreen(
             onSearchByCompanions = { showSearchDialog = false; showCompanionSafetyDialog = true },
             onSearchByColor      = { showSearchDialog = false; onNavigateToColorSearch() },
             onSearchByConfusable = { showSearchDialog = false; onNavigateToConfusable() },
+            onPlantCompare      = { showSearchDialog = false; onNavigateToPlantCompare() },
             onSearchByToxicParts = { showSearchDialog = false; onNavigateToToxicParts() },
             onSearchByBerries    = { showSearchDialog = false; onNavigateToBerries() },
             onIntoxication       = { showSearchDialog = false; onNavigateToIntoxication() },
@@ -697,6 +699,7 @@ fun SearchTypeDialog(
     onSearchByCompanions: () -> Unit = {},
     onSearchByColor: () -> Unit = {},
     onSearchByConfusable: () -> Unit = {},
+    onPlantCompare: () -> Unit = {},
     onSearchByToxicParts: () -> Unit = {},
     onSearchByBerries: () -> Unit = {},
     onIntoxication: () -> Unit = {},
@@ -713,16 +716,18 @@ fun SearchTypeDialog(
                     SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF1B5E20), Color(0xFF2E7D32))), icon = "🔤", title = "Nombres", onClick = onSearchByName)
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF880E4F), Color(0xFFAD1457))), icon = "🌸", title = "Colores", onClick = onSearchByColor)
                     SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFFBF360C), Color(0xFFD84315))), icon = "⚠️", title = "Confundibles", onClick = onSearchByConfusable)
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF283593), Color(0xFF3949AB))), icon = "⚖️", title = "Comparador", onClick = {
+                        onDismiss()
+                        onPlantCompare()
+                    })
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF880E4F), Color(0xFFAD1457))), icon = "🌸", title = "Colores", onClick = onSearchByColor)
                     SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF338034), Color(0xFF4A9E4C))), icon = "🫐", title = "Bayas", onClick = onSearchByBerries)
-                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF4A148C), Color(0xFF6A1B9A))), icon = "☠️", title = "Parte tóxica", onClick = onSearchByToxicParts)
                 }
-
-                // ── NUEVA FILA: GBIF ───────────────────────────────────
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF4A148C), Color(0xFF6A1B9A))), icon = "☠️", title = "Parte tóxica", onClick = onSearchByToxicParts)
                     SearchOptionSquare(
                         modifier = Modifier.weight(1f),
                         gradient = Brush.verticalGradient(listOf(Color(0xFF0D47A1), Color(0xFF1565C0))),
@@ -731,16 +736,6 @@ fun SearchTypeDialog(
                         onClick = {
                             onDismiss()
                             onNavigateToGBIF()
-                        }
-                    )
-                    SearchOptionSquare(
-                        modifier = Modifier.weight(1f),
-                        gradient = Brush.verticalGradient(listOf(Color(0xFF00695C), Color(0xFF00897B))),
-                        icon = "📱",
-                        title = "Local",
-                        onClick = {
-                            onDismiss()
-                            onSearchByName()
                         }
                     )
                 }

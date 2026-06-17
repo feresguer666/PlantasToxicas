@@ -111,6 +111,7 @@ fun MainApp() {
                 onNavigateToChildSafety      = { navController.navigate("child_safety") },
                 onNavigateToLivestockSafety  = { navController.navigate("livestock_safety") },
                 onNavigateToConfusable       = { navController.navigate("confusable_plants") },
+                onNavigateToPlantCompare     = { navController.navigate("plant_compare") },
                 onNavigateToMap              = { navController.navigate("sightings_history") },
                 onNavigateToColorSearch      = { navController.navigate("color_search") },
                 onNavigateToGlossary         = { navController.navigate("glossary") },
@@ -505,6 +506,18 @@ fun MainApp() {
         // ── PLANTAS VISTAS RECIENTEMENTE ───────────────────────
         composable("recent_plants") {
             RecentPlantsScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── COMPARADOR DE PLANTAS ────────────────────────────────
+        composable("plant_compare") {
+            PlantCompareScreen(
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)

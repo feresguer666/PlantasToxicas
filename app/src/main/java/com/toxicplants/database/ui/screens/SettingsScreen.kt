@@ -45,9 +45,7 @@ import com.toxicplants.database.ui.viewmodel.PlantViewModel
 fun SettingsScreen(
     onBack: () -> Unit,
     onNavigateToDownloadImages: () -> Unit = {},
-    onNavigateToIncompletePlants: () -> Unit = {},
-    onNavigateToPlantsWithMarkers: () -> Unit = {},
-    onNavigateToRecentPlants: () -> Unit = {}
+    onNavigateToReviewCenter: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val backupViewModel: BackupViewModel = viewModel()
@@ -87,19 +85,6 @@ fun SettingsScreen(
     }
     var localPhotosStats by remember { mutableStateOf<Pair<Int, Long>?>(null) }
     val coroutineScope = rememberCoroutineScope()
-
-    var showDeletedPlantsDialog by remember { mutableStateOf(false) }
-    var deletedSeedPlants by remember { mutableStateOf<List<PlantEntity>>(emptyList()) }
-    var loadingDeletedPlants by remember { mutableStateOf(false) }
-
-    fun loadDeletedPlants(openDialog: Boolean = true) {
-        coroutineScope.launch {
-            loadingDeletedPlants = true
-            deletedSeedPlants = plantViewModel.getDeletedSeedPlants()
-            loadingDeletedPlants = false
-            if (openDialog) showDeletedPlantsDialog = true
-        }
-    }
 
     // Cargar stats de fotos locales al entrar
     LaunchedEffect(Unit) {
@@ -395,80 +380,6 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showIncrementalPreview = null }) { Text("Cancelar") }
-            }
-        )
-    }
-
-    // ── Diálogo: papelera de plantas borradas ──────────────────────────────
-    if (showDeletedPlantsDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeletedPlantsDialog = false },
-            title = { Text("🗑️ Papelera de plantas") },
-            text = {
-                Column {
-                    Text(
-                        "Fichas del catálogo base que has eliminado manualmente. Puedes restaurarlas si las borraste por error.",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    if (loadingDeletedPlants) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
-                            Spacer(Modifier.width(8.dp))
-                            Text("Cargando…", fontSize = 13.sp)
-                        }
-                    } else if (deletedSeedPlants.isEmpty()) {
-                        Text("No hay plantas en la papelera.", fontSize = 14.sp)
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.heightIn(max = 360.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            items(deletedSeedPlants, key = { it.id }) { plant ->
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(plant.commonName, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                            Text(
-                                                "#${plant.id} · ${plant.scientificName}",
-                                                fontSize = 11.sp,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
-                                        TextButton(onClick = {
-                                            plantViewModel.restoreDeletedPlant(plant.id)
-                                            deletedSeedPlants = deletedSeedPlants.filter { it.id != plant.id }
-                                            Toast.makeText(context, "Restaurada: ${plant.commonName}", Toast.LENGTH_SHORT).show()
-                                        }) {
-                                            Text("Restaurar")
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    enabled = deletedSeedPlants.isNotEmpty() && !loadingDeletedPlants,
-                    onClick = {
-                        plantViewModel.restoreAllDeletedPlants()
-                        Toast.makeText(context, "Plantas restauradas", Toast.LENGTH_SHORT).show()
-                        deletedSeedPlants = emptyList()
-                        showDeletedPlantsDialog = false
-                    }
-                ) { Text("Restaurar todas") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeletedPlantsDialog = false }) { Text("Cerrar") }
             }
         )
     }
@@ -871,136 +782,23 @@ fun SettingsScreen(
                 }
             }
 
-            // Card: Calidad del catálogo / plantas incompletas ─────
+            // Card: Centro de revisión ─────────────────────────
             item {
-                SettingsCard(modifier = Modifier.clickable { onNavigateToIncompletePlants() }) {
+                SettingsCard(modifier = Modifier.clickable { onNavigateToReviewCenter() }) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = Color(0xFFF57C00),
-                            modifier = Modifier.size(28.dp)
-                        )
+                        Text("🧭", fontSize = 28.sp)
                         Spacer(Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "🧹 Plantas incompletas",
+                                "🧭 Centro de revisión",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )
                             Text(
-                                "Revisar fichas sin imagen, familia, síntomas o datos clave",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-
-            // Card: Historial de plantas vistas ────────────────
-            item {
-                SettingsCard(modifier = Modifier.clickable { onNavigateToRecentPlants() }) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.History,
-                            contentDescription = null,
-                            tint = Color(0xFF1565C0),
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                "🕘 Vistas recientemente",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                            Text(
-                                "Volver rápido a las últimas fichas abiertas",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-
-            // Card: Plantas con marcadores ────────────────────
-            item {
-                SettingsCard(modifier = Modifier.clickable { onNavigateToPlantsWithMarkers() }) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Label,
-                            contentDescription = null,
-                            tint = Color(0xFF2E7D32),
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                "🏷️ Plantas con marcadores",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                            Text(
-                                "Ver fichas marcadas como Revisar, Pendiente foto, etc.",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Icon(
-                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-
-            // Card: Papelera de plantas borradas ──────────────────
-            item {
-                SettingsCard(modifier = Modifier.clickable { loadDeletedPlants(openDialog = true) }) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Delete,
-                            contentDescription = null,
-                            tint = Color(0xFFD32F2F),
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                "🗑️ Papelera de plantas",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                            Text(
-                                "Restaurar fichas eliminadas manualmente",
+                                "Incompletas, notas, marcadores y recientes",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

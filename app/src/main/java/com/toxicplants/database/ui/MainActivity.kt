@@ -472,9 +472,28 @@ fun MainApp() {
             SettingsScreen(
                 onBack                     = { navController.popBackStack() },
                 onNavigateToDownloadImages = { navController.navigate("download_images") },
-                onNavigateToIncompletePlants = { navController.navigate("incomplete_plants") },
-                onNavigateToPlantsWithMarkers = { navController.navigate("plants_with_markers") },
-                onNavigateToRecentPlants = { navController.navigate("recent_plants") }
+                onNavigateToReviewCenter = { navController.navigate("review_center") }
+            )
+        }
+
+        // ── CENTRO DE REVISIÓN ───────────────────────────────────
+        composable("review_center") {
+            ReviewCenterScreen(
+                viewModel = viewModel,
+                onIncompletePlants = { navController.navigate("incomplete_plants") },
+                onPlantsWithNotes = { navController.navigate("plants_with_notes") },
+                onPlantsWithMarkers = { navController.navigate("plants_with_markers") },
+                onRecentPlants = { navController.navigate("recent_plants") },
+                onDeletedPlants = { navController.navigate("deleted_plants") },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── PAPELERA DE PLANTAS ─────────────────────────────────
+        composable("deleted_plants") {
+            DeletedPlantsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -522,6 +541,18 @@ fun MainApp() {
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── PLANTAS CON NOTAS ─────────────────────────────────────
+        composable("plants_with_notes") {
+            PlantsWithNotesScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail")
                 },
                 onBack = { navController.popBackStack() }
             )

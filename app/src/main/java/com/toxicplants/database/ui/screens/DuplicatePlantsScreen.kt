@@ -15,11 +15,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.toxicplants.database.DuplicateReviewStore
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
@@ -35,6 +37,8 @@ private data class DuplicateGroup(
     val plants: List<PlantEntity>
 )
 
+private fun DuplicateGroup.reviewKey(): String = "${type.name}:${key}"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DuplicatePlantsScreen(
@@ -42,13 +46,17 @@ fun DuplicatePlantsScreen(
     onPlantClick: (PlantEntity) -> Unit,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
     var selectedFilter by remember { mutableStateOf(DuplicateFilter.All) }
     var query by remember { mutableStateOf("") }
+    var reviewedGroups by remember { mutableStateOf(DuplicateReviewStore.load(context)) }
+    var showReviewed by remember { mutableStateOf(false) }
 
     val duplicateGroups = remember(allPlants) { buildDuplicateGroups(allPlants) }
-    val visibleGroups = remember(duplicateGroups, selectedFilter, query) {
+    val visibleGroups = remember(duplicateGroups, selectedFilter, query, reviewedGroups, showReviewed) {
         duplicateGroups
+            .filter { showReviewed || it.reviewKey() !in reviewedGroups }
             .filter { selectedFilter == DuplicateFilter.All || it.type == selectedFilter }
             .filter { group ->
                 query.isBlank() ||
@@ -64,6 +72,7 @@ fun DuplicatePlantsScreen(
 
     val scientificCount = remember(duplicateGroups) { duplicateGroups.count { it.type == DuplicateFilter.Scientific } }
     val commonCount = remember(duplicateGroups) { duplicateGroups.count { it.type == DuplicateFilter.Common } }
+    val reviewedCount = remember(duplicateGroups, reviewedGroups) { duplicateGroups.count { it.reviewKey() in reviewedGroups } }
 
     Scaffold(
         topBar = {
@@ -72,7 +81,7 @@ fun DuplicatePlantsScreen(
                     Column {
                         Text("🔁 Posibles duplicados", fontWeight = FontWeight.Bold)
                         Text(
-                            "${visibleGroups.size} grupos · ${duplicateGroups.sumOf { it.plants.size }} fichas implicadas",
+                            "${visibleGroups.size} grupos · $reviewedCount revisados ocultos",
                             fontSize = 12.sp,
                             color = Color.White.copy(alpha = 0.82f)
                         )
@@ -148,6 +157,19 @@ fun DuplicatePlantsScreen(
                                 )
                             )
                         }
+
+                        item {
+                            FilterChip(
+                                selected = showReviewed,
+                                onClick = { showReviewed = !showReviewed },
+                                label = { Text("Mostrar revisados ($reviewedCount)", fontSize = 12.sp) },
+                                enabled = reviewedCount > 0,
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = Color(0xFF607D8B),
+                                    selectedLabelColor = Color.White
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -174,6 +196,15 @@ fun DuplicatePlantsScreen(
                     items(visibleGroups, key = { "${it.type.name}:${it.key}" }) { group ->
                         DuplicateGroupCard(
                             group = group,
+                            reviewed = group.reviewKey() in reviewedGroups,
+                            onMarkReviewed = {
+                                DuplicateReviewStore.markReviewed(context, group.reviewKey())
+                                reviewedGroups = DuplicateReviewStore.load(context)
+                            },
+                            onUnmarkReviewed = {
+                                DuplicateReviewStore.unmarkReviewed(context, group.reviewKey())
+                                reviewedGroups = DuplicateReviewStore.load(context)
+                            },
                             onOpenGroup = {
                                 viewModel.setDetailNavigationPlants(group.plants)
                                 onPlantClick(group.plants.first())
@@ -193,6 +224,9 @@ fun DuplicatePlantsScreen(
 @Composable
 private fun DuplicateGroupCard(
     group: DuplicateGroup,
+    reviewed: Boolean,
+    onMarkReviewed: () -> Unit,
+    onUnmarkReviewed: () -> Unit,
     onOpenGroup: () -> Unit,
     onOpenPlant: (PlantEntity) -> Unit
 ) {
@@ -223,6 +257,12 @@ private fun DuplicateGroupCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    if (reviewed) {
+                        Text("✓ Grupo revisado", fontSize = 11.sp, color = Color(0xFF607D8B), fontWeight = FontWeight.Medium)
+                    }
+                }
+                TextButton(onClick = if (reviewed) onUnmarkReviewed else onMarkReviewed) {
+                    Text(if (reviewed) "Reactivar" else "Marcar revisado")
                 }
                 TextButton(onClick = onOpenGroup) { Text("Abrir grupo") }
             }

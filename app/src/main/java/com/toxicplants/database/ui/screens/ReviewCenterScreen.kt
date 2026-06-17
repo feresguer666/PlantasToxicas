@@ -44,6 +44,7 @@ fun ReviewCenterScreen(
     onRecentPlants: () -> Unit,
     onDeletedPlants: () -> Unit,
     onDuplicatePlants: () -> Unit,
+    onScientificNameReview: () -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -139,6 +140,14 @@ fun ReviewCenterScreen(
                 subtitle = "Detectar nombres científicos o comunes repetidos",
                 color = Color(0xFF5E35B1),
                 onClick = onDuplicatePlants
+            )
+
+            ReviewToolCard(
+                icon = "🔬",
+                title = "Nombres científicos",
+                subtitle = "Detectar nombres vacíos, raros, spp. o duplicados",
+                color = Color(0xFF3949AB),
+                onClick = onScientificNameReview
             )
 
             ReviewToolCard(

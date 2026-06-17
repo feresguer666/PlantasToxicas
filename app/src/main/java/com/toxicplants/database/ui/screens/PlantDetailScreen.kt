@@ -235,6 +235,8 @@ fun PlantDetailScreen(
             var isSavingUrl   by remember { mutableStateOf(false) }
             var noteDraft by remember(p.id, p.notes) { mutableStateOf(p.notes.orEmpty()) }
             var selectedMarkers by remember(p.id) { mutableStateOf(PlantMarkerStore.load(context, p.id)) }
+            var compactView by remember(p.id) { mutableStateOf(true) }
+            var compactSymptomsExpanded by remember(p.id) { mutableStateOf(false) }
             var quickIndexExpanded by remember(p.id) { mutableStateOf(false) }
             var notesExpanded by remember(p.id) { mutableStateOf(false) }
             var markersExpanded by remember(p.id) { mutableStateOf(false) }
@@ -459,6 +461,76 @@ fun PlantDetailScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
+                // Selector simple de vista compacta / completa
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    OutlinedButton(onClick = { compactView = !compactView }) {
+                        Text(if (compactView) "Vista completa" else "Vista compacta", fontSize = 12.sp)
+                    }
+                }
+
+                if (compactView) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().bringIntoViewRequester(imageSectionRequester),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        PlantImageCard(
+                            plant = p,
+                            height = 260.dp,
+                            showReload = true,
+                            reloadKey = loadAttempts,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = getToxicityColor(p.toxicityLevel).copy(alpha = 0.1f)
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(p.commonName, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                p.scientificName,
+                                fontSize = 16.sp,
+                                fontStyle = FontStyle.Italic,
+                                color = Color.Gray
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Surface(
+                                color = getToxicityColor(p.toxicityLevel),
+                                shape = MaterialTheme.shapes.small
+                            ) {
+                                Text(
+                                    "Toxicidad: ${p.toxicityLevel}",
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+
+                    ExpandableSectionCard(
+                        title = "Síntomas",
+                        expanded = compactSymptomsExpanded,
+                        onExpandedChange = { compactSymptomsExpanded = it },
+                        modifier = Modifier.bringIntoViewRequester(symptomsSectionRequester)
+                    ) {
+                        com.toxicplants.database.ui.components.GlossaryText(
+                            text = p.symptoms,
+                            fontSize = 14.sp
+                        )
+                    }
+                    DetailSection(
+                        title = "Partes Tóxicas",
+                        content = p.toxicParts
+                    )
+                } else {
 
                 // ══════════════════════════════════════════════════════════
                 // ÍNDICE RÁPIDO DE SECCIONES
@@ -1169,6 +1241,8 @@ fun PlantDetailScreen(
                         InfoRow("Nivel",     p.toxicityLevel)
                     }
                 }
+
+                } // fin vista completa
 
             } // fin Column
         } // fin else (plant != null)

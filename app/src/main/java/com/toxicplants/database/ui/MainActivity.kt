@@ -486,6 +486,20 @@ fun MainApp() {
                 onRecentPlants = { navController.navigate("recent_plants") },
                 onDeletedPlants = { navController.navigate("deleted_plants") },
                 onDuplicatePlants = { navController.navigate("duplicate_plants") },
+                onScientificNameReview = { navController.navigate("scientific_name_review") },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── REVISIÓN DE NOMBRES CIENTÍFICOS ───────────────────
+        composable("scientific_name_review") {
+            ScientificNameReviewScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                },
+                onEditPlant = { plantId -> navController.navigate("edit_plant/$plantId") },
                 onBack = { navController.popBackStack() }
             )
         }

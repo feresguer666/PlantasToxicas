@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -58,6 +59,7 @@ fun ScientificNameReviewScreen(
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
     var selectedFilter by remember { mutableStateOf(ScientificNameIssueFilter.All) }
     var query by remember { mutableStateOf("") }
+    var plantToDelete by remember { mutableStateOf<PlantEntity?>(null) }
 
     val issues = remember(allPlants) { buildScientificNameIssues(allPlants) }
     val visibleIssues = remember(issues, selectedFilter, query) {
@@ -173,6 +175,7 @@ fun ScientificNameReviewScreen(
                                 onPlantClick(issue.plant)
                             },
                             onEdit = { onEditPlant(issue.plant.id) },
+                            onDelete = { plantToDelete = issue.plant },
                             onGbif = {
                                 val queryText = issue.plant.scientificName.ifBlank { issue.plant.commonName }
                                 val url = "https://www.gbif.org/species/search?q=${Uri.encode(queryText)}"
@@ -189,6 +192,26 @@ fun ScientificNameReviewScreen(
             }
         }
     }
+
+    plantToDelete?.let { plant ->
+        AlertDialog(
+            onDismissRequest = { plantToDelete = null },
+            title = { Text("¿Eliminar planta con nombre sospechoso?") },
+            text = {
+                Text("Se eliminará ${plant.commonName} (#${plant.id}) de la base local y quedará en la papelera de plantas.")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deletePlant(plant)
+                    plantToDelete = null
+                }) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { plantToDelete = null }) { Text("Cancelar") }
+            }
+        )
+    }
+
 }
 
 @Composable
@@ -196,6 +219,7 @@ private fun ScientificNameIssueCard(
     issue: ScientificNameIssue,
     onOpen: () -> Unit,
     onEdit: () -> Unit,
+    onDelete: () -> Unit,
     onGbif: () -> Unit,
     onWikipedia: () -> Unit
 ) {
@@ -228,6 +252,13 @@ private fun ScientificNameIssueCard(
                     if (plant.family.isNotBlank()) {
                         Text(plant.family, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Eliminar planta con nombre sospechoso",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
                 IconButton(onClick = onEdit) {
                     Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Color(0xFF2E7D32))

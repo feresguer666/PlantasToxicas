@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -50,6 +51,7 @@ fun DuplicatePlantsScreen(
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
     var selectedFilter by remember { mutableStateOf(DuplicateFilter.All) }
     var query by remember { mutableStateOf("") }
+    var plantToDelete by remember { mutableStateOf<PlantEntity?>(null) }
     var reviewedGroups by remember { mutableStateOf(DuplicateReviewStore.load(context)) }
     var showReviewed by remember { mutableStateOf(false) }
 
@@ -212,13 +214,34 @@ fun DuplicatePlantsScreen(
                             onOpenPlant = { plant ->
                                 viewModel.setDetailNavigationPlants(group.plants)
                                 onPlantClick(plant)
-                            }
+                            },
+                            onDeletePlant = { plant -> plantToDelete = plant }
                         )
                     }
                 }
             }
         }
     }
+
+    plantToDelete?.let { plant ->
+        AlertDialog(
+            onDismissRequest = { plantToDelete = null },
+            title = { Text("¿Eliminar planta duplicada?") },
+            text = {
+                Text("Se eliminará ${plant.commonName} (#${plant.id}) de la base local y quedará en la papelera de plantas.")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deletePlant(plant)
+                    plantToDelete = null
+                }) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { plantToDelete = null }) { Text("Cancelar") }
+            }
+        )
+    }
+
 }
 
 @Composable
@@ -228,7 +251,8 @@ private fun DuplicateGroupCard(
     onMarkReviewed: () -> Unit,
     onUnmarkReviewed: () -> Unit,
     onOpenGroup: () -> Unit,
-    onOpenPlant: (PlantEntity) -> Unit
+    onOpenPlant: (PlantEntity) -> Unit,
+    onDeletePlant: (PlantEntity) -> Unit
 ) {
     val color = when (group.type) {
         DuplicateFilter.Scientific -> Color(0xFF1565C0)
@@ -284,6 +308,13 @@ private fun DuplicateGroupCard(
                             if (plant.family.isNotBlank()) {
                                 Text(plant.family, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
+                        }
+                        IconButton(onClick = { onDeletePlant(plant) }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Eliminar planta duplicada",
+                                tint = MaterialTheme.colorScheme.error
+                            )
                         }
                         Text("Ver →", fontSize = 12.sp, color = color, fontWeight = FontWeight.Bold)
                     }

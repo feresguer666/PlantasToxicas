@@ -783,6 +783,7 @@ fun MainApp() {
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 },
+                onEditPlantLocation = { plantId -> navController.navigate("location/$plantId") },
                 onBack = { navController.popBackStack() }
             )
         }

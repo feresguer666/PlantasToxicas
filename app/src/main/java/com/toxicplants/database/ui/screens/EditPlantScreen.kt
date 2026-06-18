@@ -24,7 +24,8 @@ fun EditPlantScreen(
     plantId: Int?,
     viewModel: PlantViewModel,
     onBack: () -> Unit,
-    onSaveAndNext: ((Int) -> Unit)? = null
+    onSaveAndNext: ((Int) -> Unit)? = null,
+    onSaved: ((Int) -> Unit)? = null
 ) {
     val isNew = plantId == null || plantId == 0
     val existingPlant = if (!isNew) {
@@ -128,7 +129,11 @@ fun EditPlantScreen(
                             if (commonName.isNotBlank()) {
                                 val plant = buildPlantForSave()
                                 viewModel.insertPlant(plant)
-                                onBack()
+                                if (onSaved != null && plant.id != 0) {
+                                    onSaved(plant.id)
+                                } else {
+                                    onBack()
+                                }
                             }
                         }
                     ) {
@@ -349,7 +354,11 @@ fun EditPlantScreen(
                     if (commonName.isNotBlank()) {
                         val plant = buildPlantForSave()
                         viewModel.insertPlant(plant)
-                        onBack()
+                        if (onSaved != null && plant.id != 0) {
+                            onSaved(plant.id)
+                        } else {
+                            onBack()
+                        }
                     }
                 },
                 modifier = Modifier

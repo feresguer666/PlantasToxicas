@@ -428,6 +428,15 @@ fun MainApp() {
                         popUpTo("edit_plant/$plantId") { inclusive = true }
                         launchSingleTop = true
                     }
+                },
+                onSaved = { savedPlantId ->
+                    val removedOldDetail = navController.popBackStack("plant_detail/{plantId}", inclusive = true)
+                    if (!removedOldDetail) {
+                        navController.popBackStack()
+                    }
+                    navController.navigate("plant_detail/$savedPlantId") {
+                        launchSingleTop = true
+                    }
                 }
             )
         }

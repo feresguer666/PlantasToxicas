@@ -45,6 +45,7 @@ fun ReviewCenterScreen(
     onDeletedPlants: () -> Unit,
     onDuplicatePlants: () -> Unit,
     onScientificNameReview: () -> Unit,
+    onLocalChanges: () -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -140,6 +141,14 @@ fun ReviewCenterScreen(
                 subtitle = "Detectar nombres científicos o comunes repetidos",
                 color = Color(0xFF5E35B1),
                 onClick = onDuplicatePlants
+            )
+
+            ReviewToolCard(
+                icon = "🛠️",
+                title = "Cambios locales",
+                subtitle = "Ver ediciones, borrados, notas, marcadores y revisiones",
+                color = Color(0xFF455A64),
+                onClick = onLocalChanges
             )
 
             ReviewToolCard(

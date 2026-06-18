@@ -496,6 +496,21 @@ fun MainApp() {
                 onDeletedPlants = { navController.navigate("deleted_plants") },
                 onDuplicatePlants = { navController.navigate("duplicate_plants") },
                 onScientificNameReview = { navController.navigate("scientific_name_review") },
+                onLocalChanges = { navController.navigate("local_changes") },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── CAMBIOS LOCALES ─────────────────────────────────────
+        composable("local_changes") {
+            LocalChangesScreen(
+                plantViewModel = viewModel,
+                compoundViewModel = compoundViewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                },
+                onCompoundClick = { compound -> navController.navigate("compound_detail/${compound.id}") },
                 onBack = { navController.popBackStack() }
             )
         }

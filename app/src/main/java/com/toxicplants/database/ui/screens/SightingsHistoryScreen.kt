@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
@@ -93,6 +94,7 @@ fun SightingsHistoryScreen(
     viewModel: SightingViewModel,
     plantViewModel: PlantViewModel,
     onPlantClick: (PlantEntity) -> Unit,
+    onEditPlantLocation: (Int) -> Unit = {},
     onBack: () -> Unit
 ) {
     LocalContext.current
@@ -139,6 +141,7 @@ fun SightingsHistoryScreen(
             TabRow(selectedTabIndex = selectedTab) {
                 Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("Historial") })
                 Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("Mapa") })
+                Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }, text = { Text("Plantas") })
             }
             if (selectedTab == 0) {
                 SightingsList(
@@ -153,10 +156,16 @@ fun SightingsHistoryScreen(
                     onEdit = { editTarget = it },
                     onDelete = { deleteTarget = it }
                 )
-            } else {
+            } else if (selectedTab == 1) {
                 SightingsMap(
                     sightings = sightings,
                     focusedSightingId = focusedSightingId
+                )
+            } else {
+                PlantsWithLocationInSightingsTab(
+                    plants = allPlants,
+                    onPlantClick = onPlantClick,
+                    onEditLocation = onEditPlantLocation
                 )
             }
         }
@@ -207,6 +216,172 @@ fun SightingsHistoryScreen(
         )
     }
 }
+
+
+@Composable
+private fun PlantsWithLocationInSightingsTab(
+    plants: List<PlantEntity>,
+    onPlantClick: (PlantEntity) -> Unit,
+    onEditLocation: (Int) -> Unit
+) {
+    var query by remember { mutableStateOf("") }
+    val locatedPlants = remember(plants, query) {
+        plants
+            .filter { it.latitude != null && it.longitude != null }
+            .filter { plant ->
+                query.isBlank() ||
+                    plant.commonName.contains(query, ignoreCase = true) ||
+                    plant.scientificName.contains(query, ignoreCase = true) ||
+                    plant.locationName.orEmpty().contains(query, ignoreCase = true) ||
+                    plant.notes.orEmpty().contains(query, ignoreCase = true)
+            }
+            .sortedBy { it.commonName.lowercase() }
+    }
+
+    Column(Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                singleLine = true,
+                label = { Text("Buscar por planta, lugar o nota") },
+                leadingIcon = { Icon(Icons.Filled.LocationOn, contentDescription = null) }
+            )
+        }
+
+        if (plants.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = Color(0xFF1565C0))
+            }
+        } else if (locatedPlants.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("📍", fontSize = 54.sp)
+                    Text(
+                        if (query.isBlank()) "No hay plantas con ubicación" else "Sin resultados",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        if (query.isBlank()) "Añade coordenadas desde una ficha de planta" else "Prueba otro texto",
+                        color = Color.Gray,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                item {
+                    Text(
+                        "📍 ${locatedPlants.size} plantas localizadas",
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1565C0)
+                    )
+                }
+                items(locatedPlants, key = { it.id }, contentType = { "located_plant" }) { plant ->
+                    LocatedPlantInSightingsCard(
+                        plant = plant,
+                        onOpenPlant = { onPlantClick(plant) },
+                        onEditLocation = { onEditLocation(plant.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LocatedPlantInSightingsCard(
+    plant: PlantEntity,
+    onOpenPlant: () -> Unit,
+    onEditLocation: () -> Unit
+) {
+    val context = LocalContext.current
+    val hasLocation = plant.latitude != null && plant.longitude != null
+
+    Card(elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)) {
+        Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFE3F2FD)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Filled.LocationOn, contentDescription = null, tint = Color(0xFF1565C0), modifier = Modifier.size(34.dp))
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = plant.commonName.ifBlank { "Sin nombre" },
+                    modifier = Modifier.clickable { onOpenPlant() },
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (plant.scientificName.isNotBlank()) {
+                    Text(
+                        plant.scientificName,
+                        modifier = Modifier.clickable { onOpenPlant() },
+                        fontStyle = FontStyle.Italic,
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Text("Abrir ficha ↗", modifier = Modifier.clickable { onOpenPlant() }, fontSize = 10.sp, color = MaterialTheme.colorScheme.primary)
+                if (!plant.locationName.isNullOrBlank()) {
+                    Text("📍 ${plant.locationName}", fontSize = 12.sp, color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                if (hasLocation) {
+                    Text(
+                        "${"%.5f".format(plant.latitude)}, ${"%.5f".format(plant.longitude)}",
+                        fontSize = 11.sp,
+                        color = Color(0xFF1565C0)
+                    )
+                }
+                if (!plant.notes.isNullOrBlank()) {
+                    Text("📝 ${plant.notes}", fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                }
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (hasLocation) {
+                    IconButton(onClick = { openPlantInExternalMap(context, plant) }) {
+                        Icon(Icons.Filled.LocationOn, contentDescription = "Abrir en mapa", tint = Color(0xFF1565C0))
+                    }
+                }
+                IconButton(onClick = onEditLocation) {
+                    Icon(Icons.Filled.Edit, contentDescription = "Editar ubicación", tint = Color.Gray)
+                }
+            }
+        }
+    }
+}
+
+private fun openPlantInExternalMap(context: Context, plant: PlantEntity) {
+    val lat = plant.latitude ?: return
+    val lng = plant.longitude ?: return
+    val label = Uri.encode(plant.commonName.ifBlank { "Planta" })
+    val uri = Uri.parse("geo:$lat,$lng?q=$lat,$lng($label)")
+    runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) }
+}
+
 
 @Composable
 private fun SightingsList(

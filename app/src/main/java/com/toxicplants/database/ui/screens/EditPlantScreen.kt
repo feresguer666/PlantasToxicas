@@ -62,7 +62,7 @@ fun EditPlantScreen(
     var maxToxicityMonths by remember(existingPlant) { mutableStateOf(existingPlant?.maxToxicityMonths ?: "") }
 
     fun buildPlantForSave(): PlantEntity = PlantEntity(
-        id = existingPlant?.id ?: 0,
+        id = existingPlant?.id ?: plantId ?: 0,
         commonName = commonName,
         commonNames = commonNames,
         scientificName = scientificName,

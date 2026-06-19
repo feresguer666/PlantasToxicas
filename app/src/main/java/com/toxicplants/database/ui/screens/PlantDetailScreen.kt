@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +58,8 @@ fun PlantDetailScreen(
     onBack: () -> Unit,
     onEdit: ((Int) -> Unit)? = null,
     onNavigateToLocation: ((Int) -> Unit)? = null,
-    onCompoundClick: ((CompoundEntity) -> Unit)? = null
+    onCompoundClick: ((CompoundEntity) -> Unit)? = null,
+    onNavigateToPlant: ((Int) -> Unit)? = null
 ) {
     val context        = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -72,7 +74,7 @@ fun PlantDetailScreen(
     // Permite moverse entre fichas sin volver a la lista. Si se abrió desde una
     // lista filtrada/búsqueda/familia, las flechas recorren ese contexto; si no,
     // recorren el catálogo completo.
-    var currentPlantId by remember(plantId) { mutableIntStateOf(plantId) }
+    var currentPlantId by rememberSaveable(plantId) { mutableIntStateOf(plantId) }
     val navigationPlants = remember(allPlants, contextPlants, currentPlantId) {
         if (contextPlants.any { it.id == currentPlantId }) contextPlants else allPlants
     }
@@ -93,8 +95,15 @@ fun PlantDetailScreen(
 
     fun goToPlant(target: PlantEntity?) {
         if (target == null) return
+
+        // Guardamos SIEMPRE el ID actual en estado saveable. Así, si salimos a
+        // Wiki/Commons y Android recrea la pantalla, vuelve a esta ficha y no
+        // a la primera con la que se abrió el detalle.
         currentPlantId = target.id
         viewModel.selectPlant(target)
+
+        // Si existe callback de navegación, también actualiza la ruta real.
+        onNavigateToPlant?.invoke(target.id)
     }
 
     // Sembrar datos fenológicos si faltan

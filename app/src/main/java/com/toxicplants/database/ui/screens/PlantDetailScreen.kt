@@ -981,6 +981,18 @@ fun PlantDetailScreen(
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.SYMPTOMS,
                     viewModel = viewModel
                 )
+                OutlinedButton(
+                    onClick = {
+                        val query = "componentes y síntomas tóxicos de " +
+                                (p.scientificName.ifBlank { p.commonName }) +
+                                if (p.commonName.isNotBlank()) " (${p.commonName})" else ""
+                        val url = "https://www.google.com/search?q=${Uri.encode(query)}"
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("🔎 Google toxicología", fontSize = 13.sp)
+                }
                 DetailSection(title = "Primeros Auxilios", content = p.firstAid, modifier = Modifier.bringIntoViewRequester(firstAidSectionRequester))
                 AiFillButton(
                     label = "🤖 Generar primeros auxilios con IA",

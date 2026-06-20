@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.Normalizer
 
 private enum class DuplicateTextFilter(val label: String, val fieldLabel: String? = null) {
@@ -70,10 +72,25 @@ fun DuplicateTextPlantsScreen(
     onBack: () -> Unit
 ) {
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
-    var selectedFilter by remember { mutableStateOf(DuplicateTextFilter.All) }
+    var selectedFilter by remember { mutableStateOf(DuplicateTextFilter.Description) }
     var query by remember { mutableStateOf("") }
 
-    val allIssues = remember(allPlants) { buildDuplicateTextIssues(allPlants) }
+    var allIssues by remember { mutableStateOf<List<DuplicateTextIssue>>(emptyList()) }
+    var isAnalyzing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(allPlants, selectedFilter) {
+        if (allPlants.isEmpty()) {
+            allIssues = emptyList()
+            isAnalyzing = false
+        } else {
+            isAnalyzing = true
+            allIssues = withContext(Dispatchers.Default) {
+                buildDuplicateTextIssues(allPlants, selectedFilter)
+            }
+            isAnalyzing = false
+        }
+    }
+
     val visibleIssues = remember(allIssues, selectedFilter, query) {
         allIssues
             .filter { selectedFilter == DuplicateTextFilter.All || it.filter == selectedFilter }
@@ -88,9 +105,13 @@ fun DuplicateTextPlantsScreen(
             .sortedWith(compareBy<DuplicateTextIssue> { it.plant.commonName.lowercase() }.thenBy { it.fieldLabel })
     }
 
-    val counts = remember(allIssues) {
+    val counts = remember(allIssues, selectedFilter) {
         DuplicateTextFilter.entries.associateWith { filter ->
-            if (filter == DuplicateTextFilter.All) allIssues.size else allIssues.count { it.filter == filter }
+            when {
+                filter == selectedFilter -> allIssues.size
+                filter == DuplicateTextFilter.All && selectedFilter == DuplicateTextFilter.All -> allIssues.size
+                else -> 0
+            }
         }
     }
 
@@ -149,8 +170,8 @@ fun DuplicateTextPlantsScreen(
                             FilterChip(
                                 selected = selectedFilter == filter,
                                 onClick = { selectedFilter = filter },
-                                label = { Text("${filter.label} ($count)", fontSize = 12.sp) },
-                                enabled = count > 0 || filter == DuplicateTextFilter.All,
+                                label = { Text(if (filter == selectedFilter) "${filter.label} ($count)" else filter.label, fontSize = 12.sp) },
+                                enabled = true,
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = Color(0xFF2E7D32),
                                     selectedLabelColor = Color.White
@@ -161,9 +182,16 @@ fun DuplicateTextPlantsScreen(
                 }
             }
 
-            if (allPlants.isEmpty()) {
+            if (allPlants.isEmpty() || isAnalyzing) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color(0xFF2E7D32))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = Color(0xFF2E7D32))
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            if (allPlants.isEmpty()) "Cargando plantas…" else "Analizando ${selectedFilter.label.lowercase()}…",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             } else if (visibleIssues.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -254,10 +282,16 @@ private fun DuplicateTextIssueCard(
     }
 }
 
-private fun buildDuplicateTextIssues(plants: List<PlantEntity>): List<DuplicateTextIssue> {
+private fun buildDuplicateTextIssues(plants: List<PlantEntity>, selectedFilter: DuplicateTextFilter = DuplicateTextFilter.All): List<DuplicateTextIssue> {
     val out = mutableListOf<DuplicateTextIssue>()
+    val fieldsToAnalyze = if (selectedFilter == DuplicateTextFilter.All) {
+        duplicateTextFields
+    } else {
+        duplicateTextFields.filter { it.filter == selectedFilter }
+    }
+
     for (plant in plants) {
-        for (field in duplicateTextFields) {
+        for (field in fieldsToAnalyze) {
             val value = field.getter(plant).trim()
             val duplicate = findDuplicateFragment(value) ?: continue
             out += DuplicateTextIssue(

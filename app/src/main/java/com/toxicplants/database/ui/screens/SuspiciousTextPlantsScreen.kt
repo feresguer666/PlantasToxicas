@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
+import kotlinx.coroutines.launch
 
 private enum class SuspiciousTextFilter(val label: String) {
     All("Todos"),
@@ -79,6 +80,11 @@ fun SuspiciousTextPlantsScreen(
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
     var selectedFilter by remember { mutableStateOf(SuspiciousTextFilter.All) }
     var query by remember { mutableStateOf("") }
+    val translationScope = rememberCoroutineScope()
+    var issueToTranslate by remember { mutableStateOf<SuspiciousTextIssue?>(null) }
+    var translatedText by remember { mutableStateOf("") }
+    var translationError by remember { mutableStateOf("") }
+    var isTranslating by remember { mutableStateOf(false) }
 
     val allIssues = remember(allPlants) { buildSuspiciousTextIssues(allPlants) }
     val visibleIssues = remember(allIssues, selectedFilter, query) {
@@ -99,6 +105,60 @@ fun SuspiciousTextPlantsScreen(
         SuspiciousTextFilter.entries.associateWith { filter ->
             if (filter == SuspiciousTextFilter.All) allIssues.size else allIssues.count { filter in it.filters }
         }
+    }
+
+    issueToTranslate?.let { issue ->
+        AlertDialog(
+            onDismissRequest = {
+                if (!isTranslating) issueToTranslate = null
+            },
+            title = { Text("Traducir y limpiar: ${issue.fieldLabel}") },
+            text = {
+                Column {
+                    Text("Antes", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                    Spacer(Modifier.height(4.dp))
+                    Text(issue.preview, fontSize = 12.sp, maxLines = 7, overflow = TextOverflow.Ellipsis)
+                    Spacer(Modifier.height(12.dp))
+                    Text("Después", fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                    Spacer(Modifier.height(4.dp))
+                    when {
+                        isTranslating -> {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Traduciendo con IA…", fontSize = 13.sp)
+                            }
+                        }
+                        translationError.isNotBlank() -> Text(translationError, color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+                        else -> OutlinedTextField(
+                            value = translatedText,
+                            onValueChange = { translatedText = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 5,
+                            label = { Text("Texto traducido editable") }
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = !isTranslating && translatedText.isNotBlank(),
+                    onClick = {
+                        val updated = issue.plant.copyWithReviewedText(issue.fieldLabel, translatedText.trim())
+                        viewModel.insertPlant(updated)
+                        issueToTranslate = null
+                        translatedText = ""
+                        translationError = ""
+                    }
+                ) { Text("Aplicar") }
+            },
+            dismissButton = {
+                TextButton(
+                    enabled = !isTranslating,
+                    onClick = { issueToTranslate = null }
+                ) { Text("Cancelar") }
+            }
+        )
     }
 
     Scaffold(
@@ -190,7 +250,25 @@ fun SuspiciousTextPlantsScreen(
                                 viewModel.setDetailNavigationPlants(visibleIssues.map { it.plant }.distinctBy { it.id })
                                 onPlantClick(issue.plant)
                             },
-                            onEdit = { onEditPlant(issue.plant.id) }
+                            onEdit = { onEditPlant(issue.plant.id) },
+                            onTranslate = {
+                                issueToTranslate = issue
+                                translatedText = ""
+                                translationError = ""
+                                isTranslating = true
+                                translationScope.launch {
+                                    val response = com.toxicplants.database.ui.GeminiNameHelper.chatCompletion(
+                                        prompt = buildTranslationPrompt(issue.fieldLabel, issue.preview),
+                                        systemInstruction = "Eres un editor técnico de botánica y toxicología. Traduce al español y limpia el texto manteniendo el significado. No inventes datos. Devuelve solo el texto final, sin markdown."
+                                    ).trim()
+                                    if (response.startsWith("❌") || response.startsWith("⚠️")) {
+                                        translationError = response
+                                    } else {
+                                        translatedText = response
+                                    }
+                                    isTranslating = false
+                                }
+                            }
                         )
                     }
                 }
@@ -203,7 +281,8 @@ fun SuspiciousTextPlantsScreen(
 private fun SuspiciousTextIssueCard(
     issue: SuspiciousTextIssue,
     onOpen: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onTranslate: () -> Unit
 ) {
     val severityColor = when {
         SuspiciousTextFilter.English in issue.filters -> Color(0xFFE65100)
@@ -245,6 +324,14 @@ private fun SuspiciousTextIssueCard(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 OutlinedButton(onClick = onOpen, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)) {
                     Text("Ver", fontSize = 12.sp)
+                }
+                OutlinedButton(
+                    onClick = onTranslate,
+                    enabled = SuspiciousTextFilter.English in issue.filters && issue.fieldLabel != "Nombre científico",
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text("Traducir", fontSize = 12.sp)
                 }
                 Button(onClick = onEdit, modifier = Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))) {
                     Text("Editar", fontSize = 12.sp)
@@ -318,4 +405,33 @@ private fun inspectTextField(plant: PlantEntity, label: String, value: String): 
         messages = messages.distinct(),
         preview = value
     )
+}
+
+
+private fun buildTranslationPrompt(fieldLabel: String, text: String): String = """
+Campo: $fieldLabel
+
+Texto original:
+$text
+
+Tarea:
+- Traduce al español si hay inglés.
+- Limpia restos de texto externo como etiquetas de bases de datos.
+- Mantén información botánica/toxicológica útil.
+- No inventes datos nuevos.
+- Devuelve solo el texto final corregido.
+""".trimIndent()
+
+private fun PlantEntity.copyWithReviewedText(fieldLabel: String, value: String): PlantEntity = when (fieldLabel) {
+    "Nombre común" -> copy(commonName = value)
+    "Nombre científico" -> copy(scientificName = value)
+    "Descripción" -> copy(description = value)
+    "Síntomas" -> copy(symptoms = value)
+    "Primeros auxilios" -> copy(firstAid = value)
+    "Partes tóxicas" -> copy(toxicParts = value)
+    "Hábitat" -> copy(habitat = value)
+    "Distribución" -> copy(geographicDistribution = value)
+    "Categoría" -> copy(category = value)
+    "Mitos" -> copy(mythsAndLegends = value)
+    else -> this
 }

@@ -208,6 +208,7 @@ object GeminiNameHelper {
 
         val species = "Especie: \"${scientificName.ifBlank { "(desconocida)" }}\" " +
                 "(nombre común: \"${commonName.ifBlank { "(ninguno)" }}\")."
+        val toxinHint = toxinHintForSpecies(scientificName, commonName)
 
         val instruction = when (type) {
             FieldType.DESCRIPTION -> """
@@ -220,22 +221,38 @@ object GeminiNameHelper {
 
             FieldType.SYMPTOMS -> """
                 $species
-                Describe los SÍNTOMAS DE INTOXICACIÓN de forma ESPECÍFICA para esta especie o, si no hay datos de especie,
-                para su género/familia indicando prudencia.
 
-                Reglas importantes:
-                - NO des una lista genérica igual para todas las plantas.
-                - Diferencia humanos / mascotas / ganado solo si hay datos conocidos.
-                - Indica órganos o sistemas afectados: digestivo, neurológico, cardíaco, respiratorio, dérmico, renal/hepático.
-                - Incluye signos diferenciales si son conocidos: midriasis/miosis, bradicardia/taquicardia, arritmias,
-                  convulsiones, dermatitis, fotosensibilidad, fallo hepático/renal, etc.
-                - Si procede, menciona tiempo de aparición aproximado y gravedad.
-                - Si la especie se considera de baja toxicidad o no hay evidencia clara, dilo explícitamente.
-                - Si no conoces datos fiables, responde exactamente: "DESCONOCIDO".
+                Redacta SOLO el campo "síntomas de intoxicación" para esta planta.
 
-                Devuelve 3-6 frases en español, texto plano, sin markdown, sin títulos.
+                Información orientativa local sobre toxina/grupo, si existe:
+                ${toxinHint.ifBlank { "No hay toxina predefinida en la tabla local. Si no conoces con certeza la toxina real, NO menciones compuestos concretos." }}
+
+                Reglas estrictas:
+                - NO inventes compuestos.
+                - NO digas "varios compuestos", "incluyendo alcaloides tropánicos y cianogénicos" ni listas genéricas de toxinas.
+                - Nombra una toxina o grupo químico SOLO si es característico y conocido para esa especie/género.
+                - Si hay una toxina conocida en la tabla local, úsala como prioridad.
+                - Si no sabes la toxina exacta, describe solo el cuadro clínico sin nombrar compuestos.
+                - NO des primeros auxilios ni recomendaciones médicas.
+                - NO digas "buscar atención médica", "acudir a urgencias", "consultar a un profesional".
+                - NO añadas coletillas como "es importante destacar que..." o "la toxicidad depende de...".
+                - NO uses markdown ni títulos.
+
+                Contenido esperado:
+                - 2 a 4 frases clínicas en español.
+                - Menciona mecanismo solo si es conocido.
+                - Describe síntomas por sistemas: digestivos, neurológicos, cardíacos, respiratorios, dérmicos, oculares, hepáticos o renales según corresponda.
+                - Incluye signos diferenciales solo si son propios de esa toxina/planta.
+
+                Ejemplos de precisión:
+                - Abrus precatorius: abrina/abrin, toxalbúmina proteica inhibidora de ribosomas; gastroenteritis intensa, vómitos, diarrea, deshidratación, fallo multiorgánico retardado.
+                - Ricinus communis: ricina, toxalbúmina inhibidora de ribosomas.
+                - Digitalis/Nerium/Thevetia: glucósidos cardíacos, arritmias, bradicardia/bloqueo AV.
+                - Atropa/Datura/Hyoscyamus/Brugmansia: alcaloides tropánicos, síndrome anticolinérgico.
+                - Prunus/Sorghum/mandioca amarga: glucósidos cianogénicos/cianuro.
+
+                Si no conoces datos fiables, responde exactamente: "DESCONOCIDO".
             """.trimIndent()
-
             FieldType.REGION -> """
                 $species
                 Indica la DISTRIBUCIÓN GEOGRÁFICA / regiones donde se encuentra esta especie, en español,
@@ -317,16 +334,111 @@ object GeminiNameHelper {
                     .optString("content", "")
                     .trim()
 
+                val finalTxt = if (type == FieldType.SYMPTOMS) cleanGeneratedSymptoms(txt) else txt
+
                 when {
-                    txt.isBlank() -> TextResult.Error("La IA no devolvió respuesta.")
-                    txt.equals("DESCONOCIDO", true) -> TextResult.Error("La IA no conoce datos fiables de esta especie.")
-                    else -> TextResult.Success(txt)
+                    finalTxt.isBlank() -> TextResult.Error("La IA no devolvió respuesta útil.")
+                    finalTxt.equals("DESCONOCIDO", true) -> TextResult.Error("La IA no conoce datos fiables de esta especie.")
+                    else -> TextResult.Success(finalTxt)
                 }
             }
         }.getOrElse { e ->
             TextResult.Error("No se pudo conectar con la IA (${e.message ?: "error"}).")
         }
     }
+
+
+    private fun toxinHintForSpecies(scientificName: String, commonName: String): String {
+        val n = (scientificName + " " + commonName).lowercase()
+
+        return when {
+            "abrus precatorius" in n || "abrus" in n || "regaliz americano" in n ->
+                "Toxina característica: abrina/abrin, una toxalbúmina proteica inhibidora de ribosomas."
+
+            "ricinus communis" in n || "ricino" in n ->
+                "Toxina característica: ricina, toxalbúmina proteica inhibidora de ribosomas."
+
+            "nerium oleander" in n || "adelfa" in n || "oleander" in n ->
+                "Toxinas características: glucósidos cardíacos como oleandrina/neriina."
+
+            "thevetia" in n ->
+                "Toxinas características: glucósidos cardíacos como tevetina/peruvósido."
+
+            "digitalis" in n || "dedalera" in n ->
+                "Toxinas características: glucósidos cardíacos como digitoxina/digoxina."
+
+            "atropa" in n || "belladonna" in n || "belladona" in n ->
+                "Toxinas características: alcaloides tropánicos como atropina, hiosciamina y escopolamina."
+
+            "datura" in n || "brugmansia" in n || "hyoscyamus" in n || "estramonio" in n ->
+                "Toxinas características: alcaloides tropánicos; cuadro anticolinérgico."
+
+            "taxus" in n || "tejo" in n ->
+                "Toxinas características: taxinas; cardiotoxicidad con arritmias y colapso."
+
+            "aconitum" in n || "acónito" in n ->
+                "Toxina característica: aconitina y alcaloides diterpénicos; neuro/cardiotoxicidad."
+
+            "conium maculatum" in n || "cicuta" in n ->
+                "Toxinas características: alcaloides piperidínicos como coniína; bloqueo neuromuscular."
+
+            "colchicum" in n || "colchico" in n ->
+                "Toxina característica: colchicina; toxicidad digestiva, hematológica y multiorgánica."
+
+            "dieffenbachia" in n || "zantedeschia" in n || "arum " in n || "philodendron" in n ->
+                "Principio irritante característico: cristales de oxalato cálcico; irritación oral y edema local."
+
+            "euphorbia" in n ->
+                "Principios irritantes característicos: látex con ésteres diterpénicos; dermatitis e irritación ocular."
+
+            "prunus" in n || "amygdalus" in n || "sorghum" in n || "yuca amarga" in n || "mandioca" in n ->
+                "Toxinas posibles: glucósidos cianogénicos con liberación de cianuro, según especie y parte."
+
+            "laburnum" in n || "cytisus" in n ->
+                "Toxina característica: citisina y alcaloides quinolizidínicos."
+
+            "veratrum" in n ->
+                "Toxinas características: alcaloides esteroidales/veratrínicos; hipotensión, bradicardia y síntomas neurológicos."
+
+            "phytolacca" in n ->
+                "Principios tóxicos: saponinas y lectinas; irritación gastrointestinal marcada."
+
+            else -> ""
+        }
+    }
+
+    private fun cleanGeneratedSymptoms(text: String): String {
+        if (text.isBlank()) return text
+
+        val bannedFragments = listOf(
+            "buscar atención médica",
+            "busque atención médica",
+            "acudir a urgencias",
+            "acuda a urgencias",
+            "consultar a un profesional",
+            "consulte a un profesional",
+            "es importante destacar",
+            "es importante señalar",
+            "la toxicidad depende",
+            "puede estar relacionada con varios compuestos",
+            "incluyendo alcaloides tropánicos y cianogénicos",
+            "varios compuestos, incluyendo"
+        )
+
+        val sentences = text
+            .replace("\n", " ")
+            .split(Regex("(?<=[.!?])\\s+"))
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+
+        val cleaned = sentences.filterNot { sentence ->
+            val lower = sentence.lowercase()
+            bannedFragments.any { it in lower }
+        }.joinToString(" ").trim()
+
+        return cleaned.ifBlank { text.trim() }
+    }
+
 
     private fun httpErrorMessage(code: Int, body: String): String = when (code) {
         401 -> "API key de Groq no válida o no configurada."

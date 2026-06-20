@@ -49,7 +49,7 @@ object GeminiNameHelper {
     }
 
     /* Tipo de campo de texto a generar. */
-    enum class FieldType { DESCRIPTION, SYMPTOMS, REGION }
+    enum class FieldType { DESCRIPTION, SYMPTOMS, REGION, HABITAT, TOXIC_PARTS, FIRST_AID }
 
     /**
      * Función genérica para que puedas usarla en el ASISTENTE FLORASAFE
@@ -210,24 +210,67 @@ object GeminiNameHelper {
                 "(nombre común: \"${commonName.ifBlank { "(ninguno)" }}\")."
 
         val instruction = when (type) {
-            FieldType.DESCRIPTION -> """  
-                $species  
-                Escribe una DESCRIPCIÓN BOTÁNICA breve y clara en español (3-5 frases):  
-                porte (árbol/arbusto/hierba), hojas, flores (color), frutos (color), rasgos distintivos.  
-                Texto plano, sin markdown, sin títulos. Si no conoces la especie, responde exactamente: "DESCONOCIDO".  
+            FieldType.DESCRIPTION -> """
+                $species
+                Escribe una DESCRIPCIÓN BOTÁNICA breve y clara en español (3-5 frases):
+                porte (árbol/arbusto/hierba), hojas, flores, frutos, olor/látex si aplica y rasgos distintivos.
+                Evita frases genéricas. Si no conoces la especie con fiabilidad, responde exactamente: "DESCONOCIDO".
+                Texto plano, sin markdown y sin títulos.
             """.trimIndent()
-            FieldType.SYMPTOMS -> """  
-                $species  
-                Describe los SÍNTOMAS DE INTOXICACIÓN en humanos por esta especie, en español (2-5 frases o lista breve):  
-                principales signos digestivos, neurológicos, cardíacos, dérmicos según corresponda, y gravedad.  
-                Sé prudente y orientativo. Texto plano, sin markdown. Si la especie no es tóxica, indícalo.  
-                Si no conoces la especie, responde exactamente: "DESCONOCIDO".  
+
+            FieldType.SYMPTOMS -> """
+                $species
+                Describe los SÍNTOMAS DE INTOXICACIÓN de forma ESPECÍFICA para esta especie o, si no hay datos de especie,
+                para su género/familia indicando prudencia.
+
+                Reglas importantes:
+                - NO des una lista genérica igual para todas las plantas.
+                - Diferencia humanos / mascotas / ganado solo si hay datos conocidos.
+                - Indica órganos o sistemas afectados: digestivo, neurológico, cardíaco, respiratorio, dérmico, renal/hepático.
+                - Incluye signos diferenciales si son conocidos: midriasis/miosis, bradicardia/taquicardia, arritmias,
+                  convulsiones, dermatitis, fotosensibilidad, fallo hepático/renal, etc.
+                - Si procede, menciona tiempo de aparición aproximado y gravedad.
+                - Si la especie se considera de baja toxicidad o no hay evidencia clara, dilo explícitamente.
+                - Si no conoces datos fiables, responde exactamente: "DESCONOCIDO".
+
+                Devuelve 3-6 frases en español, texto plano, sin markdown, sin títulos.
             """.trimIndent()
-            FieldType.REGION -> """  
-                $species  
-                Indica la DISTRIBUCIÓN GEOGRÁFICA / regiones donde se encuentra esta especie, en español,  
-                en una frase corta (ej: "Europa central y meridional; naturalizada en América del Norte").  
-                Texto plano, sin markdown. Si no la conoces, responde exactamente: "DESCONOCIDO".  
+
+            FieldType.REGION -> """
+                $species
+                Indica la DISTRIBUCIÓN GEOGRÁFICA / regiones donde se encuentra esta especie, en español,
+                en una frase corta (ej: "Europa central y meridional; naturalizada en América del Norte").
+                Si no la conoces, responde exactamente: "DESCONOCIDO". Texto plano, sin markdown.
+            """.trimIndent()
+
+            FieldType.HABITAT -> """
+                $species
+                Describe el HÁBITAT típico de esta especie en español: tipo de suelo, humedad, altitud aproximada,
+                exposición solar, ambientes naturales o cultivados, bordes de camino/jardines/bosques/pastizales si aplica.
+                Sé concreto y evita frases genéricas. Si no conoces datos fiables, responde exactamente: "DESCONOCIDO".
+                Devuelve 1-3 frases, texto plano, sin markdown.
+            """.trimIndent()
+
+            FieldType.TOXIC_PARTS -> """
+                $species
+                Indica qué PARTES DE LA PLANTA son tóxicas o irritantes y, si se conoce, cuáles concentran más compuestos activos:
+                hojas, semillas, bayas/frutos, raíces, bulbos, corteza, látex, savia, flores, toda la planta, etc.
+                Si hay variación por madurez/estación/secado, menciónala. Si no conoces datos fiables, responde exactamente: "DESCONOCIDO".
+                Devuelve una frase o lista breve en español, texto plano, sin markdown.
+            """.trimIndent()
+
+            FieldType.FIRST_AID -> """
+                $species
+                Redacta PRIMEROS AUXILIOS orientativos para exposición o ingestión accidental de esta planta.
+
+                Reglas:
+                - Prioriza seguridad: retirar restos de la boca/piel, lavar con agua, no provocar vómito salvo indicación profesional.
+                - Recomienda llamar a Toxicología/112/urgencias si hay síntomas, ingestión relevante, niños, mascotas, o toxicidad alta.
+                - Menciona conservar muestra/foto de la planta.
+                - No des dosis de medicamentos ni tratamientos hospitalarios específicos.
+                - Si no conoces datos fiables, da consejos generales prudentes y no inventes antídotos.
+
+                Devuelve 3-5 frases cortas en español, texto plano, sin markdown.
             """.trimIndent()
         }
 

@@ -929,7 +929,19 @@ fun PlantDetailScreen(
                     viewModel = viewModel
                 )
                 DetailSection(title = "Primeros Auxilios", content = p.firstAid, modifier = Modifier.bringIntoViewRequester(firstAidSectionRequester))
+                AiFillButton(
+                    label = "🤖 Generar primeros auxilios con IA",
+                    plant = p,
+                    fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.FIRST_AID,
+                    viewModel = viewModel
+                )
                 DetailSection(title = "Partes Tóxicas", content = p.toxicParts)
+                AiFillButton(
+                    label = "🤖 Generar partes tóxicas con IA",
+                    plant = p,
+                    fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.TOXIC_PARTS,
+                    viewModel = viewModel
+                )
 
                 // ══════════════════════════════════════════════════════════
                 // COMPUESTOS TÓXICOS QUE CONTIENE
@@ -1039,6 +1051,12 @@ fun PlantDetailScreen(
                     }
                 }
                 DetailSection(title = "Hábitat",        content = p.habitat)
+                AiFillButton(
+                    label = "🤖 Generar hábitat con IA",
+                    plant = p,
+                    fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.HABITAT,
+                    viewModel = viewModel
+                )
                 DetailSection(title = "Distribución",   content = p.geographicDistribution)
                 AiFillButton(
                     label = "🤖 Clasificar región / distribución con IA",
@@ -1399,6 +1417,12 @@ fun AiFillButton(
                                     plant.copy(symptoms = result.text)
                                 com.toxicplants.database.ui.GeminiNameHelper.FieldType.REGION ->
                                     plant.copy(geographicDistribution = result.text)
+                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.HABITAT ->
+                                    plant.copy(habitat = result.text)
+                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.TOXIC_PARTS ->
+                                    plant.copy(toxicParts = result.text)
+                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.FIRST_AID ->
+                                    plant.copy(firstAid = result.text)
                             }
                             viewModel.insertPlant(updated)
                             message = "✅ Generado y guardado."

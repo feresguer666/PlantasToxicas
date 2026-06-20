@@ -909,6 +909,59 @@ fun PlantDetailScreen(
                         onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsCommonUrl))) },
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Buscar fotos por nombre común en Commons", fontSize = 12.sp) }
+
+                    Spacer(Modifier.height(10.dp))
+                    HorizontalDivider()
+                    Spacer(Modifier.height(8.dp))
+
+                    Text("Búsqueda toxicológica externa", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(Modifier.height(6.dp))
+
+                    val toxicologyQuery = "componentes y síntomas tóxicos de " +
+                            (p.scientificName.ifBlank { p.commonName })
+                    val toxicologyQueryWithCommon = toxicologyQuery +
+                            if (p.commonName.isNotBlank()) " (${p.commonName})" else ""
+                    val googleToxicologyUrl = "https://www.google.com/search?q=" +
+                            Uri.encode(toxicologyQueryWithCommon)
+                    val scholarUrl = "https://scholar.google.com/scholar?q=" +
+                            Uri.encode("${p.scientificName.ifBlank { p.commonName }} toxicity toxic compounds symptoms")
+                    val pubMedUrl = "https://pubmed.ncbi.nlm.nih.gov/?term=" +
+                            Uri.encode("${p.scientificName.ifBlank { p.commonName }} toxicity toxic compounds symptoms")
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(googleToxicologyUrl))) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4))
+                        ) { Text("Google toxicología", fontSize = 11.sp) }
+
+                        OutlinedButton(
+                            onClick = {
+                                clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(toxicologyQueryWithCommon))
+                                Toast.makeText(context, "Consulta copiada", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) { Text("Copiar consulta", fontSize = 11.sp) }
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(scholarUrl))) },
+                            modifier = Modifier.weight(1f)
+                        ) { Text("Scholar", fontSize = 11.sp) }
+
+                        OutlinedButton(
+                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pubMedUrl))) },
+                            modifier = Modifier.weight(1f)
+                        ) { Text("PubMed", fontSize = 11.sp) }
+                    }
                 }
 
                 // ══════════════════════════════════════════════════════════

@@ -46,6 +46,7 @@ fun ReviewCenterScreen(
     onDuplicatePlants: () -> Unit,
     onScientificNameReview: () -> Unit,
     onSuspiciousText: () -> Unit,
+    onDuplicateText: () -> Unit,
     onLocalChanges: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -158,6 +159,14 @@ fun ReviewCenterScreen(
                 subtitle = "Detectar texto en inglés, placeholders, HTML o fragmentos raros",
                 color = Color(0xFFE65100),
                 onClick = onSuspiciousText
+            )
+
+            ReviewToolCard(
+                icon = "📄",
+                title = "Texto duplicado",
+                subtitle = "Detectar descripciones, síntomas o auxilios repetidos",
+                color = Color(0xFF795548),
+                onClick = onDuplicateText
             )
 
             ReviewToolCard(

@@ -375,7 +375,13 @@ fun MainApp() {
                     onBack               = { navController.popBackStack() },
                     onEdit               = { plantId -> navController.navigate("edit_plant/$plantId") },
                     onNavigateToLocation = { plantId -> navController.navigate("location/$plantId") },
-                    onCompoundClick      = { compound -> navController.navigate("compound_detail/${compound.id}") }
+                    onCompoundClick      = { compound -> navController.navigate("compound_detail/${compound.id}") },
+                    onNavigateToPlant    = { id ->
+                        navController.popBackStack()
+                        navController.navigate("plant_detail/$id") {
+                            launchSingleTop = true
+                        }
+                    }
                 )
             } else {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -496,6 +502,7 @@ fun MainApp() {
                 onDeletedPlants = { navController.navigate("deleted_plants") },
                 onDuplicatePlants = { navController.navigate("duplicate_plants") },
                 onScientificNameReview = { navController.navigate("scientific_name_review") },
+                onSuspiciousText = { navController.navigate("suspicious_text_plants") },
                 onLocalChanges = { navController.navigate("local_changes") },
                 onBack = { navController.popBackStack() }
             )
@@ -511,6 +518,19 @@ fun MainApp() {
                     navController.navigate("plant_detail/${plant.id}")
                 },
                 onCompoundClick = { compound -> navController.navigate("compound_detail/${compound.id}") },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── TEXTO SOSPECHOSO / INGLÉS ────────────────────────
+        composable("suspicious_text_plants") {
+            SuspiciousTextPlantsScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                },
+                onEditPlant = { plantId -> navController.navigate("edit_plant/$plantId") },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -603,7 +623,7 @@ fun MainApp() {
                 viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail")
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )

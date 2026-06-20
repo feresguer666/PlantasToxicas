@@ -45,6 +45,7 @@ fun ReviewCenterScreen(
     onDeletedPlants: () -> Unit,
     onDuplicatePlants: () -> Unit,
     onScientificNameReview: () -> Unit,
+    onSuspiciousText: () -> Unit,
     onLocalChanges: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -149,6 +150,14 @@ fun ReviewCenterScreen(
                 subtitle = "Ver ediciones, borrados, notas, marcadores y revisiones",
                 color = Color(0xFF455A64),
                 onClick = onLocalChanges
+            )
+
+            ReviewToolCard(
+                icon = "🧯",
+                title = "Texto sospechoso",
+                subtitle = "Detectar texto en inglés, placeholders, HTML o fragmentos raros",
+                color = Color(0xFFE65100),
+                onClick = onSuspiciousText
             )
 
             ReviewToolCard(

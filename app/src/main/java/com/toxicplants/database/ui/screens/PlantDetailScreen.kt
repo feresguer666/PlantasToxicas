@@ -974,6 +974,18 @@ fun PlantDetailScreen(
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.DESCRIPTION,
                     viewModel = viewModel
                 )
+                OutlinedButton(
+                    onClick = {
+                        val query = "descripción botánica características hábitat de " +
+                                (p.scientificName.ifBlank { p.commonName }) +
+                                if (p.commonName.isNotBlank()) " (${p.commonName})" else ""
+                        val url = "https://www.google.com/search?q=${Uri.encode(query)}"
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("🔎 Google descripción", fontSize = 13.sp)
+                }
                 DetailSection(title = "Síntomas",       content = p.symptoms, modifier = Modifier.bringIntoViewRequester(symptomsSectionRequester))
                 AiFillButton(
                     label = "🤖 Generar síntomas de intoxicación con IA",

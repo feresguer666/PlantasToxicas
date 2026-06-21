@@ -84,6 +84,7 @@ fun MainApp() {
                 viewModel                    = viewModel,
                 onNavigateToList             = { navController.navigate("plant_list") },
                 onNavigateToCategories       = { navController.navigate("categories") },
+                onNavigateToOrnamentalDanger = { navController.navigate("ornamental_danger") },
                 onNavigateToEmergency        = { navController.navigate("emergency") },
                 onNavigateToMyths            = { navController.navigate("myths") },
                 onNavigateToAssistant        = { navController.navigate("assistant") },
@@ -141,6 +142,18 @@ fun MainApp() {
         composable("plant_list") {
             PlantListScreen(
                 viewModel    = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── PLANTAS ORNAMENTALES PELIGROSAS ────────────────────
+        composable("ornamental_danger") {
+            OrnamentalDangerPlantsScreen(
+                viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")

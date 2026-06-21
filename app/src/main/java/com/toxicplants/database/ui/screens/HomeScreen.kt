@@ -69,6 +69,7 @@ fun HomeScreen(
     viewModel: PlantViewModel,
     onNavigateToList: () -> Unit,
     onNavigateToCategories: () -> Unit,
+    onNavigateToOrnamentalDanger: () -> Unit = {},
     onNavigateToEmergency: () -> Unit,
     onNavigateToMyths: () -> Unit,
     onNavigateToAssistant: () -> Unit = {},
@@ -371,6 +372,8 @@ fun HomeScreen(
             onSearchByName       = { showSearchDialog = false; onNavigateToSearch() },
             onSearchBySymptoms   = { showSearchDialog = false; onNavigateToSearchBySymptoms() },
             onSearchByFamily     = { showSearchDialog = false; onNavigateToFamilies() },
+            onSearchByCategories = { showSearchDialog = false; onNavigateToCategories() },
+            onSearchByOrnamental = { showSearchDialog = false; onNavigateToOrnamentalDanger() },
             onSearchByPets       = { showSearchDialog = false; onNavigateToPetSafety() },
             onSearchByChildren   = { showSearchDialog = false; onNavigateToChildSafety() },
             onSearchByLivestock  = { showSearchDialog = false; onNavigateToLivestockSafety() },
@@ -604,7 +607,7 @@ fun NavigationGrid(
                 title = { Text("☠️ Fitotoxicología", fontWeight = FontWeight.Bold) },
                 text  = {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF43A047))), icon = "🌿", title = "Botánica", subtitle = "Líquenes, setas, plantas y categorías", onClick = { showFitoDialog = false; showBotanicaDialog = true })
+                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF43A047))), icon = "🌿", title = "Botánica", subtitle = "Líquenes, setas y plantas", onClick = { showFitoDialog = false; showBotanicaDialog = true })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF263238), Color(0xFF7B1FA2))), icon = "🧠", title = "Plantas psicotrópicas", subtitle = "Alucinógenos, IMAO, depresores, estimulantes y tropánicos", onClick = { showFitoDialog = false; onNavigateToPsychotropicPlants() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF2D1B69), Color(0xFF6A1B9A))), icon = "🔬", title = "Química", subtitle = "Fitoquímica: compuestos tóxicos y alcaloides", onClick = { showFitoDialog = false; showQuimicaDialog = true })
                     }
@@ -623,7 +626,6 @@ fun NavigationGrid(
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF37474F), Color(0xFF607D8B))), icon = "🪨", title = "Líquenes tóxicos", subtitle = "Compuestos liquénicos y efectos", onClick  = { showBotanicaDialog = false; onNavigateToLichens() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF4E342E), Color(0xFF795548))), icon = "🍄", title = "Setas tóxicas", subtitle = "Catálogo micológico y síndromes", onClick  = { showBotanicaDialog = false; onNavigateToMushrooms() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B3A1E), Color(0xFF2E5232))), icon = "🌿", title = "Plantas", subtitle = "Catálogo completo", onClick  = { showBotanicaDialog = false; onNavigateToList() })
-                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1E4423), Color(0xFF2A5C30))), icon = "🗂️", title = "Categorías", subtitle = "Silvestre, jardín, interior…", onClick  = { showBotanicaDialog = false; onNavigateToCategories() })
                     }
                 },
                 confirmButton = {},
@@ -693,6 +695,8 @@ fun SearchTypeDialog(
     onSearchByName: () -> Unit,
     onSearchBySymptoms: () -> Unit,
     onSearchByFamily: () -> Unit,
+    onSearchByCategories: () -> Unit = {},
+    onSearchByOrnamental: () -> Unit = {},
     onSearchByPets: () -> Unit,
     onSearchByChildren: () -> Unit,
     onSearchByLivestock: () -> Unit,

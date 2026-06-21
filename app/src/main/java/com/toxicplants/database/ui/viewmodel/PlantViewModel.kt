@@ -51,6 +51,42 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     private val detailNavigationPlants = MutableStateFlow<List<PlantEntity>>(emptyList())
     val detailNavigationPlantsData: StateFlow<List<PlantEntity>> = detailNavigationPlants
 
+
+    // ── Caché: plantas ornamentales peligrosas ───────────────────────────
+    // Evita recalcular en cada entrada a la pantalla. Se invalida al editar/borrar/restaurar plantas.
+    private var ornamentalDangerCache: List<PlantEntity>? = null
+    private val ornamentalDangerLevels = setOf("Mortal", "Muy alto", "Alto", "Moderado")
+    private val ornamentalKeywords = listOf(
+        "ornamental", "ornamentales", "jardín", "jardin", "jardinería", "jardineria",
+        "interior", "doméstica", "domestica", "casa", "maceta", "cultivada", "cultivo",
+        "parque", "seto", "decorativa", "decorativo", "patio", "terraza", "balcón", "balcon"
+    )
+
+    suspend fun getOrnamentalDangerPlantsCached(): List<PlantEntity> = withContext(Dispatchers.IO) {
+        ornamentalDangerCache ?: repository.getAllPlantsSync()
+            .filter { it.toxicityLevel in ornamentalDangerLevels }
+            .filter { it.isLikelyOrnamentalForCache() }
+            .sortedWith(
+                compareBy<PlantEntity> {
+                    listOf("Mortal", "Muy alto", "Alto", "Moderado").indexOf(it.toxicityLevel).let { idx ->
+                        if (idx < 0) 99 else idx
+                    }
+                }.thenBy { it.commonName.lowercase() }
+            )
+            .also { ornamentalDangerCache = it }
+    }
+
+    fun invalidateOrnamentalDangerCache() {
+        ornamentalDangerCache = null
+    }
+
+    private fun PlantEntity.isLikelyOrnamentalForCache(): Boolean {
+        val haystack = listOf(category, habitat, description, geographicDistribution, commonName, commonNames)
+            .joinToString(" ")
+            .lowercase()
+        return ornamentalKeywords.any { it in haystack }
+    }
+
     init {
         val db = PlantDatabase.getDatabase(application)
         val plantDao = db.plantDao()
@@ -195,6 +231,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     fun insertPlant(plant: PlantEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(plant)
+            invalidateOrnamentalDangerCache()
             PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
             PlantUserEditStore.markEdited(getApplication(), plant.id)
         }
@@ -245,6 +282,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun insertPlantSync(plant: PlantEntity) {
         withContext(Dispatchers.IO) {
             repository.insert(plant)
+            invalidateOrnamentalDangerCache()
             PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
             PlantUserEditStore.markEdited(getApplication(), plant.id)
         }
@@ -253,6 +291,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     fun deletePlant(plant: PlantEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.delete(plant)
+            invalidateOrnamentalDangerCache()
             PlantDeletionStore.markDeleted(getApplication(), plant.id)
             if (selectedPlant.value?.id == plant.id) selectedPlant.value = null
             plants.value = repository.getAllPlantsSync()
@@ -275,6 +314,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             val seedPlant = PlantDataSource.loadAll(app).firstOrNull { it.id == plantId }
             if (seedPlant != null) {
                 repository.insert(seedPlant)
+                invalidateOrnamentalDangerCache()
                 PlantDeletionStore.unmarkDeleted(app, plantId)
                 PlantUserEditStore.unmarkEdited(app, plantId)
                 plants.value = repository.getAllPlantsSync()
@@ -290,6 +330,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             val seedPlants = PlantDataSource.loadAll(app).filter { it.id in deletedIds }
             if (seedPlants.isNotEmpty()) {
                 repository.insertAll(seedPlants)
+                invalidateOrnamentalDangerCache()
             }
             PlantDeletionStore.clear(app)
             for (id in deletedIds) PlantUserEditStore.unmarkEdited(app, id)

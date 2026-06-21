@@ -23,12 +23,6 @@ import androidx.compose.ui.unit.sp
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
-private val ornamentalKeywords = listOf(
-    "ornamental", "ornamentales", "jardín", "jardin", "jardinería", "jardineria",
-    "interior", "doméstica", "domestica", "casa", "maceta", "cultivada", "cultivo",
-    "parque", "seto", "decorativa", "decorativo", "patio", "terraza", "balcón", "balcon"
-)
-
 private val dangerousLevels = listOf("Mortal", "Muy alto", "Alto", "Moderado")
 
 private enum class OrnamentalToxicityFilter(val label: String, val levels: Set<String>) {
@@ -36,13 +30,6 @@ private enum class OrnamentalToxicityFilter(val label: String, val levels: Set<S
     Mortal("Mortal", setOf("Mortal")),
     High("Alto/Muy alto", setOf("Alto", "Muy alto")),
     Moderate("Moderado", setOf("Moderado"))
-}
-
-private fun PlantEntity.isLikelyOrnamental(): Boolean {
-    val haystack = listOf(category, habitat, description, geographicDistribution, commonName, commonNames)
-        .joinToString(" ")
-        .lowercase()
-    return ornamentalKeywords.any { it in haystack }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,11 +42,23 @@ fun OrnamentalDangerPlantsScreen(
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
     var selectedFilter by remember { mutableStateOf(OrnamentalToxicityFilter.All) }
     var query by remember { mutableStateOf("") }
+    var baseOrnamentalPlants by remember { mutableStateOf<List<PlantEntity>>(emptyList()) }
+    var isLoadingCache by remember { mutableStateOf(true) }
 
-    val ornamentalPlants = remember(allPlants, selectedFilter, query) {
-        allPlants
+    LaunchedEffect(allPlants.size) {
+        if (allPlants.isEmpty()) {
+            baseOrnamentalPlants = emptyList()
+            isLoadingCache = true
+        } else {
+            isLoadingCache = true
+            baseOrnamentalPlants = viewModel.getOrnamentalDangerPlantsCached()
+            isLoadingCache = false
+        }
+    }
+
+    val ornamentalPlants = remember(baseOrnamentalPlants, selectedFilter, query) {
+        baseOrnamentalPlants
             .filter { it.toxicityLevel in selectedFilter.levels }
-            .filter { it.isLikelyOrnamental() }
             .filter { plant ->
                 query.isBlank() ||
                     plant.commonName.contains(query, ignoreCase = true) ||
@@ -67,17 +66,12 @@ fun OrnamentalDangerPlantsScreen(
                     plant.family.contains(query, ignoreCase = true) ||
                     plant.category.contains(query, ignoreCase = true)
             }
-            .sortedWith(compareBy<PlantEntity> {
-                dangerousLevels.indexOf(it.toxicityLevel).let { idx -> if (idx < 0) 99 else idx }
-            }.thenBy { it.commonName.lowercase() })
     }
 
-    val totalOrnamental = remember(allPlants) {
-        allPlants.count { it.toxicityLevel in dangerousLevels && it.isLikelyOrnamental() }
-    }
-    val counts = remember(allPlants) {
+    val totalOrnamental = baseOrnamentalPlants.size
+    val counts = remember(baseOrnamentalPlants) {
         OrnamentalToxicityFilter.entries.associateWith { filter ->
-            allPlants.count { it.isLikelyOrnamental() && it.toxicityLevel in filter.levels }
+            baseOrnamentalPlants.count { it.toxicityLevel in filter.levels }
         }
     }
 
@@ -136,9 +130,16 @@ fun OrnamentalDangerPlantsScreen(
                 }
             }
 
-            if (allPlants.isEmpty()) {
+            if (allPlants.isEmpty() || isLoadingCache) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color(0xFF2E7D32))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator(color = Color(0xFF2E7D32))
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            if (allPlants.isEmpty()) "Cargando plantas…" else "Cargando ornamentales peligrosas…",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             } else if (ornamentalPlants.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -5993,7 +5993,7 @@
     "notes": null,
     "commonName": "Milkweed",
     "scientificName": "Asclepias speciosa",
-    "family": "Asclepiadaceae",
+    "family": "Apocynaceae",
     "toxicityLevel": "Mortal",
     "toxicParts": "partes no especificadas por la fuente, evitar ingestión o contacto hasta identificación profesional",
     "symptoms": "vómitos, profound depresión/letargo, debilidad, falta de apetito, and diarrea are common; may be followed by convulsiones, dificultad respiratoria, rapid, pulso débil, dilated pupils, kidney or fallo hepático, coma, respiratory paralysis and muerte; Registro inferido automáticamente: especie de Asclepias, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
@@ -6003,7 +6003,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Asclepias_speciosa1jakesmome.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 2774,
@@ -6147,7 +6151,7 @@
     "notes": null,
     "commonName": "Milkweed",
     "scientificName": "Asclepias tuberosa",
-    "family": "Asclepiadaceae",
+    "family": "Apocynaceae",
     "toxicityLevel": "Mortal",
     "toxicParts": "partes no especificadas por la fuente, evitar ingestión o contacto hasta identificación profesional",
     "symptoms": "vómitos, profound depresión/letargo, debilidad, falta de apetito, and diarrea are common; may be followed by convulsiones, dificultad respiratoria, rapid, pulso débil, dilated pupils, kidney or fallo hepático, coma, respiratory paralysis and muerte; Registro inferido automáticamente: especie de Asclepias, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
@@ -6157,7 +6161,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/07/Butterfly_Weed_Flower_and_Bud_Closeup_2408px.jpg",
     "category": "Silvestre",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 2781,
@@ -8180,29 +8188,6 @@
     "geographicDistribution": "Validación taxonómica GBIF: Plantae SPECIES SYNONYM. Distribución geográfica no inferida automáticamente.",
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Brunfelsia_americana1C2000.jpg",
-    "category": "Jardín",
-    "commonNames": "",
-    "mythsAndLegends": ""
-  },
-  {
-    "id": 2873,
-    "isFavorite": false,
-    "latitude": null,
-    "longitude": null,
-    "locationName": null,
-    "foundDate": null,
-    "notes": null,
-    "commonName": "Today",
-    "scientificName": "Brunfelsia species",
-    "family": "Solanaceae",
-    "toxicityLevel": "Alto",
-    "toxicParts": "partes no especificadas por la fuente, evitar ingestión o contacto hasta identificación profesional",
-    "symptoms": "temblores, convulsiones (for several days), diarrea, vómitos, hypersalivation, letargo, incoordination, coughing; Registro inferido automáticamente: especie de Brunfelsia, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
-    "description": "Principios tóxicos indicados por ASPCA: Brunfelsamidine. Notas de fuentes: Registro inferido automáticamente: especie de Brunfelsia, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar. Registro generado automáticamente desde: ASPCA-cats, ASPCA-dogs, ASPCA-horses, GBIF, GBIF-genus-expansion. Requiere revisión experta.",
-    "habitat": "Hábitat no especificado automáticamente; revisar distribución local antes de publicar.",
-    "geographicDistribution": "Validación taxonómica GBIF: Plantae GENUS ACCEPTED. Distribución geográfica no inferida automáticamente.",
-    "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
-    "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/yesterday-today-tomorrow-r.jpg?itok=r7plL0Ro",
     "category": "Jardín",
     "commonNames": "",
     "mythsAndLegends": ""

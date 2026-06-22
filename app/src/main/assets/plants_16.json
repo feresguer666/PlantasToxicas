@@ -2461,7 +2461,11 @@
     "firstAid": "No provocar el vómito. Enjuagar la boca si hubo ingestión accidental. Conservar muestra/foto y consultar con centro toxicológico o veterinario si hay síntomas o exposición en niños/mascotas.",
     "imageUrl": "",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 7613,
@@ -2703,7 +2707,11 @@
     "firstAid": "No provocar el vómito. Enjuagar la boca si hubo ingestión accidental. Conservar muestra/foto y consultar con centro toxicológico o veterinario si hay síntomas o exposición en niños/mascotas.",
     "imageUrl": "",
     "category": "Tropical",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 7624,
@@ -4548,28 +4556,6 @@
     "description": "Tabernaemontana debrayi pertenece al género Tabernaemontana, familia Apocynaceae. Muchas especies del género contienen látex y alcaloides indólicos; algunas especies se han investigado por compuestos relacionados con voacangina/coronaridina/iboga y otros alcaloides. La composición varía mucho entre especies y partes de la planta, por lo que la ficha es preventiva y requiere revisión específica. No usar como planta medicinal o recreativa.",
     "habitat": "Arbustos o árboles tropicales/subtropicales; algunas especies se cultivan como ornamentales por sus flores.",
     "geographicDistribution": "Madagascar",
-    "firstAid": "No provocar el vómito. Enjuagar la boca si hubo ingestión accidental y lavar piel/ojos con abundante agua si hubo contacto con látex. Conservar foto/muestra. Contactar con centro toxicológico, emergencias o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
-    "imageUrl": "",
-    "category": "Tropical",
-    "commonNames": ""
-  },
-  {
-    "id": 7708,
-    "isFavorite": false,
-    "latitude": null,
-    "longitude": null,
-    "locationName": null,
-    "foundDate": null,
-    "notes": null,
-    "commonName": "tabernaemontana donnell-smithii",
-    "scientificName": "Tabernaemontana donnell-smithii",
-    "family": "Apocynaceae",
-    "toxicityLevel": "Alto",
-    "toxicParts": "látex/savia, corteza, hojas, frutos, semillas, raíces y partes no especificadas; evitar ingestión y contacto con mucosas/ojos",
-    "symptoms": "Posible toxicidad por alcaloides indólicos de Apocynaceae/Tabernaemontana. Signos posibles: náuseas, vómitos, diarrea, dolor abdominal, salivación, mareo, somnolencia o agitación, confusión, temblores, alteraciones de presión arterial o ritmo cardíaco y síntomas neurológicos en exposiciones importantes.",
-    "description": "Tabernaemontana donnell-smithii pertenece al género Tabernaemontana, familia Apocynaceae. Muchas especies del género contienen látex y alcaloides indólicos; algunas especies se han investigado por compuestos relacionados con voacangina/coronaridina/iboga y otros alcaloides. La composición varía mucho entre especies y partes de la planta, por lo que la ficha es preventiva y requiere revisión específica. No usar como planta medicinal o recreativa.",
-    "habitat": "Arbustos o árboles tropicales/subtropicales; algunas especies se cultivan como ornamentales por sus flores.",
-    "geographicDistribution": "México, América Central",
     "firstAid": "No provocar el vómito. Enjuagar la boca si hubo ingestión accidental y lavar piel/ojos con abundante agua si hubo contacto con látex. Conservar foto/muestra. Contactar con centro toxicológico, emergencias o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "",
     "category": "Tropical",

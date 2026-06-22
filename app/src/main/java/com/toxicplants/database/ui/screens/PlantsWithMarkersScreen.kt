@@ -35,6 +35,7 @@ fun PlantsWithMarkersScreen(
 ) {
     val context = LocalContext.current
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
+    val availableMarkers = remember { PlantMarkerStore.allAvailableMarkers(context) }
     var markerMap by remember { mutableStateOf<Map<Int, Set<String>>>(emptyMap()) }
     var selectedMarker by remember { mutableStateOf<String?>(null) }
     var query by remember { mutableStateOf("") }
@@ -60,7 +61,7 @@ fun PlantsWithMarkersScreen(
 
     val totalMarkedPlants = remember(markerMap) { markerMap.size }
     val countsByMarker = remember(markerMap) {
-        PlantMarkerStore.DEFAULT_MARKERS.associateWith { marker ->
+        availableMarkers.associateWith { marker ->
             markerMap.values.count { marker in it }
         }
     }
@@ -127,7 +128,7 @@ fun PlantsWithMarkersScreen(
                                 )
                             )
                         }
-                        items(PlantMarkerStore.DEFAULT_MARKERS) { marker ->
+                        items(availableMarkers) { marker ->
                             val count = countsByMarker[marker] ?: 0
                             FilterChip(
                                 selected = selectedMarker == marker,

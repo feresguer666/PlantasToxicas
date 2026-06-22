@@ -24,6 +24,9 @@ y copias de seguridad. Antes de ejecutarlos sobre datos importantes, se recomien
 | `sync_backup_a_proyecto.py` | Sincroniza datos desde una copia de seguridad completa al proyecto. |
 | `tools/check_room_schemas.py` | Comprueba que los esquemas Room exportados existan y sean JSON válidos. |
 | `tools/check_assets_json.py` | Valida que los JSON de `app/src/main/assets/` carguen correctamente y resume conteos. |
+| `tools/sync_backup_to_assets.py` | Sincroniza cambios de un backup de la app hacia `app/src/main/assets/plants_*.json`. |
+| `tools/import_csv_changes_to_assets.py` | Importa cambios desde CSV hacia `assets/plants_*.json` con modo dry-run/apply. |
+| `tools/extract_backup_images_to_assets.py` | Extrae fotos de una copia completa a `assets/generated_images/` y actualiza `imageUrl`. |
 
 ## Ejemplos de comandos que había en la raíz
 
@@ -56,3 +59,9 @@ Opciones útiles de `sync_backup_a_proyecto.py`:
 ## Documentación relacionada
 
 - [`BACKUP_RESTORE.md`](BACKUP_RESTORE.md): notas sobre copias completas/incrementales y restauración segura.
+
+- [`SYNC_BACKUP_TO_ASSETS.md`](SYNC_BACKUP_TO_ASSETS.md): cómo pasar cambios hechos en la app al catálogo JSON del proyecto.
+
+- [`EXTRACT_BACKUP_IMAGES.md`](EXTRACT_BACKUP_IMAGES.md): cómo importar fotos de una copia completa al proyecto.
+
+- [`IMPORT_CSV_CHANGES.md`](IMPORT_CSV_CHANGES.md): cómo importar cambios desde CSV al catálogo JSON.

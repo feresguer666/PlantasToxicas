@@ -6141,7 +6141,7 @@
     "notes": null,
     "commonName": "Kaffir Lily",
     "scientificName": "Clivia carlavirus A",
-    "family": "Betaflexiviridae",
+    "family": "Amaryllidaceae",
     "toxicityLevel": "Mortal",
     "toxicParts": "bulbos/raíces, evitar ingestión o contacto hasta identificación profesional",
     "symptoms": "vómitos, salvation, diarrea; large ingestions cause convulsiones, presión arterial baja, temblores and cardíaco arrhythmias. Bulbs are the most poisonous part; Registro inferido automáticamente: especie de Clivia, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
@@ -6151,7 +6151,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/kaffir-lily-r.jpg?itok=JoGwMhft",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 3278,
@@ -9256,28 +9260,6 @@
     "commonNames": ""
   },
   {
-    "id": 3419,
-    "isFavorite": false,
-    "latitude": null,
-    "longitude": null,
-    "locationName": null,
-    "foundDate": null,
-    "notes": null,
-    "commonName": "Cycads",
-    "scientificName": "Cycas and Zamia species",
-    "family": "Cycadaceae",
-    "toxicityLevel": "Mortal",
-    "toxicParts": "semillas/frutos, evitar ingestión o contacto hasta identificación profesional",
-    "symptoms": "vómitos (may be con sangre), dark stools, jaundice, increased thirst, con sangre diarrea, bruising, fallo hepático, muerte. 1-2 seeds can be fatal; Registro inferido automáticamente: especie de Cycas, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
-    "description": "Principios tóxicos indicados por ASPCA: Cycasin, B-methylamino-l-alanine, unidentified neurotoxin (cattle). Notas de fuentes: Registro inferido automáticamente: especie de Cycas, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar. Registro generado automáticamente desde: ASPCA-cats, ASPCA-dogs, ASPCA-horses, GBIF, GBIF-genus-expansion. Requiere revisión experta.",
-    "habitat": "Hábitat no especificado automáticamente; revisar distribución local antes de publicar.",
-    "geographicDistribution": "Validación taxonómica GBIF: Plantae GENUS ACCEPTED. Distribución geográfica no inferida automáticamente.",
-    "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
-    "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/cycads-r.jpg?itok=gpIQoEUO",
-    "category": "Tropical",
-    "commonNames": ""
-  },
-  {
     "id": 3420,
     "isFavorite": false,
     "latitude": null,
@@ -10067,7 +10049,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/lemon-grass.jpg?itok=8hpvS2WM",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 3456,
@@ -10079,7 +10065,7 @@
     "notes": null,
     "commonName": "Oil Grass",
     "scientificName": "Cymbopogon jwarancusa",
-    "family": "Gramineae",
+    "family": "Poaceae",
     "toxicityLevel": "Alto",
     "toxicParts": "partes no especificadas por la fuente, evitar ingestión o contacto hasta identificación profesional",
     "symptoms": "Dogs, cats: Stomach upset; Horses: dificultad respiratoria, debilidad, muerte (rare); Registro inferido automáticamente: especie de Cymbopogon, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
@@ -10089,7 +10075,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/lemon-grass.jpg?itok=8hpvS2WM",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 3457,
@@ -10145,7 +10135,7 @@
     "notes": null,
     "commonName": "Oil Grass",
     "scientificName": "Cymbopogon martinii",
-    "family": "Gramineae",
+    "family": "Poaceae",
     "toxicityLevel": "Alto",
     "toxicParts": "partes no especificadas por la fuente, evitar ingestión o contacto hasta identificación profesional",
     "symptoms": "Dogs, cats: Stomach upset; Horses: dificultad respiratoria, debilidad, muerte (rare); Registro inferido automáticamente: especie de Cymbopogon, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
@@ -10155,7 +10145,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Cymbopogon_martinii_Image.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 3460,

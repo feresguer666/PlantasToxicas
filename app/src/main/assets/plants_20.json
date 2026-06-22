@@ -3261,7 +3261,11 @@
     "firstAid": "En mascotas, acudir urgentemente al veterinario para inducción de emesis o terapia de soporte. En humanos, evitar el consumo en cantidades excesivas de especies silvestres.",
     "imageUrl": "file:///android_asset/generated_images/plant_9648.jpg",
     "category": "Huerto",
-    "commonNames": "ajo silvestre, cebolla silvestre, allium chitralicum es una especie de ajo silvestre"
+    "commonNames": "ajo silvestre, cebolla silvestre, allium chitralicum es una especie de ajo silvestre",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9649,
@@ -3481,7 +3485,11 @@
     "firstAid": "En mascotas, acudir urgentemente al veterinario para inducción de emesis o terapia de soporte. En humanos, evitar el consumo en cantidades excesivas de especies silvestres.",
     "imageUrl": "file:///android_asset/generated_images/plant_9658.jpg",
     "category": "Huerto",
-    "commonNames": "ajo silvestre, ajo silvestre dentado, ajo silvestre de dientes, ajo silvestre de dientes de ajo, ajo silvestre de dientes de ajo silvestre"
+    "commonNames": "ajo silvestre, ajo silvestre dentado, ajo silvestre de dientes, ajo silvestre de dientes de ajo, ajo silvestre de dientes de ajo silvestre",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9659,
@@ -4450,7 +4458,11 @@
     "firstAid": "En mascotas, acudir urgentemente al veterinario para inducción de emesis o terapia de soporte. En humanos, evitar el consumo en cantidades excesivas de especies silvestres.",
     "imageUrl": "file:///android_asset/generated_images/plant_9702.jpg",
     "category": "Huerto",
-    "commonNames": "ajo silvestre, ajo silvestre de Bunge (Allium bungei)"
+    "commonNames": "ajo silvestre, ajo silvestre de Bunge (Allium bungei)",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9703,
@@ -6032,14 +6044,18 @@
     "family": "Amaryllidaceae",
     "toxicityLevel": "Bajo",
     "toxicParts": "Bulbos, hojas y flores (toda la planta)",
-    "symptoms": "Especialmente tóxico para mascotas (perros y gatos): anemia hemolítica, ictericia, letargo, debilidad, vómitos y aumento del ritmo cardíaco debido a compuestos de azufre.",
+    "symptoms": "No tengo información específica sobre la especie \"Allium trachycoleum\" (Ajo silvestre trachycoleum). Sin embargo, como miembro de la familia de las Alliáceas, es probable que presente ciertas características similares a otras especies de Allium, como el ajo común (Allium sativum).\n\nSi bien no tengo datos específicos sobre la toxicidad de Allium trachycoleum, puedo proporcionar información general sobre los síntomas de intoxicación por plantas de la familia Alliáceas. \n\nLos síntomas de intoxicación por plantas de la familia Alliáceas pueden incluir:\n\n- Signos digestivos: náuseas, vómitos, diarrea, dolor abdominal\n- Signos neurológicos: mareo, confusión, convulsiones (en casos graves)\n- Signos dérmicos: irritación de la piel, enrojecimiento, picazón\n\nLa gravedad de los síntomas puede variar dependiendo de la cantidad y la concentración de los compuestos tóxicos consumidos, así como de la sensibilidad individual del paciente.\n\nEs importante destacar que la información proporcionada es general y no específica para Allium trachycoleum. Si se sospecha una intoxicación, es fundamental buscar asesoramiento médico inmediato.",
     "description": "DESCRIPCIÓN BOTÁNICA:\n\nEl Ajo silvestre trachycoleum (Allium trachycoleum) es una planta perenne que crece como una hierba. Presenta hojas lineales y lanceoladas, de color verde oscuro, que se encuentran en una roseta basal. Las flores son de color púrpura oscuro a casi negro, con un cáliz tubular y un labelo trilobulado. Los frutos son cápsulas secedidas, de color marrón claro, que contienen semillas pequeñas. Un rasgo distintivo de esta especie es su olor intenso y picante, similar al ajo cultivado, aunque con un sabor más amargo.",
     "habitat": "Campos abiertos, pastizales, claros de bosque y zonas agrícolas de clima templado.",
     "geographicDistribution": "Zonas templadas de Europa, Asia, África del Norte y América del Norte.",
     "firstAid": "En mascotas, acudir urgentemente al veterinario para inducción de emesis o terapia de soporte. En humanos, evitar el consumo en cantidades excesivas de especies silvestres.",
     "imageUrl": "file:///android_asset/generated_images/plant_9774.jpg",
     "category": "Huerto",
-    "commonNames": "ajo silvestre, ajo montés, ajo rojo"
+    "commonNames": "ajo silvestre, ajo montés, ajo rojo",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9775,
@@ -10313,7 +10329,11 @@
     "firstAid": "En mascotas, acudir urgentemente al veterinario para inducción de emesis o terapia de soporte. En humanos, evitar el consumo en cantidades excesivas de especies silvestres.",
     "imageUrl": "file:///android_asset/generated_images/plant_9968.jpg",
     "category": "Huerto",
-    "commonNames": "ajo silvestre, ajo silvestre elegante, ajo silvestre común"
+    "commonNames": "ajo silvestre, ajo silvestre elegante, ajo silvestre común",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9969,

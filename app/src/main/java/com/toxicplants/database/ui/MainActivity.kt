@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -33,10 +32,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.toxicplants.database.PlantEntity
-import com.toxicplants.database.CompoundEntity
+import com.toxicplants.database.ui.gbif.GBIFEnrichmentScreen
 import com.toxicplants.database.ui.screens.*
-import com.toxicplants.database.ui.theme.ToxicPlantsTheme
+import com.toxicplants.database.ui.screens.toxicgenera.GenusDetailScreen
+import com.toxicplants.database.ui.screens.toxicgenera.ToxicGeneraScreen
 import com.toxicplants.database.ui.theme.ThemeManager
+import com.toxicplants.database.ui.theme.ToxicPlantsTheme
 import com.toxicplants.database.ui.theme.carbonEffectSubtle
 import com.toxicplants.database.ui.viewmodel.CompoundViewModel
 import com.toxicplants.database.ui.viewmodel.LichenViewModel
@@ -44,7 +45,6 @@ import com.toxicplants.database.ui.viewmodel.MushroomViewModel
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import com.toxicplants.database.ui.viewmodel.SightingViewModel
 import com.toxicplants.database.ui.viewmodel.ToxicCalendarViewModel
-import com.toxicplants.database.ui.gbif.GBIFEnrichmentScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,14 +54,16 @@ class MainActivity : ComponentActivity() {
             val themeMode by ThemeManager.themeMode.collectAsState()
             val systemDark = isSystemInDarkTheme()
             val isDark = when (themeMode) {
-                "dark"  -> true
+                "dark" -> true
                 "light" -> false
-                else    -> systemDark
+                else -> systemDark
             }
             ToxicPlantsTheme(darkTheme = isDark) {
                 Surface(
-                    modifier = Modifier.fillMaxSize().carbonEffectSubtle(),
-                    color    = MaterialTheme.colorScheme.background
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .carbonEffectSubtle(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     MainApp()
                 }
@@ -72,8 +74,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp() {
-    val navController     = rememberNavController()
-    val viewModel: PlantViewModel    = viewModel()
+    val navController = rememberNavController()
+    val viewModel: PlantViewModel = viewModel()
     val compoundViewModel: CompoundViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "home") {
@@ -81,49 +83,50 @@ fun MainApp() {
         // ── HOME ─────────────────────────────────────────────────────
         composable("home") {
             HomeScreen(
-                viewModel                    = viewModel,
-                onNavigateToList             = { navController.navigate("plant_list") },
-                onNavigateToCategories       = { navController.navigate("categories") },
+                viewModel = viewModel,
+                onNavigateToList = { navController.navigate("plant_list") },
+                onNavigateToCategories = { navController.navigate("categories") },
                 onNavigateToOrnamentalDanger = { navController.navigate("ornamental_danger") },
-                onNavigateToEmergency        = { navController.navigate("emergency") },
-                onNavigateToMyths            = { navController.navigate("myths") },
-                onNavigateToAssistant        = { navController.navigate("assistant") },
-                onNavigateToRiskCalculator   = { navController.navigate("risk_calculator") },
+                onNavigateToEmergency = { navController.navigate("emergency") },
+                onNavigateToMyths = { navController.navigate("myths") },
+                onNavigateToAssistant = { navController.navigate("assistant") },
+                onNavigateToRiskCalculator = { navController.navigate("risk_calculator") },
                 onNavigateToLethalDoseCalculator = { navController.navigate("lethal_dose_calculator") },
-                onNavigateToOnlineDatabases  = { navController.navigate("online_databases") },
-                onNavigateToSearch           = { navController.navigate("search") },
+                onNavigateToOnlineDatabases = { navController.navigate("online_databases") },
+                onNavigateToSearch = { navController.navigate("search") },
                 onNavigateToSearchBySymptoms = { navController.navigate("search_symptoms") },
-                onNavigateToDownloadImages   = { navController.navigate("download_images") },
-                onNavigateToNewPlant         = { navController.navigate("new_plant") },
-                onNavigateToCamera           = { navController.navigate("camera_identify") },
-                onNavigateToNatureIdentify   = { navController.navigate("nature_photo_identify") },
-                onNavigateToPhytochemistry   = { navController.navigate("phytochemistry") },
+                onNavigateToDownloadImages = { navController.navigate("download_images") },
+                onNavigateToNewPlant = { navController.navigate("new_plant") },
+                onNavigateToCamera = { navController.navigate("camera_identify") },
+                onNavigateToNatureIdentify = { navController.navigate("nature_photo_identify") },
+                onNavigateToPhytochemistry = { navController.navigate("phytochemistry") },
                 onNavigateToPsychotropicPlants = { navController.navigate("psychotropic_plants") },
                 onNavigateToExtractionMethods = { navController.navigate("chemical_extraction_methods") },
                 onNavigateToChemicalReagents = { navController.navigate("chemical_reagents") },
-                onNavigateToMushrooms        = { navController.navigate("toxic_mushrooms") },
-                onNavigateToLichens          = { navController.navigate("toxic_lichens") },
-                onNavigateToAR               = { navController.navigate("ar") },
-                onNavigateToSettings         = { navController.navigate("settings") },
-                onNavigateToBerries          = { navController.navigate("berries") },
-                onNavigateToNotes            = { navController.navigate("notes") },
-                onNavigateToFamilies         = { navController.navigate("family_list") },
-                onNavigateToPetSafety        = { navController.navigate("pet_safety") },
-                onNavigateToChildSafety      = { navController.navigate("child_safety") },
-                onNavigateToLivestockSafety  = { navController.navigate("livestock_safety") },
-                onNavigateToConfusable       = { navController.navigate("confusable_plants") },
-                onNavigateToPlantCompare     = { navController.navigate("plant_compare") },
-                onNavigateToMap              = { navController.navigate("sightings_history") },
-                onNavigateToColorSearch      = { navController.navigate("color_search") },
-                onNavigateToGlossary         = { navController.navigate("glossary") },
-                onNavigateToToxicParts       = { navController.navigate("toxic_parts") },
-                onNavigateToIntoxication     = { navController.navigate("intoxication") },
-                onNavigateToGlobalSearch     = { query ->
+                onNavigateToMushrooms = { navController.navigate("toxic_mushrooms") },
+                onNavigateToLichens = { navController.navigate("toxic_lichens") },
+                onNavigateToToxicGenera = { navController.navigate("toxic_genera") },
+                onNavigateToAR = { navController.navigate("ar") },
+                onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToBerries = { navController.navigate("berries") },
+                onNavigateToNotes = { navController.navigate("notes") },
+                onNavigateToFamilies = { navController.navigate("family_list") },
+                onNavigateToPetSafety = { navController.navigate("pet_safety") },
+                onNavigateToChildSafety = { navController.navigate("child_safety") },
+                onNavigateToLivestockSafety = { navController.navigate("livestock_safety") },
+                onNavigateToConfusable = { navController.navigate("confusable_plants") },
+                onNavigateToPlantCompare = { navController.navigate("plant_compare") },
+                onNavigateToMap = { navController.navigate("sightings_history") },
+                onNavigateToColorSearch = { navController.navigate("color_search") },
+                onNavigateToGlossary = { navController.navigate("glossary") },
+                onNavigateToToxicParts = { navController.navigate("toxic_parts") },
+                onNavigateToIntoxication = { navController.navigate("intoxication") },
+                onNavigateToGlobalSearch = { query ->
                     if (query.isBlank()) navController.navigate("global_search")
                     else navController.navigate("global_search/${Uri.encode(query)}")
                 },
-                onNavigateToCalendar         = { navController.navigate("toxic_calendar") },
-                onNavigateToGBIF             = { navController.navigate("gbif_enrichment") },
+                onNavigateToCalendar = { navController.navigate("toxic_calendar") },
+                onNavigateToGBIF = { navController.navigate("gbif_enrichment") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
@@ -141,7 +144,7 @@ fun MainApp() {
         // ── LISTA DE PLANTAS ─────────────────────────────────────────
         composable("plant_list") {
             PlantListScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
@@ -165,7 +168,7 @@ fun MainApp() {
         // ── CATEGORÍAS ───────────────────────────────────────────────
         composable("categories") {
             CategoriesScreen(
-                viewModel       = viewModel,
+                viewModel = viewModel,
                 onCategoryClick = { categoryName ->
                     navController.navigate("category/${Uri.encode(categoryName)}")
                 },
@@ -190,7 +193,7 @@ fun MainApp() {
 
         composable("emergency") {
             EmergencyScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
@@ -234,7 +237,7 @@ fun MainApp() {
         // ── BÚSQUEDA ─────────────────────────────────────────────────
         composable("search") {
             SearchScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
@@ -247,7 +250,8 @@ fun MainApp() {
 
         // ── CLAVES DICOTÓMICAS: ÍNDICE ───────────────────────────────
         composable("dichotomous_keys") {
-            val keyViewModel: com.toxicplants.database.ui.viewmodel.DichotomousKeyViewModel = viewModel()
+            val keyViewModel: com.toxicplants.database.ui.viewmodel.DichotomousKeyViewModel =
+                viewModel()
             DichotomousKeysIndexScreen(
                 viewModel = keyViewModel,
                 plantViewModel = viewModel,
@@ -262,7 +266,8 @@ fun MainApp() {
             arguments = listOf(navArgument("keyId") { type = NavType.StringType })
         ) { backStackEntry ->
             val keyId = backStackEntry.arguments?.getString("keyId") ?: "general"
-            val keyViewModel: com.toxicplants.database.ui.viewmodel.DichotomousKeyViewModel = viewModel()
+            val keyViewModel: com.toxicplants.database.ui.viewmodel.DichotomousKeyViewModel =
+                viewModel()
             DichotomousKeyScreen(
                 keyId = keyId,
                 keyViewModel = keyViewModel,
@@ -278,7 +283,7 @@ fun MainApp() {
         // ── BÚSQUEDA POR SÍNTOMAS ────────────────────────────────────
         composable("search_symptoms") {
             SearchBySymptomsScreen(
-                plantViewModel    = viewModel,
+                plantViewModel = viewModel,
                 compoundViewModel = compoundViewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
@@ -310,7 +315,7 @@ fun MainApp() {
         // ── AR ───────────────────────────────────────────────────────
         composable("ar") {
             ARScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
@@ -322,8 +327,16 @@ fun MainApp() {
         // ── BAYAS ────────────────────────────────────────────────────
         composable("berries") {
             BerriesScreen(
-                onBack     = { navController.popBackStack() },
-                onAddPlant = { color -> navController.navigate("add_plant_extra/fruitColor?color=${Uri.encode(color)}") }
+                onBack = { navController.popBackStack() },
+                onAddPlant = { color ->
+                    navController.navigate(
+                        "add_plant_extra/fruitColor?color=${
+                            Uri.encode(
+                                color
+                            )
+                        }"
+                    )
+                }
             )
         }
 
@@ -335,13 +348,19 @@ fun MainApp() {
         // ── CÁMARA / IDENTIFICAR ─────────────────────────────────────
         composable("camera_identify") {
             CameraIdentifyScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 },
                 onNavigateToPlantNetResult = { name, scientificName ->
-                    navController.navigate("plantnet_result/${Uri.encode(name)}/${Uri.encode(scientificName)}")
+                    navController.navigate(
+                        "plantnet_result/${Uri.encode(name)}/${
+                            Uri.encode(
+                                scientificName
+                            )
+                        }"
+                    )
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -365,31 +384,31 @@ fun MainApp() {
         ) { backStackEntry ->
             val routePlantId = backStackEntry.arguments?.getInt("plantId") ?: 0
             PlantDetailScreen(
-                plantId              = routePlantId,
-                viewModel            = viewModel,
-                compoundViewModel    = compoundViewModel,
-                onBack               = { navController.popBackStack() },
-                onEdit               = { id -> navController.navigate("edit_plant/$id") },
+                plantId = routePlantId,
+                viewModel = viewModel,
+                compoundViewModel = compoundViewModel,
+                onBack = { navController.popBackStack() },
+                onEdit = { id -> navController.navigate("edit_plant/$id") },
                 onNavigateToLocation = { id -> navController.navigate("location/$id") },
-                onCompoundClick      = { compound -> navController.navigate("compound_detail/${compound.id}") }
+                onCompoundClick = { compound -> navController.navigate("compound_detail/${compound.id}") }
             )
         }
 
         // ── DETALLE DE PLANTA ────────────────────────────────────────
         composable("plant_detail") {
             val selectedPlant by viewModel.selectedPlantData.collectAsState()
-            val plantToShow    = selectedPlant
+            val plantToShow = selectedPlant
 
             if (plantToShow != null) {
                 PlantDetailScreen(
-                    plantId              = plantToShow.id,
-                    viewModel            = viewModel,
-                    compoundViewModel    = compoundViewModel,
-                    onBack               = { navController.popBackStack() },
-                    onEdit               = { plantId -> navController.navigate("edit_plant/$plantId") },
+                    plantId = plantToShow.id,
+                    viewModel = viewModel,
+                    compoundViewModel = compoundViewModel,
+                    onBack = { navController.popBackStack() },
+                    onEdit = { plantId -> navController.navigate("edit_plant/$plantId") },
                     onNavigateToLocation = { plantId -> navController.navigate("location/$plantId") },
-                    onCompoundClick      = { compound -> navController.navigate("compound_detail/${compound.id}") },
-                    onNavigateToPlant    = { id ->
+                    onCompoundClick = { compound -> navController.navigate("compound_detail/${compound.id}") },
+                    onNavigateToPlant = { id ->
                         navController.popBackStack()
                         navController.navigate("plant_detail/$id") {
                             launchSingleTop = true
@@ -411,16 +430,16 @@ fun MainApp() {
 
         // ── UBICACIÓN ────────────────────────────────────────────────
         composable("location/{plantId}") { backStackEntry ->
-            val plantId   = backStackEntry.arguments?.getString("plantId")?.toIntOrNull() ?: 0
+            val plantId = backStackEntry.arguments?.getString("plantId")?.toIntOrNull() ?: 0
             val allPlants by viewModel.allPlants.observeAsState(emptyList())
-            val plant     = allPlants.find { it.id == plantId }
+            val plant = allPlants.find { it.id == plantId }
 
             if (plant != null) {
                 LocationScreen(
-                    plantId   = plantId,
+                    plantId = plantId,
                     plantName = plant.commonName,
                     viewModel = viewModel,
-                    onBack    = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() }
                 )
             } else {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -439,9 +458,9 @@ fun MainApp() {
         composable("edit_plant/{plantId}") { backStackEntry ->
             val plantId = backStackEntry.arguments?.getString("plantId")?.toIntOrNull()
             EditPlantScreen(
-                plantId   = plantId,
+                plantId = plantId,
                 viewModel = viewModel,
-                onBack    = { navController.popBackStack() },
+                onBack = { navController.popBackStack() },
                 onSaveAndNext = { nextPlantId ->
                     navController.navigate("edit_plant/$nextPlantId") {
                         popUpTo("edit_plant/$plantId") { inclusive = true }
@@ -449,7 +468,8 @@ fun MainApp() {
                     }
                 },
                 onSaved = { savedPlantId ->
-                    val removedOldDetail = navController.popBackStack("plant_detail/{plantId}", inclusive = true)
+                    val removedOldDetail =
+                        navController.popBackStack("plant_detail/{plantId}", inclusive = true)
                     if (!removedOldDetail) {
                         navController.popBackStack()
                     }
@@ -464,7 +484,7 @@ fun MainApp() {
         composable("category/{category}") { backStackEntry ->
             val categoryName = backStackEntry.arguments?.getString("category") ?: ""
             CategoryListScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 categoryName = categoryName,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
@@ -476,12 +496,12 @@ fun MainApp() {
 
         // ── RESULTADO PLANTNET ───────────────────────────────────────
         composable("plantnet_result/{name}/{scientificName}") { backStackEntry ->
-            val name           = backStackEntry.arguments?.getString("name") ?: ""
+            val name = backStackEntry.arguments?.getString("name") ?: ""
             val scientificName = backStackEntry.arguments?.getString("scientificName") ?: ""
             PlantNetResultScreen(
-                name           = name,
+                name = name,
                 scientificName = scientificName,
-                onBack         = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -498,7 +518,7 @@ fun MainApp() {
         // ── AJUSTES ──────────────────────────────────────────────────
         composable("settings") {
             SettingsScreen(
-                onBack                     = { navController.popBackStack() },
+                onBack = { navController.popBackStack() },
                 onNavigateToDownloadImages = { navController.navigate("download_images") },
                 onNavigateToReviewCenter = { navController.navigate("review_center") }
             )
@@ -660,46 +680,46 @@ fun MainApp() {
         composable("global_search/{initialQuery}") { backStackEntry ->
             val initialQuery = backStackEntry.arguments?.getString("initialQuery") ?: ""
             GlobalSearchScreen(
-                plantViewModel    = viewModel,
+                plantViewModel = viewModel,
                 compoundViewModel = compoundViewModel,
-                initialQuery      = initialQuery,
-                onPlantClick      = { plant ->
+                initialQuery = initialQuery,
+                onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 },
-                onCompoundClick   = { compound ->
+                onCompoundClick = { compound ->
                     navController.navigate("compound_detail/${compound.id}")
                 },
-                onBack            = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
         composable("global_search") {
             GlobalSearchScreen(
-                plantViewModel    = viewModel,
+                plantViewModel = viewModel,
                 compoundViewModel = compoundViewModel,
-                initialQuery      = "",
-                onPlantClick      = { plant ->
+                initialQuery = "",
+                onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 },
-                onCompoundClick   = { compound ->
+                onCompoundClick = { compound ->
                     navController.navigate("compound_detail/${compound.id}")
                 },
-                onBack            = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
         // ── PLANTAS PSICOTRÓPICAS ───────────────────────────────────
         composable("psychotropic_plants") {
             PsychotropicPlantsScreen(
-                plantViewModel    = viewModel,
+                plantViewModel = viewModel,
                 compoundViewModel = compoundViewModel,
-                onPlantClick      = { plant ->
+                onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 },
-                onBack            = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -714,20 +734,20 @@ fun MainApp() {
 
         composable("phytochemistry") {
             PhytochemistryScreen(
-                viewModel          = compoundViewModel,
-                onGroupClick        = { group -> navController.navigate("compound_group/${Uri.encode(group)}") },
-                onAddCompoundClick  = { navController.navigate("edit_compound/0") },
+                viewModel = compoundViewModel,
+                onGroupClick = { group -> navController.navigate("compound_group/${Uri.encode(group)}") },
+                onAddCompoundClick = { navController.navigate("edit_compound/0") },
                 onInteractionsClick = { navController.navigate("compound_interactions") },
-                onCompoundClick     = { c -> navController.navigate("compound_detail/${c.id}") },
-                onBack              = { navController.popBackStack() }
+                onCompoundClick = { c -> navController.navigate("compound_detail/${c.id}") },
+                onBack = { navController.popBackStack() }
             )
         }
 
         composable("compound_interactions") {
             CompoundInteractionsScreen(
-                viewModel       = compoundViewModel,
+                viewModel = compoundViewModel,
                 onCompoundClick = { c -> navController.navigate("compound_detail/${c.id}") },
-                onBack          = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -735,7 +755,7 @@ fun MainApp() {
             val mushroomViewModel: MushroomViewModel = viewModel()
             ToxicMushroomsScreen(
                 viewModel = mushroomViewModel,
-                onBack    = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -743,29 +763,53 @@ fun MainApp() {
             val lichenViewModel: LichenViewModel = viewModel()
             ToxicLichensScreen(
                 viewModel = lichenViewModel,
-                onBack    = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── GÉNEROS TÓXICOS ───────────────────────────────────────
+        composable("toxic_genera") {
+            ToxicGeneraScreen(
+                onBack = { navController.popBackStack() },
+                onGenusClick = { genus -> navController.navigate("genus_detail/${Uri.encode(genus)}") }
+            )
+        }
+
+        composable(
+            "genus_detail/{genus}",
+            arguments = listOf(navArgument("genus") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val genus = backStackEntry.arguments?.getString("genus") ?: ""
+            GenusDetailScreen(
+                genusName = genus,
+                plantViewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                }
             )
         }
 
         composable("compound_group/{group}") { backStackEntry ->
             val group = backStackEntry.arguments?.getString("group") ?: ""
             CompoundGroupScreen(
-                viewModel       = compoundViewModel,
-                groupName       = group,
+                viewModel = compoundViewModel,
+                groupName = group,
                 onCompoundClick = { c -> navController.navigate("compound_detail/${c.id}") },
-                onBack          = { navController.popBackStack() },
-                onEditCompound  = { c -> navController.navigate("edit_compound/${c.id}") }
+                onBack = { navController.popBackStack() },
+                onEditCompound = { c -> navController.navigate("edit_compound/${c.id}") }
             )
         }
 
         composable("compound_detail/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
             CompoundDetailScreen(
-                compoundId        = id,
+                compoundId = id,
                 compoundViewModel = compoundViewModel,
-                plantViewModel    = viewModel,
-                onBack            = { navController.popBackStack() },
-                onPlantClick      = { plant ->
+                plantViewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 }
@@ -776,17 +820,17 @@ fun MainApp() {
             val compoundId = backStackEntry.arguments?.getString("compoundId")?.toIntOrNull()
             EditCompoundScreen(
                 compoundId = compoundId,
-                viewModel  = compoundViewModel,
-                onBack     = { navController.popBackStack() }
+                viewModel = compoundViewModel,
+                onBack = { navController.popBackStack() }
             )
         }
 
         // ── NUEVA PLANTA ─────────────────────────────────────────────
         composable("new_plant") {
             EditPlantScreen(
-                plantId   = null,
+                plantId = null,
                 viewModel = viewModel,
-                onBack    = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -796,8 +840,8 @@ fun MainApp() {
 
         composable("family_list") {
             FamilyListScreen(
-                viewModel     = viewModel,
-                onBack        = { navController.popBackStack() },
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
                 onFamilyClick = { family ->
                     navController.navigate("plants_by_family/${Uri.encode(family)}")
                 }
@@ -805,13 +849,13 @@ fun MainApp() {
         }
 
         composable(
-            route     = "plants_by_family/{family}",
+            route = "plants_by_family/{family}",
             arguments = listOf(navArgument("family") { type = NavType.StringType })
         ) { backStackEntry ->
             val family = backStackEntry.arguments?.getString("family") ?: ""
             PlantsByFamilyScreen(
-                family       = family,
-                viewModel    = viewModel,
+                family = family,
+                viewModel = viewModel,
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
@@ -838,71 +882,79 @@ fun MainApp() {
         // ── MASCOTAS ─────────────────────────────────────────────────
         composable("pet_safety") {
             PetSafetyScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
-                onBack       = { navController.popBackStack() },
-                onAddPlant   = { navController.navigate("add_plant_extra/dogs") },
-                onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
+                onBack = { navController.popBackStack() },
+                onAddPlant = { navController.navigate("add_plant_extra/dogs") },
+                onEditPlant = { id -> navController.navigate("edit_plant/$id") }
             )
         }
 
         // ── INFANTIL ─────────────────────────────────────────────────
         composable("child_safety") {
             ChildSafetyScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
-                onBack       = { navController.popBackStack() },
-                onAddPlant   = { navController.navigate("add_plant_extra/children") },
-                onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
+                onBack = { navController.popBackStack() },
+                onAddPlant = { navController.navigate("add_plant_extra/children") },
+                onEditPlant = { id -> navController.navigate("edit_plant/$id") }
             )
         }
 
         // ── GANADO ───────────────────────────────────────────────────
         composable("livestock_safety") {
             LivestockSafetyScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
-                onBack       = { navController.popBackStack() },
-                onAddPlant   = { navController.navigate("add_plant_extra/horses") },
-                onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
+                onBack = { navController.popBackStack() },
+                onAddPlant = { navController.navigate("add_plant_extra/horses") },
+                onEditPlant = { id -> navController.navigate("edit_plant/$id") }
             )
         }
 
         // ── PLANTAS CONFUNDIBLES ─────────────────────────────────────
         composable("confusable_plants") {
             ConfusablePlantsScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
-                onBack       = { navController.popBackStack() },
-                onAddPlant   = { navController.navigate("add_plant_extra/dogs") },
-                onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
+                onBack = { navController.popBackStack() },
+                onAddPlant = { navController.navigate("add_plant_extra/dogs") },
+                onEditPlant = { id -> navController.navigate("edit_plant/$id") }
             )
         }
 
         // ── MAPA DE AVISTAMIENTOS ────────────────────────────────────
         composable("sightings_map") {
             SightingsMapScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
-                onBack       = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
         composable("color_search") {
             ColorSearchScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
-                onBack       = { navController.popBackStack() },
-                onAddPlant   = { mode: String, color: String -> navController.navigate("add_plant_extra/${Uri.encode(mode)}?color=${Uri.encode(color)}") },
-                onEditPlant  = { id -> navController.navigate("edit_plant/$id") }
+                onBack = { navController.popBackStack() },
+                onAddPlant = { mode: String, color: String ->
+                    navController.navigate(
+                        "add_plant_extra/${
+                            Uri.encode(
+                                mode
+                            )
+                        }?color=${Uri.encode(color)}"
+                    )
+                },
+                onEditPlant = { id -> navController.navigate("edit_plant/$id") }
             )
         }
 
         composable("toxic_parts") {
             ToxicPartsScreen(
-                viewModel    = viewModel,
+                viewModel = viewModel,
                 onPlantClick = { plant -> viewModel.selectPlant(plant); navController.navigate("plant_detail/${plant.id}") },
-                onBack       = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -922,19 +974,19 @@ fun MainApp() {
 
         // ── AÑADIR PLANTA A EXTRA ────────────────────────────────────
         composable(
-            route     = "add_plant_extra/{mode}?color={color}",
+            route = "add_plant_extra/{mode}?color={color}",
             arguments = listOf(
-                navArgument("mode")  { type = NavType.StringType },
+                navArgument("mode") { type = NavType.StringType },
                 navArgument("color") { type = NavType.StringType; defaultValue = "" }
             )
         ) { backStackEntry ->
-            val mode  = backStackEntry.arguments?.getString("mode") ?: "dogs"
+            val mode = backStackEntry.arguments?.getString("mode") ?: "dogs"
             val color = backStackEntry.arguments?.getString("color") ?: ""
             AddPlantToExtraScreen(
-                viewModel  = viewModel,
-                mode       = mode,
+                viewModel = viewModel,
+                mode = mode,
                 colorValue = color,
-                onBack     = { navController.popBackStack() }
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -951,9 +1003,9 @@ fun CategoryListScreen(
     onPlantClick: (PlantEntity) -> Unit,
     onBack: () -> Unit
 ) {
-    val allPlants       by viewModel.allPlants.observeAsState(emptyList())
-    val filteredPlants   = allPlants.filter { it.category == categoryName }
-    var plantToDelete   by remember { mutableStateOf<PlantEntity?>(null) }
+    val allPlants by viewModel.allPlants.observeAsState(emptyList())
+    val filteredPlants = allPlants.filter { it.category == categoryName }
+    var plantToDelete by remember { mutableStateOf<PlantEntity?>(null) }
 
     Scaffold(
         topBar = {
@@ -965,17 +1017,19 @@ fun CategoryListScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor        = Color(0xFF1976D2),
-                    titleContentColor     = Color.White,
+                    containerColor = Color(0xFF1976D2),
+                    titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 )
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
             if (filteredPlants.isEmpty()) {
                 Column(
-                    modifier            = Modifier.align(Alignment.Center),
+                    modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("🌿", fontSize = 48.sp)
@@ -984,13 +1038,17 @@ fun CategoryListScreen(
                 }
             } else {
                 LazyColumn(
-                    contentPadding      = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(filteredPlants) { plant ->
                         CategoryPlantCard(
-                            plant         = plant,
-                            onClick       = { viewModel.setDetailNavigationPlants(filteredPlants); onPlantClick(plant) },
+                            plant = plant,
+                            onClick = {
+                                viewModel.setDetailNavigationPlants(filteredPlants); onPlantClick(
+                                plant
+                            )
+                            },
                             onDeleteClick = { plantToDelete = plant }
                         )
                     }
@@ -1002,8 +1060,8 @@ fun CategoryListScreen(
     plantToDelete?.let { plant ->
         AlertDialog(
             onDismissRequest = { plantToDelete = null },
-            title   = { Text("¿Eliminar planta?") },
-            text    = { Text("¿Eliminar ${plant.commonName}?") },
+            title = { Text("¿Eliminar planta?") },
+            text = { Text("¿Eliminar ${plant.commonName}?") },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deletePlant(plant)
@@ -1026,16 +1084,18 @@ fun CategoryPlantCard(
     onDeleteClick: () -> Unit
 ) {
     val toxicityColor = when (plant.toxicityLevel) {
-        "Mortal"   -> Color(0xFFB71C1C)
+        "Mortal" -> Color(0xFFB71C1C)
         "Muy alto" -> Color(0xFFFF5722)
-        "Alto"     -> Color(0xFFE65100)
+        "Alto" -> Color(0xFFE65100)
         "Moderado" -> Color(0xFFF57C00)
-        "Bajo"     -> Color(0xFF388E3C)
-        else       -> Color.Gray
+        "Bajo" -> Color(0xFF388E3C)
+        else -> Color.Gray
     }
 
     Card(
-        modifier  = Modifier.fillMaxWidth().clickable { onClick() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -1048,18 +1108,18 @@ fun CategoryPlantCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     plant.commonName,
-                    style      = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    maxLines   = 1,
-                    overflow   = TextOverflow.Ellipsis
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     plant.scientificName,
-                    style     = MaterialTheme.typography.bodySmall,
-                    color     = Color.Gray,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
                     fontStyle = FontStyle.Italic,
-                    maxLines  = 1,
-                    overflow  = TextOverflow.Ellipsis
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Surface(
                     color = toxicityColor.copy(alpha = 0.15f),
@@ -1067,9 +1127,9 @@ fun CategoryPlantCard(
                 ) {
                     Text(
                         plant.toxicityLevel,
-                        modifier   = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        fontSize   = 11.sp,
-                        color      = toxicityColor,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        fontSize = 11.sp,
+                        color = toxicityColor,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -1078,7 +1138,7 @@ fun CategoryPlantCard(
                 Icon(
                     Icons.Default.LocationOn,
                     contentDescription = "Tiene ubicación",
-                    tint     = Color(0xFF1565C0),
+                    tint = Color(0xFF1565C0),
                     modifier = Modifier.size(20.dp)
                 )
             }

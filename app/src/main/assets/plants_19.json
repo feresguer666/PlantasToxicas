@@ -1203,11 +1203,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis cedretorum contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa,asia",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "digitalis, yerba del rey",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9056,
@@ -1225,11 +1229,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis ciliata contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa occidental y central.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9057,
@@ -1247,11 +1255,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis fucata contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "asia",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9058,
@@ -1267,13 +1279,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "todas, especialmente hojas",
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
-    "description": "Digitalis fulva contiene digitálicos.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nLa digitalis fulva es un arbusto que alcanza un tamaño de hasta 1 metro de altura. Sus hojas son lanceoladas, de color verde oscuro y de 10-20 cm de largo. Las flores son de color amarillo pálido y se encuentran en inflorescencias terminales. Los frutos son cápsulas de color marrón claro que contienen semillas pequeñas. Un rasgo distintivo de esta especie es la presencia de un olor desagradable en sus hojas y flores.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa occidental y central.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "digitalis, cardo de la virgen, cardo de los muertos, cardo de San Bernardo, cardo de San Juan, cardo de San Pedro",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9059,
@@ -1289,13 +1305,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "todas, especialmente hojas",
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
-    "description": "Digitalis fuscescens contiene digitálicos.",
+    "description": "La especie \"Digitalis fuscescens\" es un arbusto perenne que alcanza un tamaño de hasta 1 metro de altura. Sus hojas son ovales, de color verde oscuro y tienen un borde serrado. Las flores son de color amarillo verdoso y se encuentran en una inflorescencia en forma de corona. Los frutos son cápsulas secas y marrones que contienen semillas pequeñas. Un rasgo distintivo de esta especie es su capacidad para producir alcaloides cardíacos, como la digoxina, que son utilizados en la medicina para tratar la insuficiencia cardíaca.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa occidental y meridional.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "digitalis, fuscescens",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9060,
@@ -1313,11 +1333,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis ikarica contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9061,
@@ -1335,11 +1359,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis mariana contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9062,
@@ -1355,13 +1383,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "todas, especialmente hojas",
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
-    "description": "Digitalis media contiene digitálicos.",
+    "description": "DESCRIPCIÓN BOTÁNICA DE \"DIGITALIS MEDIA\":\n\nDigitalis media es un arbusto perenne que alcanza un tamaño de hasta 1 metro de altura. Sus hojas son ovales, de color verde oscuro y tienen un borde serrado. Las flores de color azul violeta se encuentran en una inflorescencia en forma de corona y se producen en verano. Los frutos son cápsulas secas de color marrón que contienen semillas pequeñas. Un rasgo distintivo de esta planta es su capacidad para producir alcaloides cardíacos, lo que la hace interesante para fines medicinales.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa central y meridional; naturalizada en América del Norte.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9063,
@@ -1377,13 +1409,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "todas, especialmente hojas",
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
-    "description": "Digitalis minor contiene digitálicos.",
+    "description": "La digitalis minor es una planta herbácea que crece hasta 20-30 cm de altura. Tiene hojas lanceoladas y dentadas, de color verde oscuro. Las flores son pequeñas y de color blanco o ligeramente rosado, dispuestas en una inflorescencia en forma de corona. Los frutos son cápsulas secas y triangulares, de color marrón claro. Una de sus características distintivas es la presencia de una glándula en la base de la hoja que produce una sustancia resinosa.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa central y meridional.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "digitalis menuda, digitalis pequeña, digitalis menor, digitalis chiquita",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9064,
@@ -1401,11 +1437,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis nervosa contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Asia.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "digitalis, luzerna, luzernilla, luzerna de San Juan",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9065,
@@ -1421,16 +1461,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "todas, especialmente hojas",
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
-    "description": "Digitalis obscura contiene digitálicos.",
+    "description": "Lo siento, pero no tengo información sobre la especie \"Digitalis obscura\".",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": "",
+    "commonNames": "cardo lobo, digitalis, lirio de la muerte, lirio de los muertos, lirio negro, lirio tóxico, muerto, muertos, negrito",
     "floweringMonths": "5,6",
     "fruitingMonths": "7,8",
-    "maxToxicityMonths": "5,6,7"
+    "maxToxicityMonths": "5,6,7",
+    "mythsAndLegends": ""
   },
   {
     "id": 9066,
@@ -1448,14 +1489,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis thapsi contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": "",
+    "commonNames": "digitalis, yerba del corazón, digital, digitalis común, digitalis de la costa, digitalis marítima, digitalis silvestre",
     "floweringMonths": "5,6",
     "fruitingMonths": "7,8",
-    "maxToxicityMonths": "5,6,7"
+    "maxToxicityMonths": "5,6,7",
+    "mythsAndLegends": ""
   },
   {
     "id": 9067,
@@ -1471,13 +1513,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "todas, especialmente hojas",
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
-    "description": "Digitalis transitiens contiene digitálicos.",
+    "description": "Lo siento, pero no tengo información sobre la especie \"Digitalis transitiens\".",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "digitalis, cardo lobo, digitalis común",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9068,
@@ -1495,11 +1541,15 @@
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
     "description": "Digitalis velenovskyana contiene digitálicos.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "cardenalín, digitalis, madreselva, madreselva de los bosques, madreselva de los bosques de montaña, madreselva de los montes, madreselva de los valles, madreselva montana",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9069,
@@ -1515,13 +1565,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "todas, especialmente hojas",
     "symptoms": "Glucósidos cardíacos (digitoxina). Náuseas, vómitos, bradicardia, arritmias.",
-    "description": "Digitalis × coutinhoi contiene digitálicos.",
+    "description": "DESCONOCIDO.",
     "habitat": "",
-    "geographicDistribution": "",
+    "geographicDistribution": "Europa.",
     "firstAid": "Urgencias",
     "imageUrl": "",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "digitalis, yerba de los cardenales, yerba del cardenal, cardenal",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 9070,

@@ -87,6 +87,7 @@ fun HomeScreen(
     onNavigateToChemicalReagents: () -> Unit = {},
     onNavigateToMushrooms: () -> Unit = {},
     onNavigateToLichens: () -> Unit = {},
+    onNavigateToToxicGenera: () -> Unit = {},
     onNavigateToSearchBySymptoms: () -> Unit,
     onNavigateToAR: () -> Unit,
     onNavigateToBerries: () -> Unit,
@@ -108,7 +109,7 @@ fun HomeScreen(
     onNavigateToGBIF: () -> Unit = {},
     onPlantClick: (PlantEntity) -> Unit,
 ) {
-    LocalContext.current
+    val context = LocalContext.current
     val allPlants   by viewModel.allPlants.observeAsState(emptyList())
     val allFamilies by viewModel.allFamilies.observeAsState(emptyList())
 
@@ -353,6 +354,7 @@ fun HomeScreen(
                     onNavigateToChemicalReagents = onNavigateToChemicalReagents,
                     onNavigateToMushrooms       = onNavigateToMushrooms,
                     onNavigateToLichens         = onNavigateToLichens,
+                    onNavigateToToxicGenera     = onNavigateToToxicGenera,
                     onNavigateToBerries        = onNavigateToBerries,
                     onNavigateToSearch         = { showSearchDialog = true },
                     onNavigateToIdentify       = { showIdentifyDialog = true },
@@ -555,6 +557,7 @@ fun NavigationGrid(
     onNavigateToChemicalReagents: () -> Unit = {},
     onNavigateToMushrooms: () -> Unit = {},
     onNavigateToLichens: () -> Unit = {},
+    onNavigateToToxicGenera: () -> Unit = {},
     onNavigateToBerries: () -> Unit,
     onNavigateToSearch: () -> Unit,
     onNavigateToIdentify: () -> Unit,
@@ -607,7 +610,7 @@ fun NavigationGrid(
                 title = { Text("☠️ Fitotoxicología", fontWeight = FontWeight.Bold) },
                 text  = {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF43A047))), icon = "🌿", title = "Botánica", subtitle = "Líquenes, setas y plantas", onClick = { showFitoDialog = false; showBotanicaDialog = true })
+                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B5E20), Color(0xFF43A047))), icon = "🌿", title = "Botánica", subtitle = "Líquenes, setas, plantas y categorías", onClick = { showFitoDialog = false; showBotanicaDialog = true })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF263238), Color(0xFF7B1FA2))), icon = "🧠", title = "Plantas psicotrópicas", subtitle = "Alucinógenos, IMAO, depresores, estimulantes y tropánicos", onClick = { showFitoDialog = false; onNavigateToPsychotropicPlants() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF2D1B69), Color(0xFF6A1B9A))), icon = "🔬", title = "Química", subtitle = "Fitoquímica: compuestos tóxicos y alcaloides", onClick = { showFitoDialog = false; showQuimicaDialog = true })
                     }
@@ -626,6 +629,8 @@ fun NavigationGrid(
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF37474F), Color(0xFF607D8B))), icon = "🪨", title = "Líquenes tóxicos", subtitle = "Compuestos liquénicos y efectos", onClick  = { showBotanicaDialog = false; onNavigateToLichens() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF4E342E), Color(0xFF795548))), icon = "🍄", title = "Setas tóxicas", subtitle = "Catálogo micológico y síndromes", onClick  = { showBotanicaDialog = false; onNavigateToMushrooms() })
                         DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B3A1E), Color(0xFF2E5232))), icon = "🌿", title = "Plantas", subtitle = "Catálogo completo", onClick  = { showBotanicaDialog = false; onNavigateToList() })
+                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFFB71C1C), Color(0xFFD32F2F))), icon = "🧬", title = "Géneros tóxicos", subtitle = "82 géneros, todas sus especies tóxicas", onClick  = { showBotanicaDialog = false; onNavigateToToxicGenera() })
+                        DialogOptionCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1E4423), Color(0xFF2A5C30))), icon = "🗂️", title = "Categorías", subtitle = "Silvestre, jardín, interior…", onClick  = { showBotanicaDialog = false; onNavigateToCategories() })
                     }
                 },
                 confirmButton = {},
@@ -722,9 +727,9 @@ fun SearchTypeDialog(
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFFBF360C), Color(0xFFD84315))), icon = "⚠️", title = "Confundibles", onClick = onSearchByConfusable)
                     SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF283593), Color(0xFF3949AB))), icon = "⚖️", title = "Comparador", onClick = {
-                        onDismiss()
-                        onPlantCompare()
-                    })
+                            onDismiss()
+                            onPlantCompare()
+                        })
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     SearchOptionSquare(modifier = Modifier.weight(1f), gradient = Brush.verticalGradient(listOf(Color(0xFF880E4F), Color(0xFFAD1457))), icon = "🌸", title = "Colores", onClick = onSearchByColor)
@@ -743,13 +748,35 @@ fun SearchTypeDialog(
                         }
                     )
                 }
-
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SearchOptionSquare(
+                        modifier = Modifier.weight(1f),
+                        gradient = Brush.verticalGradient(listOf(Color(0xFF33691E), Color(0xFF689F38))),
+                        icon = "🏡",
+                        title = "Ornamentales",
+                        onClick = {
+                            onDismiss()
+                            onSearchByOrnamental()
+                        }
+                    )
+                    SearchOptionSquare(
+                        modifier = Modifier.weight(1f),
+                        gradient = Brush.verticalGradient(listOf(Color(0xFF1E4423), Color(0xFF2A5C30))),
+                        icon = "🗂️",
+                        title = "Categorías",
+                        onClick = {
+                            onDismiss()
+                            onSearchByCategories()
+                        }
+                    )
+                }
             }
         },
         confirmButton = {},
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }
+
 
 @Composable
 private fun SearchOptionSquare(modifier: Modifier = Modifier, gradient: Brush, icon: String, title: String, onClick: () -> Unit) {

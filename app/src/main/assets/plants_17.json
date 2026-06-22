@@ -6336,28 +6336,6 @@
     "commonNames": ""
   },
   {
-    "id": 8289,
-    "isFavorite": false,
-    "latitude": null,
-    "longitude": null,
-    "locationName": null,
-    "foundDate": null,
-    "notes": null,
-    "commonName": "virola schwackei",
-    "scientificName": "Virola schwackei",
-    "family": "Myristicaceae",
-    "toxicityLevel": "Alto",
-    "toxicParts": "corteza, resina/exudado, hojas, raíces y partes no especificadas; evitar ingestión o manipulación no controlada",
-    "symptoms": "Riesgo preventivo por alcaloides indólicos/triptamínicos reportados en varias especies del género Virola. Posibles efectos tras ingestión o exposición significativa: náuseas, vómitos, mareo, ansiedad, confusión, alteraciones perceptivas, taquicardia, cambios de presión arterial y efectos neurológicos impredecibles.",
-    "description": "Virola schwackei es una especie del género Virola, familia Myristicaceae. Varias especies de Virola se citan en literatura etnobotánica por alcaloides indólicos como DMT/5-MeO-DMT u otros compuestos relacionados, aunque la presencia y cantidad varían por especie y parte vegetal. Esta ficha es preventiva y no implica que la especie concreta tenga la misma composición. No usar como planta medicinal o recreativa.",
-    "habitat": "Árboles tropicales de bosques húmedos; hábitat variable por especie.",
-    "geographicDistribution": "Principalmente regiones tropicales de América Central y Sudamérica según especie; revisar distribución botánica específica.",
-    "firstAid": "No provocar el vómito. Enjuagar la boca si hubo ingestión accidental y la persona está consciente. Evitar alcohol, sedantes o remedios caseros. Guardar foto/muestra y contactar con centro toxicológico o urgencias si hay síntomas, ingestión, exposición en menores o mezcla con fármacos/drogas.",
-    "imageUrl": "",
-    "category": "Tropical",
-    "commonNames": ""
-  },
-  {
     "id": 8290,
     "isFavorite": false,
     "latitude": null,
@@ -6729,7 +6707,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8307,
@@ -6751,7 +6733,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8308,
@@ -7279,7 +7265,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8332,
@@ -7301,7 +7291,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8333,
@@ -7411,7 +7405,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8338,
@@ -7431,9 +7429,13 @@
     "habitat": "Hábitat variable según especie; muchos hongos crecen en madera, suelos ricos en materia orgánica, estiércol, pastizales o bosques. No recolectar para consumo.",
     "geographicDistribution": "Distribución variable por especie; revisar fuentes micológicas locales. La presencia regional no implica seguridad ni facilidad de identificación.",
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
-    "imageUrl": "",
+    "imageUrl": "https://static.inaturalist.org/photos/2130184/medium.jpg",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8339,
@@ -7477,7 +7479,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8341,
@@ -7609,7 +7615,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8347,
@@ -7631,7 +7641,11 @@
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
     "imageUrl": "",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8348,
@@ -7673,9 +7687,13 @@
     "habitat": "Hábitat variable según especie; muchos hongos crecen en madera, suelos ricos en materia orgánica, estiércol, pastizales o bosques. No recolectar para consumo.",
     "geographicDistribution": "Distribución variable por especie; revisar fuentes micológicas locales. La presencia regional no implica seguridad ni facilidad de identificación.",
     "firstAid": "No provocar el vómito salvo indicación profesional. Si hubo ingestión, conservar restos/fotos del hongo y contactar urgentemente con centro toxicológico o emergencias, especialmente si hay síntomas, menores, mezcla con alcohol/drogas/fármacos o identificación incierta. En mascotas, acudir a veterinario.",
-    "imageUrl": "",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsYkpSXfwJg8tXYq-swmYPf534HgrX-mBvTWMa4VUmzneSDAmI0YWDmrbskUi6eZQJcQwAvA&s",
     "category": "Hongo",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8350,
@@ -10395,15 +10413,19 @@
     "scientificName": "Aconitum abietetorum",
     "family": "Ranunculaceae",
     "toxicityLevel": "Alto",
-    "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
-    "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
+    "toxicParts": "La planta Aconitum abietetorum contiene varias partes tóxicas o irritantes. \n\nLas hojas y las flores de la planta contienen alcaloides, incluyendo aconitina, que es una sustancia altamente tóxica y puede causar efectos adversos en la salud.\n\nLa raíz de la planta es la parte más tóxica y contiene la mayor concentración de aconitina y otros alcaloides. La raíz puede causar efectos graves si se ingiere o se entra en contacto con la piel.\n\nLa planta en su conjunto es tóxica y puede causar problemas de salud si se ingiere o se entra en contacto con ella.\n\nNo se conoce variación en la toxicidad según la madurez, estación o secado de la planta.",
+    "symptoms": "La intoxicación por Aconitum abietetorum puede causar síntomas graves y potencialmente mortales. Los efectos neurológicos son comunes y pueden incluir visión borrosa, confusión, somnolencia y convulsiones. La intoxicación también puede afectar el sistema nervioso autónomo, lo que puede llevar a midriasis (dilatación de la pupila) y taquicardia (aceleración del ritmo cardíaco). \n\nEl sistema digestivo también puede verse afectado, con síntomas como náuseas, vómitos y diarrea. En casos graves, la intoxicación puede causar fallo hepático y renal. Es importante destacar que la gravedad de los síntomas puede variar dependiendo de la cantidad y la frecuencia de la exposición a la planta. \n\nEs importante tener en cuenta que la Aconitum abietetorum es una planta muy tóxica y cualquier exposición a ella debe ser evitada. Si se sospecha una intoxicación, es fundamental buscar atención médica de inmediato.",
     "description": "Aconitum abietetorum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
-    "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
+    "habitat": "DESCONOCIDO.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
-    "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
+    "firstAid": "Si se sospecha una exposición o ingestión accidental de Aconitum abietetorum, sigue estos pasos:\n\n- Retira cualquier resto de la planta de la boca o piel afectada y lávalos con agua corriente durante varios minutos.\n- No intentes provocar vómito a menos que se te indique por un profesional de la salud.\n- Si hay síntomas, ingestión relevante, niños, mascotas o se sospecha una toxicidad alta, llama a Toxicología o a las urgencias (112).\n- Conserva una muestra o foto de la planta para facilitar la identificación y el tratamiento adecuado.\n- Si no conoces datos fiables sobre la planta, busca asesoramiento médico inmediato.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_abietetorum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del abeto",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8474,
@@ -10417,15 +10439,19 @@
     "scientificName": "Aconitum acutusculum",
     "family": "Ranunculaceae",
     "toxicityLevel": "Alto",
-    "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
+    "toxicParts": "La planta Aconitum acutusculum contiene varias partes tóxicas o irritantes. \n\n- Las hojas y las flores contienen alcaloides, incluyendo aconitina, que es la sustancia más tóxica de la planta.\n- Las semillas y las raíces también contienen aconitina y otros alcaloides, aunque en menor cantidad que las hojas y las flores.\n- La savia y el látex de la planta son tóxicos y pueden causar irritación en la piel y los ojos.\n- La corteza y la raíz de la planta pueden contener compuestos activos, aunque no se conoce con exactitud la cantidad de aconitina que se encuentra en estas partes de la planta.\n\nEs importante tener en cuenta que la toxicidad de la planta puede variar dependiendo de la madurez, la estación y el estado de secado de la planta.",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum acutusculum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum acutusculum es una planta perenne que se encuentra en regiones montañosas. Tiene un porte herbáceo, alcanzando hasta 50 cm de altura, con un rizoma subterráneo que produce hojas lanceoladas y dentadas. Las flores son azules, en forma de racimo, y se encuentran en la parte superior de la planta. Los frutos son cápsulas secas que contienen semillas pequeñas. Un rasgo distintivo de esta especie es la presencia de glándulas glandulares en las hojas y tallo, que contienen toxinas peligrosas.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
-    "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
+    "firstAid": "Si se ha expuesto a la planta Aconitum acutusculum o se ha ingerido accidentalmente, sigue estos pasos:\n\nRetira cualquier resto de la planta de la boca y la piel, y lávalos con agua abundante. No intentes provocar el vómito a menos que se te indique por un profesional de la salud.\n\nSi notas síntomas como dolor abdominal, náuseas, vómitos, debilidad, o problemas respiratorios, llama a la Toxicología o a 112 para obtener asesoramiento médico.\n\nConserva cualquier muestra o foto de la planta para que los profesionales puedan evaluar la situación.\n\nSi se trata de un niño, una mascota, o se sospecha una ingestión relevante, llama a la Toxicología o a 112 inmediatamente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_acutusculum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del Japón, aconito de montaña, aconito de otoño, aconito de otoño japonés, aconito de otoño oriental, aconito de otoño rojo, aconito rojo, aconito rojo de otoño",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8475,
@@ -10485,13 +10511,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum alboviolaceum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "La especie \"Aconitum alboviolaceum\" es una planta perenne que se encuentra en regiones montañosas. Su porte es de un arbusto que puede alcanzar hasta 1 metro de altura. Las hojas son largas y estrechas, de color verde oscuro, con un margen dentado. Las flores son de color azul pálido a violáceo, en forma de racimos y se encuentran en la parte superior del tallo. Los frutos son cápsulas con semillas pequeñas y negras. Un rasgo distintivo de esta planta es su toxicidad, ya que contiene alcaloides peligrosos que pueden ser mortales si se ingieren.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_alboviolaceum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito blanco violáceo, aconito de montaña, aconito montano, aconito silvestre, aconito violeta, aconito violeta blanco",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8478,
@@ -10505,15 +10535,19 @@
     "scientificName": "Aconitum alpino-nepalense",
     "family": "Ranunculaceae",
     "toxicityLevel": "Alto",
-    "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
-    "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum alpino-nepalense es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "toxicParts": "La planta Aconitum alpino-nepalense contiene varios compuestos tóxicos y irritantes en diferentes partes de la planta. A continuación, se detallan las partes más tóxicas o irritantes:\n\n- Raíces: Contienen aconitina, un alcaloide altamente tóxico que puede causar efectos adversos graves, incluyendo parálisis del sistema nervioso y muerte.\n- Hojas: Contienen cantidades menores de aconitina, pero pueden causar irritación en la piel y los ojos.\n- Semillas: Contienen aconitina en menor cantidad que las raíces, pero pueden ser tóxicas si se ingieren.\n- Toda la planta: La planta entera es tóxica y puede causar efectos adversos si se ingiere o se entra en contacto con ella.\n\nNo se conoce una variación significativa en la toxicidad según la madurez, estación o secado de la planta. Sin embargo, es importante tener en cuenta que la aconitina puede persistir en la planta incluso después de su secado.",
+    "symptoms": "La especie Aconitum alpino-nepalense pertenece a la familia Ranunculaceae y, como miembro de este género, es conocida por su toxicidad. Los síntomas de intoxicación por Aconitum alpino-nepalense pueden incluir:\n\nLa ingestión de esta planta puede causar náuseas, vómitos y diarrea en humanos, con una aparición de síntomas que puede variar desde 30 minutos a 2 horas después de la ingesta. La toxicidad puede afectar el sistema neurológico, causando mareos, confusión y debilidad muscular, y puede también afectar el sistema cardíaco, causando bradicardia y taquicardia.\n\nEn casos más graves, la intoxicación por Aconitum alpino-nepalense puede causar convulsiones, pérdida de conciencia y parálisis. La gravedad de los síntomas puede variar dependiendo de la cantidad de planta ingerida y la edad y peso del individuo afectado.\n\nEs importante destacar que la toxicidad de esta planta puede ser mortal si no se trata adecuadamente, por lo que es fundamental buscar atención médica inmediata en caso de ingestión.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nEl Aconitum alpino-nepalense es una planta herbácea perenne que alcanza una altura de hasta 100 cm. Sus hojas son lanceoladas, enteras y de color verde oscuro, con una longitud de hasta 10 cm y una anchura de hasta 2 cm. Las flores son azules, en forma de campana y con una longitud de hasta 20 mm, que se producen en racimos terminales. Los frutos son cápsulas secas y de forma ovalada, que contienen semillas pequeñas. La planta produce un látex blanco y amargo en sus hojas y tallo.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_alpino-nepalense&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del Himalaya, aconito de Nepal, aconito de los Himalayas, aconito de los montes Himalaya",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8479,
@@ -10535,7 +10569,11 @@
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_ambiguum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de montaña, aconito de los prados, aconito de los valles, aconito de los valles de montaña, aconito de valles, aconito de valles de montaña, aconito de valles montaña, aconito de los Alpes, aconito de los Alpes europeo, aconito de los Alpes occidentales, aconito de los Alpes orientales, aconito de los Alpes centrales, aconito de los Alpes meridionales",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8480,
@@ -10557,7 +10595,11 @@
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_amplexicaule&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de hojas anchas, aconito de hojas anchas del Japón, aconito de hojas anchas de Japón, aconito de hojas anchas japonesa, aconito de hojas anchas japoneso, aconito de hojas anchas japonés, aconito de hojas anchas japonés del Japón",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8481,
@@ -10573,13 +10615,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum angulatum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum angulatum es una planta perenne que crece como un arbusto. Sus hojas son ovales y dentadas, de color verde oscuro. Las flores son azules y tubulares, con una forma característica que se asemeja a una trompeta. Los frutos son cápsulas secas y triangulares, de color marrón claro. Una de las características distintivas de esta planta es su toxicidad, ya que contiene alcaloides peligrosos que pueden ser mortales si se ingieren.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_angulatum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de las montañas, aconito de las sierras",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8482,
@@ -10595,13 +10641,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum angusticassidatum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum angusticassidatum es una planta perenne que se desarrolla como un arbusto. Sus hojas son lanceoladas y de color verde oscuro, con una longitud de hasta 10 cm y una anchura de hasta 2 cm. Las flores son azules, con una forma de campana y una longitud de hasta 5 cm, y se producen en racimos en la parte superior del tallo. Los frutos son cápsulas de color marrón claro, que contienen semillas pequeñas. Una de las características distintivas de esta planta es su toxicidad, ya que contiene alcaloides peligrosos que pueden ser mortales en grandes cantidades.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_angusticassidatum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de montaña, aconito de las montañas, aconito de las sierras",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8483,
@@ -10617,13 +10667,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum angustifolium es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "La descripción botánica de Aconitum angustifolium es la siguiente:\n\nAconitum angustifolium es una planta perenne que se encuentra en forma de hierba. Las hojas son lanceoladas y de color verde oscuro, con una longitud de hasta 10 cm. Las flores son de color azul profundo y se encuentran en racimos, con una forma de campana y una longitud de hasta 5 cm. Los frutos son cápsulas de color marrón claro que contienen semillas. Un rasgo distintivo de esta planta es su toxicidad, ya que contiene alcaloides peligrosos como la aconitina.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_angustifolium&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del bosque, aconito de hojas angostas, aconito de hojas estrechas, aconito de hojas estrechas del bosque, aconito del bosque de hojas angostas",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8484,
@@ -10642,10 +10696,14 @@
     "description": "Aconitum apetalum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
-    "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
+    "firstAid": "Si se ha expuesto a la planta Aconitum apetalum o se ha ingerido accidentalmente, sigue estos pasos:\n\nRetira cualquier resto de la planta de la boca o la piel con agua corriente. No intentes provocar vómito a menos que se te indique hacerlo por un profesional de la salud.\n\nLlama a Toxicología o a las urgencias (112) si notas síntomas, si se ha ingerido una cantidad relevante de la planta, si se trata de un niño o una mascota, o si sospechas una toxicidad alta.\n\nConserva cualquier muestra o foto de la planta para que los profesionales de la salud puedan evaluar la situación. No intentes administrar ningún medicamento ni tratamiento específico.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_apetalum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de montaña, aconito sin pétalos",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8485,
@@ -10661,13 +10719,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum aquilonare es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum aquilonare es una planta perenne que se encuentra en la región de Asia. Se caracteriza por ser un arbusto que puede alcanzar una altura de hasta 1 metro. Sus hojas son ovales y dentadas, con una longitud de hasta 10 centímetros. Las flores son azules o violáceas, con cinco pétalos y se encuentran en una inflorescencia en forma de espiga. Los frutos son cápsulas que contienen semillas. Esta planta es conocida por ser tóxica y peligrosa debido a la presencia de alcaloides en sus hojas y flores.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_aquilonare&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito del norte, aconito de montaña, aconito de los Alpes",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8486,
@@ -10683,13 +10745,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum artemisiifolium es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "Aconitum artemisiifolium es una planta perenne que se encuentra en la familia de las ranunculáceas. Es un arbusto que puede alcanzar un metro de altura, con hojas lanceoladas y dentadas que se encuentran en una roseta basal. Las flores son azules o violetas, con cinco pétalos y un centro amarillo, y se encuentran en una inflorescencia en forma de espiga. Los frutos son cápsulas que contienen semillas pequeñas y negras. Una de sus características distintivas es la toxicidad de sus partes, especialmente las hojas y las flores, que contienen alcaloides peligrosos para la salud humana.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_artemisiifolium&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de hojas de artemisa, aconito de hojas de hierba de artemisa, aconito de hojas de hierba de hierba de artemisa",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8487,
@@ -10705,13 +10771,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum asahikawaense es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum asahikawaense es una planta perenne que crece como un arbusto o una hierba. Presenta hojas ovales y lanceoladas, de color verde oscuro, que se encuentran dispuestas en una roseta basal. Las flores de Aconitum asahikawaense son azules o purpuras, con una forma tubular y una corola que se abre en forma de campana, y se encuentran agrupadas en una inflorescencia en forma de espiga. Los frutos son cápsulas secas y de color marrón, que contienen semillas pequeñas. Un rasgo distintivo de esta especie es su toxicidad, ya que contiene alcaloides venenosos como la aconitina.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_asahikawaense&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del Japón, aconito de Hokkaido, aconito de las nieves, aconito de las nieves del Japón, aconito japonés, aconito montano",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8488,
@@ -10727,13 +10797,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum assamicum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum assamicum es una planta perenne que se encuentra en la familia de las ranunculáceas. Tiene un porte herbáceo, alcanzando una altura de hasta 1 metro. Las hojas son ovales, enteras y de color verde oscuro, con una longitud de hasta 10 centímetros. Las flores son azules, en forma de racimo y con forma de campana, alcanzando un diámetro de hasta 3 centímetros. Los frutos son aquenios, de color marrón claro y con una longitud de hasta 5 centímetros. Un rasgo distintivo de esta especie es la presencia de un veneno potente en sus partes aéreas, lo que la hace peligrosa para el ser humano y otros animales.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_assamicum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de Assam",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8489,
@@ -10749,13 +10823,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum atlanticum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum atlanticum es una planta perenne que crece como un arbusto. Sus hojas son ovales y dentadas, con un color verde oscuro. Las flores son azules o violetas, con una forma tubular y una longitud de hasta 10 cm. Los frutos son cápsulas secas y triangulares, de color marrón claro. Una de sus características distintivas es la presencia de un veneno potente en sus partes aéreas, lo que la hace peligrosa para el ser humano y otros animales.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_atlanticum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito atlántico, aconito de montaña",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8490,
@@ -10769,15 +10847,19 @@
     "scientificName": "Aconitum austrokoreense",
     "family": "Ranunculaceae",
     "toxicityLevel": "Alto",
-    "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
-    "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum austrokoreense es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
-    "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
+    "toxicParts": "La planta Aconitum austrokoreense es tóxica y contiene compuestos activos en varias partes. Las partes tóxicas y concentradoras de compuestos activos son:\n\n- Raíces: contienen aconitina, un alcaloide tóxico que es la principal responsable de la toxicidad de la planta.\n- Hojas: también contienen aconitina y otros alcaloides tóxicos.\n- Semillas: pueden contener aconitina y otros compuestos tóxicos, aunque su concentración es menor que en las raíces.\n- Toda la planta: la planta entera es tóxica y debe ser manipulada con cuidado.\n\nNo se conoce información sobre variación de toxicidad por madurez, estación o secado.",
+    "symptoms": "No hay datos específicos disponibles sobre los síntomas de intoxicación de Aconitum austrokoreense. Sin embargo, como miembro del género Aconitum, se puede esperar que presente una toxicidad similar a otras especies de este género.\n\nLa intoxicación por Aconitum puede afectar varios sistemas, incluyendo el neurológico, donde se pueden presentar síntomas como confusión, somnolencia, debilidad muscular y convulsiones. También puede afectar el sistema cardíaco, causando bradicardia (bajo ritmo cardíaco) y arritmias. El sistema digestivo puede verse afectado con náuseas, vómitos y diarrea.\n\nEn cuanto a la gravedad, la intoxicación por Aconitum puede ser grave y potencialmente fatal, especialmente si no se trata adecuadamente. El tiempo de aparición de los síntomas puede variar dependiendo de la dosis y la forma de exposición, pero generalmente se presentan dentro de las primeras horas después de la ingestión.\n\nEs importante destacar que la toxicidad de Aconitum austrokoreense no está bien estudiada, por lo que es difícil determinar con precisión los síntomas y la gravedad de la intoxicación. Se recomienda precaución al manejar esta planta y buscar atención médica inmediata si se sospecha una intoxicación.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum austrokoreense es una planta perenne que crece como un arbusto. Presenta hojas ovales, alternas y dentadas, que miden aproximadamente 5-10 cm de largo. Las flores son azules, con forma de campana y miden alrededor de 3-4 cm de largo. Los frutos son cápsulas de color marrón claro que contienen semillas. Una de las características distintivas de esta especie es su toxicidad, ya que contiene alcaloides venenosos como la aconitina.",
+    "habitat": "DESCONOCIDO.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_austrokoreense&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito coreano, aconito de Corea",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8491,
@@ -10793,13 +10875,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum axilliflorum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "Lo siento, pero no tengo información sobre la especie \"Aconitum axilliflorum\".",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_axilliflorum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del bosque, aconito de las montañas, aconito de los bosques, aconito de los montes, aconito montano, aconito silvestre, aconito silvestre de los bosques",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8492,
@@ -10815,13 +10901,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum azumiense es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum azumiense es una planta perenne que se caracteriza por su porte arbustivo, alcanzando un tamaño de hasta 1 metro de altura. Sus hojas son ovales, dentadas y de color verde oscuro, dispuestas de manera alterna en el tallo. Las flores de Aconitum azumiense son de color azul oscuro, con forma de campana y de 5-6 pétalos, que se encuentran en una inflorescencia en forma de espiga. Los frutos son cápsulas secas y de color marrón, que contienen semillas pequeñas. Una de las características distintivas de esta especie es la presencia de glándulas resiníferas en las hojas y tallo, que contienen toxinas peligrosas.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_azumiense&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del Japón",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8493,
@@ -10837,13 +10927,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum baburinii es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum baburinii es una planta perenne que crece como un arbusto. Sus hojas son ovales, lanceoladas y de color verde oscuro, con un margen dentado. Las flores son azules o violetas, con forma de campana y se encuentran en una inflorescencia en forma de espiga. Los frutos son cápsulas secas y de color marrón, que contienen semillas pequeñas. Esta planta es conocida por su toxicidad y su uso en la medicina tradicional en algunas regiones.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_baburinii&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito de baburin",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8494,
@@ -10859,13 +10953,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum baicalense es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum baicalense es una planta perenne que se encuentra en la región del lago Baikal en Rusia. Se trata de una hierba alta que puede alcanzar hasta 1 metro de altura, con hojas lanceoladas y dentadas que se encuentran en una roseta basal. Las flores de Aconitum baicalense son azules o violetas, con cinco pétalos y un largo tubo floral, y se encuentran en racimos terminales. Los frutos son cápsulas secas y de color marrón que contienen semillas. Una de sus características distintivas es la presencia de una sustancia tóxica llamada aconitina en sus hojas y flores.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_baicalense&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito baikal, aconito de baikal, aconito de Siberia, aconito siberiano",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8495,
@@ -10879,15 +10977,19 @@
     "scientificName": "Aconitum bailangense",
     "family": "Ranunculaceae",
     "toxicityLevel": "Alto",
-    "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
+    "toxicParts": "La planta Aconitum bailangense contiene compuestos tóxicos en varias partes, especialmente en:\n\n- Raíces: son las partes más tóxicas de la planta, ya que contienen altas concentraciones de alcaloides aconitinas, que son responsables de la toxicidad.\n- Hojas: también contienen alcaloides aconitinas, aunque en menor cantidad que las raíces.\n- Semillas: pueden contener pequeñas cantidades de alcaloides aconitinas.\n- Toda la planta: la planta entera es tóxica, y su ingestión puede causar problemas graves.\n\nNo se conoce una variación significativa en la toxicidad según la madurez, estación o secado de la planta.",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
     "description": "Aconitum bailangense es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
-    "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
+    "firstAid": "Si se ha expuesto a la planta Aconitum bailangense o se ha ingerido accidentalmente, sigue estos pasos:\n\nRetira cualquier resto de la planta de la boca o la piel lo antes posible. Lava la zona afectada con agua corriente. No intentes provocar el vómito a menos que un profesional te lo indique.\n\nSi notas cualquier síntoma, como dolor de estómago, mareos, dificultad para respirar, o si crees que ha habido una ingestión relevante, llama a Toxicología o a 112. Es importante llamar si se trata de un niño, una mascota, o si sospechas una toxicidad alta.\n\nConserva cualquier muestra de la planta y toma una foto para mostrar a un profesional. No intentes tratar el problema con medicamentos o tratamientos hospitalarios sin la supervisión de un profesional.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_bailangense&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del Himalaya",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8496,
@@ -10902,14 +11004,18 @@
     "family": "Ranunculaceae",
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
-    "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum barbatum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "symptoms": "La especie \"Aconitum barbatum\" es una planta tóxica que puede causar graves efectos en humanos. Los síntomas de intoxicación por esta planta pueden incluir:\n\n- Signos digestivos: dolor abdominal, náuseas, vómitos, diarrea y dolor en el estómago.\n- Signos neurológicos: mareos, confusión, trastornos del equilibrio, debilidad muscular, parálisis y pérdida de la conciencia.\n- Signos cardíacos: bradicardia (bajo ritmo cardíaco), taquicardia (alto ritmo cardíaco) y arritmias.\n- Signos dérmicos: erupciones cutáneas, picazón y enrojecimiento de la piel.\n\nLa gravedad de los síntomas puede variar dependiendo de la cantidad de planta consumida y la duración de la exposición. En casos graves, la intoxicación por \"Aconitum barbatum\" puede ser mortal. Es importante buscar atención médica inmediata si se sospecha una intoxicación por esta planta.",
+    "description": "La planta Aconitum barbatum es un arbusto perenne que alcanza un tamaño de hasta 1 metro de altura. Las hojas son lanceoladas, de color verde oscuro y con un borde dentado. Las flores son azules o moradas, en forma de racimo y con una longitud de hasta 20 cm. Los frutos son cápsulas de color marrón claro que contienen semillas. Un rasgo distintivo de esta especie es la presencia de pelos largos y finos en las hojas y tallo.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_barbatum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8497,
@@ -10924,14 +11030,18 @@
     "family": "Ranunculaceae",
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
-    "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum basitruncatum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "symptoms": "La intoxicación por Aconitum basitruncatum puede causar síntomas graves y potencialmente mortales. Los efectos neurológicos son comunes y pueden incluir mareos, vértigo, confusión, somnolencia y en algunos casos, convulsiones. La intoxicación también puede afectar el sistema digestivo, causando náuseas, vómitos y dolor abdominal. \n\nLa midriasis (dilatación de la pupila) es un signo característico de la intoxicación por Aconitum basitruncatum, lo que puede ser un indicio de la gravedad del envenenamiento. La taquicardia (frecuencia cardíaca aumentada) también puede ser observada, así como una disminución en la presión arterial. \n\nEs importante destacar que la intoxicación por Aconitum basitruncatum puede ser mortal si no se trata adecuadamente y con prontitud. El tiempo de aparición de los síntomas puede variar dependiendo de la dosis y la forma de exposición, pero generalmente ocurren dentro de las primeras horas después de la ingestión. \n\nNo hay datos específicos sobre la toxicidad en mascotas o ganado, por lo que se debe asumir que los síntomas pueden ser similares a los observados en humanos.",
+    "description": "DESCRIPCIÓN BOTÁNICA:\n\nAconitum basitruncatum es una planta herbácea que se encuentra en regiones montañosas. Presenta hojas ovales o lanceoladas, de color verde oscuro, que se encuentran dispuestas en una roseta basal. Las flores de color azul intenso o morado, con forma de campana, se encuentran en una inflorescencia erecta que puede alcanzar hasta 1 metro de altura. Los frutos son cápsulas secas y de color marrón claro que contienen semillas pequeñas. Una de sus características distintivas es la presencia de una glándula en la base de las hojas que produce una sustancia tóxica.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_basitruncatum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del este, aconito oriental, aconito siberiano, aconito siberiano del este, aconito siberiano oriental, aconito siberiano oriental del este, aconitum",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8498,
@@ -10953,7 +11063,11 @@
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_baumgartenianum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito de Baumgarten, aconito de montaña, aconito del Himalaya",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8499,
@@ -10969,13 +11083,17 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum bhedingense es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "DESCONOCIDO.",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
-    "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
+    "firstAid": "Si se sospecha una exposición o ingestión accidental de Aconitum bhedingense, sigue estos pasos:\n\nRetira cualquier resto de la planta de la boca o piel y lávalos con agua. No intentes provocar vómito a menos que se te indique por un profesional de la salud.\n\nSi hay síntomas, ingestión relevante, niños, mascotas o se sospecha una toxicidad alta, llama a Toxicología o a las urgencias (112) de inmediato.\n\nConserva una muestra o foto de la planta para que los profesionales puedan evaluar la situación.\n\nNo intentes dar ningún medicamento ni tratamiento específico, ya que esto puede empeorar la situación.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_bhedingense&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "aconito, aconito del Himalaya",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 8500,
@@ -10991,12 +11109,16 @@
     "toxicityLevel": "Alto",
     "toxicParts": "toda la planta, especialmente raíces y tubérculos; también hojas, flores y semillas",
     "symptoms": "Intoxicación por alcaloides diterpénicos (aconitina, mesaconitina, hipaconitina). Inicio rápido (minutos a 2 h): parestesias orales y en extremidades, hormigueo, náuseas, vómitos, diarrea, sudoración, mareo. Progresión a toxicidad cardiovascular y neurológica: hipotensión, bradicardia o taquicardia, arritmias ventriculares, dolor torácico, disnea, confusión, debilidad muscular, temblores, convulsiones, parálisis respiratoria. Dosis muy bajas pueden ser mortales.",
-    "description": "Aconitum bhutanobulbilliferum es una especie del género Aconitum (familia Ranunculaceae), conocido como acónito, matalobos o monkshood. Como todos los acónitos, contiene alcaloides diterpénicos muy tóxicos. Esta ficha es preventiva y no constituye guía de identificación ni uso. La identificación precisa requiere especialista; no consumir ni manipular sin protección.",
+    "description": "Lo siento, pero no tengo información sobre la especie \"Aconitum bhutanobulbilliferum\".",
     "habitat": "Especies de Aconitum típicas de regiones montañosas templadas y alpinas del Hemisferio Norte; prados húmedos, claros de bosque, laderas rocosas, riberas y suelos ricos en materia orgánica.",
     "geographicDistribution": "Género distribuido desde Europa hasta Asia (Himalaya, China, Siberia, Japón, Corea) y Norteamérica; algunas especies en zonas montañosas tropicales de África. Consultar floras locales para la distribución específica.",
     "firstAid": "Evitar contacto dérmico sin guantes; no ingerir. En caso de ingestión o contacto: llamar inmediatamente a emergencias / centro toxicológico. No provocar vómito. Conservar muestra/foto para identificación. Monitorización cardiaca urgente; riesgo de arritmias mortales. En contacto con piel u ojos, lavar abundantemente con agua. En mascotas, acudir a veterinario urgente.",
     "imageUrl": "https://commons.wikimedia.org/wiki/Special:Search?search=Aconitum_bhutanobulbilliferum&go=Go&ns6=1&ns14=1",
     "category": "Planta",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   }
 ]

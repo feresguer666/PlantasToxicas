@@ -559,7 +559,7 @@
     "notes": null,
     "commonName": "Hosta",
     "scientificName": "Hosta ventricosa",
-    "family": "Hostaceae",
+    "family": "Agavaceae",
     "toxicityLevel": "Alto",
     "toxicParts": "partes no especificadas por la fuente, evitar ingestión o contacto hasta identificación profesional",
     "symptoms": "vómitos, diarrea, depresión/letargo; Registro inferido automáticamente: especie de Hosta, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
@@ -569,7 +569,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/Hosta_ventricosa3726837254.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 4027,
@@ -3202,14 +3206,17 @@
     "family": "Convolvulaceae",
     "toxicityLevel": "Alto",
     "toxicParts": "semillas/frutos, evitar ingestión o contacto hasta identificación profesional",
-    "symptoms": "vómitos, large amounts of seeds may cause hallucinations; Registro inferido automáticamente: especie de Ipomoea, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
-    "description": "Ipomoea batatas, llamada comúnmente batata, chaco, papa dulce, patata dulce, papa camote, camote, moniato, boniato, o apichu, es una planta de la familia Convolvulaceae, cultivada en gran parte del mundo por su raíz tuberosa comestible, de sabor dulce. Principios tóxicos indicados por ASPCA: Indole alkaloids (Lysergic acid, lysergamide, elymoclavine and chanoclavine). Notas de fuentes: Registro inferido automáticamente: especie de Ipomoea, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar. Registro generado automáticamente desde: ASPCA-cats, ASPCA-dogs, ASPCA-horses, GBIF, GBIF-genus-expansion, Wikipedia-es. Requiere revisión experta.",
+    "symptoms": "La especie \"Ipomoea tiliacea\" (Morning Glory) puede contener alcaloides tóxicos, como ergina y ergometrina, que pueden causar intoxicación en humanos. Los síntomas de intoxicación por Morning Glory pueden incluir:\n\n- Signos digestivos: náuseas, vómitos, diarrea y dolor abdominal.\n- Signos neurológicos: confusión, alucinaciones, visión borrosa, mareos y convulsiones.\n- Signos cardíacos: aumento de la frecuencia cardíaca y presión arterial.\n- Signos dérmicos: sudoración excesiva y enrojecimiento de la piel.\n\nLa gravedad de la intoxicación puede variar dependiendo de la cantidad y frecuencia de consumo de la planta. Es importante destacar que la intoxicación por Morning Glory puede ser grave y requerir atención médica inmediata.",
+    "description": "La Ipomoea tiliacea, también conocida como Morning Glory, es una planta trepadora que se encuentra en regiones tropicales y subtropicales. Tiene hojas ovales y lanceoladas, de color verde oscuro, con un margen serrado y un tamaño que varía de 5 a 10 cm de largo. Las flores de la Morning Glory son grandes y tubulares, con un color azul intenso y una forma que recuerda a una trompeta. El fruto es una cápsula seca y dehiscente que contiene semillas pequeñas y negras. Una de las características distintivas de esta planta es su capacidad para trepar y escalar superficies utilizando sus raíces y tallos.",
     "habitat": "Información de contexto obtenida automáticamente de Wikipedia/GBIF; revisar hábitat local. Ipomoea batatas, llamada comúnmente batata, chaco, papa dulce, patata dulce, papa camote, camote, moniato, boniato, o apichu, es una planta de la familia Convolvulaceae, cultivada en gran parte del mundo por su raíz tuberosa comestible, de sabor dulce.",
     "geographicDistribution": "Validación taxonómica GBIF: Plantae SPECIES ACCEPTED. Distribución geográfica no inferida automáticamente.",
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/38/5aday_sweet_potato.jpg",
     "category": "Jardín",
-    "commonNames": "",
+    "commonNames": "morada, morera, morera de la mañana, morera de la tierra, morera de tierra, morera terrestre, morera tierra, morera terrestre de la mañana",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
     "mythsAndLegends": "El Tilo. Si bien el tilo no es tóxico para nosotros, su néctar es letalmente narcótico para las abejas. El folclore alemán decretaba que el tilo era un árbol sagrado de la verdad, y se celebraban los 'juicios bajo los tilos' porque creían que la planta impedía que se dijeran mentiras."
   },
   {
@@ -3882,7 +3889,7 @@
     "notes": null,
     "commonName": "Spuria Iris",
     "scientificName": "Iris oratoria",
-    "family": "Eremiaphilidae",
+    "family": "Iridaceae",
     "toxicityLevel": "Alto",
     "toxicParts": "partes no especificadas por la fuente, evitar ingestión o contacto hasta identificación profesional",
     "symptoms": "Salivation, vómitos, salivación,letargo, diarrea. Highest concentration in rhizomes; Registro inferido automáticamente: especie de Iris, género/grupo presente en fuentes tóxicas. Revisar manualmente antes de publicar",
@@ -3892,7 +3899,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Gottesanbeterin_Abwehr.JPG",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 4178,
@@ -10672,9 +10683,13 @@
     "habitat": "Hábitat no especificado automáticamente; revisar distribución local antes de publicar.",
     "geographicDistribution": "Validación taxonómica GBIF: Plantae SPECIES ACCEPTED. Distribución geográfica no inferida automáticamente.",
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
-    "imageUrl": "https://www.aspca.org/sites/default/files/styles/medium_image_300x200/public/field/image/plants/oregano.jpg?itok=2I3EUcWn",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Origanum_hypericifolium.jpg/1920px-Origanum_hypericifolium.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 4486,
@@ -10740,7 +10755,11 @@
     "firstAid": "No provocar el vómito. Retirar restos vegetales de la boca y enjuagar con agua si la persona o mascota está consciente. Conservar una foto o muestra de la planta para identificación. Fuente ASPCA indica toxicidad para: cats, dogs, horses; contactar con veterinario si hubo exposición. Contactar con emergencias, centro toxicológico o veterinario si hubo ingestión, síntomas o exposición en niños/mascotas.",
     "imageUrl": "file:///android_asset/generated_images/plant_4488.jpg",
     "category": "Jardín",
-    "commonNames": ""
+    "commonNames": "",
+    "floweringMonths": "",
+    "fruitingMonths": "",
+    "maxToxicityMonths": "",
+    "mythsAndLegends": ""
   },
   {
     "id": 4489,

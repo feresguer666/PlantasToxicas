@@ -244,6 +244,9 @@ fun PlantDetailScreen(
             var isSavingUrl   by remember { mutableStateOf(false) }
             var noteDraft by remember(p.id, p.notes) { mutableStateOf(p.notes.orEmpty()) }
             var selectedMarkers by remember(p.id) { mutableStateOf(PlantMarkerStore.load(context, p.id)) }
+            var availableMarkers by remember(p.id) { mutableStateOf(PlantMarkerStore.allAvailableMarkers(context)) }
+            var showNewMarkerDialog by remember { mutableStateOf(false) }
+            var newMarkerText by remember { mutableStateOf("") }
             var compactView by remember(p.id) { mutableStateOf(true) }
             var compactSymptomsExpanded by remember(p.id) { mutableStateOf(false) }
             var quickIndexExpanded by remember(p.id) { mutableStateOf(false) }
@@ -412,6 +415,48 @@ fun PlantDetailScreen(
                     },
                     dismissButton = {
                         TextButton(onClick = { showUrlDialog = false }) { Text("Cancelar") }
+                    }
+                )
+            }
+
+            // ── Diálogo: nueva etiqueta personalizada ────────────────────
+            if (showNewMarkerDialog) {
+                AlertDialog(
+                    onDismissRequest = { showNewMarkerDialog = false },
+                    title = { Text("Nueva etiqueta") },
+                    text = {
+                        Column {
+                            Text(
+                                "Crea una etiqueta personal para reutilizarla en otras plantas.",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = newMarkerText,
+                                onValueChange = { newMarkerText = it },
+                                label = { Text("Etiqueta") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            enabled = newMarkerText.isNotBlank(),
+                            onClick = {
+                                val marker = PlantMarkerStore.addCustomMarker(context, newMarkerText)
+                                if (marker != null) {
+                                    availableMarkers = PlantMarkerStore.allAvailableMarkers(context)
+                                    selectedMarkers = PlantMarkerStore.toggle(context, p.id, marker)
+                                }
+                                newMarkerText = ""
+                                showNewMarkerDialog = false
+                            }
+                        ) { Text("Crear y marcar") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showNewMarkerDialog = false }) { Text("Cancelar") }
                     }
                 )
             }
@@ -763,7 +808,7 @@ fun PlantDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PlantMarkerStore.DEFAULT_MARKERS.forEach { marker ->
+                        availableMarkers.forEach { marker ->
                             val selected = marker in selectedMarkers
                             FilterChip(
                                 selected = selected,
@@ -776,6 +821,14 @@ fun PlantDetailScreen(
                                 )
                             )
                         }
+                        Spacer(Modifier.height(10.dp))
+                        OutlinedButton(
+                            onClick = {
+                                newMarkerText = ""
+                                showNewMarkerDialog = true
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) { Text("+ Nueva etiqueta", fontSize = 13.sp) }
                     }
                 }
 

@@ -1,6 +1,7 @@
 package com.toxicplants.database.ui.screens
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -210,6 +213,10 @@ fun NotesScreen(onBack: () -> Unit) {
         FullScreenNoteDialog(
             note = note,
             onDismiss = { fullScreenNote = null },
+            onSave = { updatedNote ->
+                notes = notes.map { if (it.id == updatedNote.id) updatedNote else it }
+                fullScreenNote = updatedNote
+            },
             onEdit = {
                 editingNote = note
                 fullScreenNote = null
@@ -323,9 +330,36 @@ fun NoteCard(note: PlantNote, onOpen: () -> Unit, onEdit: () -> Unit, onDelete: 
 fun FullScreenNoteDialog(
     note: PlantNote,
     onDismiss: () -> Unit,
+    onSave: (PlantNote) -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    var editMode by remember(note.id) { mutableStateOf(false) }
+    var title by remember(note.id) { mutableStateOf(note.title) }
+    var content by remember(note.id) { mutableStateOf(note.content) }
+
+    fun copyNoteToClipboard() {
+        val textToCopy = buildString {
+            if (title.isNotBlank()) appendLine(title)
+            if (content.isNotBlank()) append(content)
+        }.ifBlank { "Nota vacía" }
+        clipboard.setText(AnnotatedString(textToCopy))
+        Toast.makeText(context, "Nota copiada", Toast.LENGTH_SHORT).show()
+    }
+
+    fun pasteClipboardIntoNote() {
+        val clip = clipboard.getText()?.text.orEmpty()
+        if (clip.isNotBlank()) {
+            content = if (content.isBlank()) clip else (content.trimEnd() + "\n" + clip)
+            editMode = true
+            Toast.makeText(context, "Texto pegado", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Portapapeles vacío", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)
@@ -347,7 +381,7 @@ fun FullScreenNoteDialog(
                     }
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            note.title.ifBlank { "Sin título" },
+                            if (editMode) "Editando nota" else title.ifBlank { "Sin título" },
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
@@ -356,7 +390,13 @@ fun FullScreenNoteDialog(
                         )
                         Text(note.date, color = Color.White.copy(alpha = 0.65f), fontSize = 11.sp)
                     }
-                    IconButton(onClick = onEdit) {
+                    TextButton(onClick = { copyNoteToClipboard() }) {
+                        Text("Copiar", color = Color.White)
+                    }
+                    TextButton(onClick = { pasteClipboardIntoNote() }) {
+                        Text("Pegar", color = Color.White)
+                    }
+                    IconButton(onClick = { editMode = true }) {
                         Icon(Icons.Filled.Edit, "Editar", tint = Color(0xFF81C784))
                     }
                     IconButton(onClick = onDelete) {
@@ -364,30 +404,94 @@ fun FullScreenNoteDialog(
                     }
                 }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(18.dp)
-                ) {
-                    if (note.content.isBlank()) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                if (editMode) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = title,
+                            onValueChange = { title = it },
+                            label = { Text("Título") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color(0xFF4CAF50),
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                                cursorColor = Color(0xFF4CAF50)
+                            )
+                        )
+                        OutlinedTextField(
+                            value = content,
+                            onValueChange = { content = it },
+                            label = { Text("Contenido") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 320.dp),
+                            minLines = 12,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                                focusedBorderColor = Color(0xFF4CAF50),
+                                unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
+                                cursorColor = Color(0xFF4CAF50)
+                            )
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
+                            OutlinedButton(
+                                onClick = {
+                                    title = note.title
+                                    content = note.content
+                                    editMode = false
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                            ) { Text("Cancelar") }
+                            Button(
+                                onClick = {
+                                    val now = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+                                    val updated = note.copy(
+                                        title = title.trim(),
+                                        content = content.trim(),
+                                        date = now
+                                    )
+                                    onSave(updated)
+                                    editMode = false
+                                    Toast.makeText(context, "Nota guardada", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
+                                enabled = title.isNotBlank() || content.isNotBlank()
+                            ) { Text("Guardar", color = Color.White, fontWeight = FontWeight.Bold) }
+                        }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(18.dp)
+                    ) {
+                        if (content.isBlank()) {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text("Nota sin contenido", color = Color.White.copy(alpha = 0.55f), fontSize = 16.sp)
+                            }
+                        } else {
                             Text(
-                                "Nota sin contenido",
-                                color = Color.White.copy(alpha = 0.55f),
-                                fontSize = 16.sp
+                                content,
+                                color = Color.White.copy(alpha = 0.92f),
+                                fontSize = 18.sp,
+                                lineHeight = 26.sp
                             )
                         }
-                    } else {
-                        Text(
-                            note.content,
-                            color = Color.White.copy(alpha = 0.92f),
-                            fontSize = 18.sp,
-                            lineHeight = 26.sp
-                        )
                     }
                 }
             }

@@ -369,38 +369,56 @@ fun FullScreenNoteDialog(
             color = Color(0xFF071208)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color(0xFF0D3311))
-                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
                 ) {
-                    IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Cerrar", tint = Color.White)
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onDismiss) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Cerrar", tint = Color.White)
+                        }
                         Text(
                             if (editMode) "Editando nota" else title.ifBlank { "Sin título" },
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
                         )
-                        Text(note.date, color = Color.White.copy(alpha = 0.65f), fontSize = 11.sp)
+                        IconButton(onClick = { editMode = true }) {
+                            Icon(Icons.Filled.Edit, "Editar", tint = Color(0xFF81C784))
+                        }
+                        IconButton(onClick = onDelete) {
+                            Icon(Icons.Filled.Delete, "Eliminar", tint = Color(0xFFEF5350))
+                        }
                     }
-                    TextButton(onClick = { copyNoteToClipboard() }) {
-                        Text("Copiar", color = Color.White)
-                    }
-                    TextButton(onClick = { pasteClipboardIntoNote() }) {
-                        Text("Pegar", color = Color.White)
-                    }
-                    IconButton(onClick = { editMode = true }) {
-                        Icon(Icons.Filled.Edit, "Editar", tint = Color(0xFF81C784))
-                    }
-                    IconButton(onClick = onDelete) {
-                        Icon(Icons.Filled.Delete, "Eliminar", tint = Color(0xFFEF5350))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 48.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            note.date,
+                            color = Color.White.copy(alpha = 0.65f),
+                            fontSize = 11.sp,
+                            maxLines = 1,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = { copyNoteToClipboard() }) {
+                            Text("Copiar", color = Color.White, fontSize = 13.sp)
+                        }
+                        TextButton(onClick = { pasteClipboardIntoNote() }) {
+                            Text("Pegar", color = Color.White, fontSize = 13.sp)
+                        }
                     }
                 }
 

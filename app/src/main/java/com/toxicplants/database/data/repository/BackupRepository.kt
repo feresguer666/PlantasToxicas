@@ -149,12 +149,15 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             //    - Backup COMPLETO: incluye todas las fotos.
             //    - Backup INCREMENTAL: SOLO DATOS, sin fotos. Las fotos ya quedan cubiertas
             //      por las copias completas y así el incremental no vuelve a pesar cientos de MB.
-            val plantPhotoFilter: (File) -> Boolean = if (incremental) { _ -> false } else { _ -> true }
+            val plantPhotoFilter: (File) -> Boolean =
+                if (incremental) { _ -> false } else { _ -> true }
 
-            val nPlantImg = if (incremental) 0 else countImagesFiltered(plantImagesDir, plantPhotoFilter)
+            val nPlantImg =
+                if (incremental) 0 else countImagesFiltered(plantImagesDir, plantPhotoFilter)
             val nMushroomImg = if (incremental) 0 else countImages(mushroomImagesDir)
             val nSightImg = if (incremental) 0 else countImages(sightingImagesDir)
-            val totalSteps = plants.size + compounds.size + nPlantImg + nMushroomImg + nSightImg + 10
+            val totalSteps =
+                plants.size + compounds.size + nPlantImg + nMushroomImg + nSightImg + 10
             var step = 0
 
             // 3. Abrir el OutputStream (con GZIP opcional).
@@ -215,7 +218,11 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
 
                     // calendarEvents
                     w.name("calendarEvents").beginArray()
-                    for (e in calendarEvents) gson.toJson(e, com.toxicplants.database.ToxicCalendarEvent::class.java, w)
+                    for (e in calendarEvents) gson.toJson(
+                        e,
+                        com.toxicplants.database.ToxicCalendarEvent::class.java,
+                        w
+                    )
                     w.endArray()
 
                     // Capa editable de plantas psicotrópicas sobre el JSON fijo
@@ -256,15 +263,84 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         w.endArray()
                     }
                     w.endObject()
+                    // ── Géneros tóxicos editados ───────────────────────
+                    w.name("toxicGeneraStore")
+                    try {
+                        val tgFile = File(context.filesDir, "toxic_genera_user.json")
+                        if (tgFile.exists()) {
+                            val element = com.google.gson.JsonParser.parseString(tgFile.readText())
+                            gson.toJson(element, w)
+                        } else {
+                            w.beginObject()
+                            w.name("custom").beginArray().endArray()
+                            w.name("overrides").beginArray().endArray()
+                            w.name("hidden").beginArray().endArray()
+                            w.endObject()
+                        }
+                    } catch (_: Exception) {
+                        w.beginObject()
+                        w.name("custom").beginArray().endArray()
+                        w.name("overrides").beginArray().endArray()
+                        w.name("hidden").beginArray().endArray()
+                        w.endObject()
+                    }
+                    // ── Familias tóxicas editadas ──────────────────────
+                    w.name("toxicFamiliesStore")
+                    try {
+                        val tfFile = File(context.filesDir, "toxic_families_user.json")
+                        if (tfFile.exists()) {
+                            val element = com.google.gson.JsonParser.parseString(tfFile.readText())
+                            gson.toJson(element, w)
+                        } else {
+                            w.beginObject()
+                            w.name("custom").beginArray().endArray()
+                            w.name("overrides").beginArray().endArray()
+                            w.name("hidden").beginArray().endArray()
+                            w.endObject()
+                        }
+                    } catch (_: Exception) {
+                        w.beginObject()
+                        w.name("custom").beginArray().endArray()
+                        w.name("overrides").beginArray().endArray()
+                        w.name("hidden").beginArray().endArray()
+                        w.endObject()
+                    }
+                    w.name("toxicFamiliesStore")
+                    try {
+                        val tf = File(context.filesDir, "toxic_families_user.json")
+                        if (tf.exists()) gson.toJson(
+                            com.google.gson.JsonParser.parseString(tf.readText()),
+                            w
+                        )
+                        else {
+                            w.beginObject(); w.name("custom").beginArray()
+                                .endArray(); w.name("overrides").beginArray()
+                                .endArray(); w.name("hidden").beginArray().endArray(); w.endObject()
+                        }
+                    } catch (_: Exception) {
+                        w.beginObject(); w.name("custom").beginArray()
+                            .endArray(); w.name("overrides").beginArray()
+                            .endArray(); w.name("hidden").beginArray().endArray(); w.endObject()
+                    }
 
                     // plantImages: solo en backup completo. En incremental se escribe array vacío.
-                    val phaseImg = if (incremental) "Omitiendo fotos (incremental solo datos)…" else "Fotos de plantas…"
+                    val phaseImg =
+                        if (incremental) "Omitiendo fotos (incremental solo datos)…" else "Fotos de plantas…"
                     progress?.onProgress(phaseImg, step, totalSteps)
                     w.name("plantImages").beginArray()
                     if (!incremental) {
-                        writeImagesStreaming(plantImagesDir, w, plantPhotoFilter, recompression) { current ->
+                        writeImagesStreaming(
+                            plantImagesDir,
+                            w,
+                            plantPhotoFilter,
+                            recompression
+                        ) { current ->
                             step = plants.size + compounds.size + current
-                            progress?.onProgress("$phaseImg ($current/$nPlantImg)", step, totalSteps)
+                            progress?.onProgress(
+                                "$phaseImg ($current/$nPlantImg)",
+                                step,
+                                totalSteps
+                            )
                         }
                     }
                     w.endArray()
@@ -273,7 +349,12 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     if (!incremental) {
                         progress?.onProgress("Fotos de setas…", step, totalSteps)
                         w.name("mushroomImages").beginArray()
-                        writeImagesStreaming(mushroomImagesDir, w, { true }, recompression) { current ->
+                        writeImagesStreaming(
+                            mushroomImagesDir,
+                            w,
+                            { true },
+                            recompression
+                        ) { current ->
                             progress?.onProgress(
                                 "Fotos de setas… ($current/$nMushroomImg)",
                                 plants.size + compounds.size + nPlantImg + current,
@@ -290,7 +371,12 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     if (!incremental) {
                         progress?.onProgress("Fotos de avistamientos…", step, totalSteps)
                         w.name("sightingImages").beginArray()
-                        writeImagesStreaming(sightingImagesDir, w, { true }, recompression) { current ->
+                        writeImagesStreaming(
+                            sightingImagesDir,
+                            w,
+                            { true },
+                            recompression
+                        ) { current ->
                             progress?.onProgress(
                                 "Fotos de avistamientos… ($current/$nSightImg)",
                                 plants.size + compounds.size + nPlantImg + nMushroomImg + current,
@@ -385,8 +471,9 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         val bytesAfter: Long
     ) {
         val savedBytes: Long get() = bytesBefore - bytesAfter
-        val savedPercent: Int get() =
-            if (bytesBefore <= 0) 0 else ((savedBytes * 100) / bytesBefore).toInt()
+        val savedPercent: Int
+            get() =
+                if (bytesBefore <= 0) 0 else ((savedBytes * 100) / bytesBefore).toInt()
     }
 
     /**
@@ -554,10 +641,12 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                             hasPlants = true
                             r.skipValue()
                         }
+
                         "compounds" -> {
                             hasCompounds = true
                             r.skipValue()
                         }
+
                         else -> r.skipValue()
                     }
                 }
@@ -584,7 +673,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         var restoredDeletedCompoundIds = false
         var restoredEditedCompoundIds = false
         var restoredPlantMarkers = false
-
+        var restoredToxicGenera = false
+        var restoredToxicFamilies = false
         r.beginObject()
         while (r.hasNext()) {
             val fieldName = r.nextName()
@@ -592,15 +682,18 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 "backupVersion", "exportedAt", "photoRecompression" -> r.skipValue()
 
                 "backupType" -> {
-                    backupType = if (r.peek() == JsonToken.STRING) r.nextString().lowercase(Locale.ROOT)
-                    else {
-                        r.skipValue()
-                        "full"
-                    }
+                    backupType =
+                        if (r.peek() == JsonToken.STRING) r.nextString().lowercase(Locale.ROOT)
+                        else {
+                            r.skipValue()
+                            "full"
+                        }
                 }
 
                 "plants" -> {
-                    if (!cleaned) { cleanAllDb(); cleaned = true }
+                    if (!cleaned) {
+                        cleanAllDb(); cleaned = true
+                    }
                     progress?.onProgress("Restaurando plantas…", 0, 1)
                     val batch = ArrayList<PlantEntity>(500)
                     var count = 0
@@ -620,7 +713,9 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 }
 
                 "compounds" -> {
-                    if (!cleaned) { cleanAllDb(); cleaned = true }
+                    if (!cleaned) {
+                        cleanAllDb(); cleaned = true
+                    }
                     progress?.onProgress("Restaurando compuestos…", 0, 1)
                     val batch = ArrayList<CompoundEntity>(500)
                     r.beginArray()
@@ -638,7 +733,10 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 "mushrooms" -> {
                     val list = ArrayList<MushroomEntity>()
                     r.beginArray()
-                    while (r.hasNext()) list += gson.fromJson<MushroomEntity>(r, MushroomEntity::class.java)
+                    while (r.hasNext()) list += gson.fromJson<MushroomEntity>(
+                        r,
+                        MushroomEntity::class.java
+                    )
                     r.endArray()
                     // Guardar incluso si la lista viene vacía: un array vacío en el backup
                     // significa "sin cambios/elementos de usuario" y debe limpiar el store local.
@@ -648,7 +746,10 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 "lichens" -> {
                     val list = ArrayList<LichenEntity>()
                     r.beginArray()
-                    while (r.hasNext()) list += gson.fromJson<LichenEntity>(r, LichenEntity::class.java)
+                    while (r.hasNext()) list += gson.fromJson<LichenEntity>(
+                        r,
+                        LichenEntity::class.java
+                    )
                     r.endArray()
                     // Guardar incluso si la lista viene vacía para limpiar favoritos/notas/custom locales.
                     LichenUserStore.save(context, list)
@@ -658,7 +759,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     progress?.onProgress("Ubicaciones…", 0, 1)
                     r.beginArray()
                     while (r.hasNext()) {
-                        val loc = gson.fromJson<BackupPlantLocation>(r, BackupPlantLocation::class.java)
+                        val loc =
+                            gson.fromJson<BackupPlantLocation>(r, BackupPlantLocation::class.java)
                         runCatching {
                             db.plantDao().updateLocation(
                                 plantId = loc.plantId,
@@ -676,7 +778,10 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                 "sightings" -> {
                     val list = ArrayList<SightingEntity>()
                     r.beginArray()
-                    while (r.hasNext()) list += gson.fromJson<SightingEntity>(r, SightingEntity::class.java)
+                    while (r.hasNext()) list += gson.fromJson<SightingEntity>(
+                        r,
+                        SightingEntity::class.java
+                    )
                     r.endArray()
                     // Guardar también listas vacías: si el backup no tiene avistamientos,
                     // el dispositivo restaurado tampoco debe conservar avistamientos antiguos.
@@ -693,7 +798,10 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     progress?.onProgress("Eventos del calendario…", 0, 1)
                     r.beginArray()
                     while (r.hasNext()) {
-                        val evt = gson.fromJson<com.toxicplants.database.ToxicCalendarEvent>(r, com.toxicplants.database.ToxicCalendarEvent::class.java)
+                        val evt = gson.fromJson<com.toxicplants.database.ToxicCalendarEvent>(
+                            r,
+                            com.toxicplants.database.ToxicCalendarEvent::class.java
+                        )
                         runCatching { db.toxicCalendarDao().insert(evt) }
                     }
                     r.endArray()
@@ -701,7 +809,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
 
                 "psychotropicOverrides" -> {
                     progress?.onProgress("Restaurando psicotrópicas…", 0, 1)
-                    val overrides = gson.fromJson<PsychotropicOverrides>(r, PsychotropicOverrides::class.java)
+                    val overrides =
+                        gson.fromJson<PsychotropicOverrides>(r, PsychotropicOverrides::class.java)
                     if (overrides != null) {
                         PsychotropicUserStore.save(context, overrides)
                     }
@@ -771,7 +880,9 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                             r.beginArray()
                             while (r.hasNext()) {
                                 when (r.peek()) {
-                                    JsonToken.STRING -> r.nextString().trim().takeIf { it.isNotBlank() }?.let { markers += it }
+                                    JsonToken.STRING -> r.nextString().trim()
+                                        .takeIf { it.isNotBlank() }?.let { markers += it }
+
                                     else -> r.skipValue()
                                 }
                             }
@@ -779,11 +890,45 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         } else {
                             r.skipValue()
                         }
-                        if (plantId != null && markers.isNotEmpty()) restoredMarkers[plantId] = markers
+                        if (plantId != null && markers.isNotEmpty()) restoredMarkers[plantId] =
+                            markers
                     }
                     r.endObject()
                     PlantMarkerStore.replaceAll(context, restoredMarkers)
                     restoredPlantMarkers = true
+                }
+
+                "toxicGeneraStore" -> {
+                    progress?.onProgress("Restaurando géneros tóxicos…", 0, 1)
+                    try {
+                        // lee el objeto completo como JsonElement con Gson
+                        val element = gson.fromJson<com.google.gson.JsonElement>(
+                            r,
+                            com.google.gson.JsonElement::class.java
+                        )
+                        val jsonStr = gson.toJson(element)
+                        com.toxicplants.database.ui.screens.toxicgenera.ToxicGeneraUserStore(context)
+                            .importRawJson(jsonStr)
+                        restoredToxicGenera = true
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    }
+                }
+
+                "toxicFamiliesStore" -> {
+                    progress?.onProgress("Restaurando familias tóxicas…", 0, 1)
+                    try {
+                        val element = gson.fromJson<com.google.gson.JsonElement>(
+                            r,
+                            com.google.gson.JsonElement::class.java
+                        )
+                        val jsonStr = gson.toJson(element)
+                        com.toxicplants.database.ui.screens.families.FamilyUserStore(context)
+                            .importRawJson(jsonStr)
+                        restoredToxicFamilies = true
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    }
                 }
 
                 "plantImages" -> {
@@ -792,7 +937,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         dir = File(context.filesDir, "plant_images"),
                         mergeOnly = incremental
                     )
-                    val phase = if (incremental) "Fotos de incremental antiguo…" else "Fotos de plantas…"
+                    val phase =
+                        if (incremental) "Fotos de incremental antiguo…" else "Fotos de plantas…"
                     progress?.onProgress(phase, 0, 1)
                     streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
@@ -803,7 +949,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         dir = File(context.filesDir, "mushroom_images"),
                         mergeOnly = incremental
                     )
-                    val phase = if (incremental) "Fotos de incremental antiguo…" else "Fotos de setas…"
+                    val phase =
+                        if (incremental) "Fotos de incremental antiguo…" else "Fotos de setas…"
                     progress?.onProgress(phase, 0, 1)
                     streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
@@ -814,7 +961,8 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         dir = SightingStore.photoDir(context),
                         mergeOnly = incremental
                     )
-                    val phase = if (incremental) "Fotos de incremental antiguo…" else "Fotos de avistamientos…"
+                    val phase =
+                        if (incremental) "Fotos de incremental antiguo…" else "Fotos de avistamientos…"
                     progress?.onProgress(phase, 0, 1)
                     streamImageArray(r, dir) { i -> progress?.onProgress("$phase ($i)", i, i) }
                 }
@@ -838,13 +986,27 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
         if (!restoredDeletedCompoundIds && !restoredEditedCompoundIds) {
             CompoundUserStateStore.clear(context)
         } else {
-            if (!restoredDeletedCompoundIds) CompoundUserStateStore.replaceDeleted(context, emptySet())
-            if (!restoredEditedCompoundIds) CompoundUserStateStore.replaceEdited(context, emptySet())
+            if (!restoredDeletedCompoundIds) CompoundUserStateStore.replaceDeleted(
+                context,
+                emptySet()
+            )
+            if (!restoredEditedCompoundIds) CompoundUserStateStore.replaceEdited(
+                context,
+                emptySet()
+            )
         }
         if (!restoredPlantMarkers) {
             PlantMarkerStore.clearAll(context)
         }
-
+        if (!restoredToxicGenera) {
+            // backup antiguo sin géneros: no borramos los locales, los mantenemos
+            // si quieres forzar limpieza, descomenta:
+            // com.toxicplants.database.ui.screens.toxicgenera.ToxicGeneraUserStore(context)
+            //     .importRawJson("""{"custom":[],"overrides":[],"hidden":[]}""")
+        }
+        if (!restoredToxicFamilies) {
+            // backup antiguo sin familias: mantenemos los locales
+        }
         if (!cleaned) {
             // Si el fichero no tenía "plants" ni "compounds", al menos limpiamos
             // para evitar mezclas raras.
@@ -895,6 +1057,7 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                         if (r.peek() == JsonToken.STRING) base64 = r.nextString()
                         else r.skipValue()
                     }
+
                     else -> r.skipValue()
                 }
             }

@@ -1,6 +1,7 @@
 package com.toxicplants.database.ui.screens.toxicgenera
 
 import android.content.Context
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
@@ -29,7 +30,8 @@ data class ToxicGeneraStore(
 )
 
 class ToxicGeneraUserStore(context: Context) {
-    private val file = File(context.filesDir, "toxic_genera_user.json")
+    private val appContext = context.applicationContext
+    private val file = File(appContext.filesDir, "toxic_genera_user.json")
     private val json = Json { ignoreUnknownKeys = true; prettyPrint = true }
 
     private val _state = MutableStateFlow(load())
@@ -37,7 +39,8 @@ class ToxicGeneraUserStore(context: Context) {
 
     private fun load(): ToxicGeneraStore = try {
         if (file.exists()) json.decodeFromString<ToxicGeneraStore>(file.readText()) else ToxicGeneraStore()
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        Log.e("ToxicGeneraStore", "load failed", e)
         ToxicGeneraStore()
     }
 
@@ -45,7 +48,12 @@ class ToxicGeneraUserStore(context: Context) {
         _state.value = s
         try {
             file.writeText(json.encodeToString(s))
-        } catch (_: Exception) {
+            Log.d(
+                "ToxicGeneraStore",
+                "saved ${s.custom.size} custom, ${s.overrides.size} overrides to ${file.absolutePath}"
+            )
+        } catch (e: Exception) {
+            Log.e("ToxicGeneraStore", "save failed", e)
         }
     }
 
@@ -75,9 +83,9 @@ class ToxicGeneraUserStore(context: Context) {
         if (isBase) {
             save(
                 cur.copy(
-                hidden = (cur.hidden + genus).distinct(),
-                overrides = cur.overrides.filterNot { it.genus.equals(genus, true) }
-            ))
+                    hidden = (cur.hidden + genus).distinct(),
+                    overrides = cur.overrides.filterNot { it.genus.equals(genus, true) }
+                ))
         } else {
             save(cur.copy(custom = cur.custom.filterNot { it.genus.equals(genus, true) }))
         }
@@ -93,5 +101,22 @@ class ToxicGeneraUserStore(context: Context) {
         val custom = s.custom.map { it.toCatalog() }
             .filterNot { c -> base.any { it.genus.equals(c.genus, true) } }
         return (base + custom).distinctBy { it.genus.lowercase() }.sortedBy { it.genus.lowercase() }
+    }
+
+    // --- para BackupRepository (Gson) ---
+    fun exportRawJson(): String = try {
+        if (file.exists()) file.readText() else """{"custom":[],"overrides":[],"hidden":[]}"""
+    } catch (_: Exception) {
+        """{"custom":[],"overrides":[],"hidden":[]}"""
+    }
+
+    fun importRawJson(jsonStr: String) {
+        try {
+            // valida que sea JSON válido con kotlinx
+            val parsed = json.decodeFromString<ToxicGeneraStore>(jsonStr)
+            save(parsed)
+        } catch (e: Exception) {
+            Log.e("ToxicGeneraStore", "import failed", e)
+        }
     }
 }

@@ -1,0 +1,482 @@
+package com.toxicplants.database.ui.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.toxicplants.database.PoisonousFamilyGenusEntity
+import com.toxicplants.database.PoisonousFamilySummary
+import com.toxicplants.database.ui.viewmodel.PoisonousFamilyViewModel
+
+private val PoisonBg = Brush.verticalGradient(
+    listOf(Color(0xFF050B06), Color(0xFF0A1A0C), Color(0xFF102615))
+)
+private val PoisonCard = Brush.horizontalGradient(
+    listOf(Color(0xFF1B3A1E), Color(0xFF314D1F), Color(0xFF5A1A1A))
+)
+private val PoisonTopBar = Color(0xFF102A13)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PoisonousFamiliesScreen(
+    viewModel: PoisonousFamilyViewModel,
+    onBack: () -> Unit,
+    onFamilyClick: (String) -> Unit,
+    onAddGenus: () -> Unit,
+) {
+    val families by viewModel.familySummaries.observeAsState(emptyList())
+    val totalGenera = families.sumOf { it.generaCount }
+    val totalSpecies = families.sumOf { it.speciesCount }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("☠️ Familias venenosas", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PoisonTopBar,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onAddGenus, containerColor = Color(0xFFC62828)) {
+                Icon(Icons.Filled.Add, contentDescription = "Añadir familia/género", tint = Color.White)
+            }
+        }
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(PoisonBg),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                TotalFamiliesHeader(
+                    familiesCount = families.size,
+                    generaCount = totalGenera,
+                    speciesCount = totalSpecies
+                )
+            }
+
+            if (families.isEmpty()) {
+                item {
+                    EmptyPoisonousFamiliesCard(onAddGenus = onAddGenus)
+                }
+            } else {
+                items(families, key = { it.familyName }) { family ->
+                    FamilySummaryCard(family = family, onClick = { onFamilyClick(family.familyName) })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TotalFamiliesHeader(familiesCount: Int, generaCount: Int, speciesCount: Int) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        tonalElevation = 4.dp,
+        color = Color(0xFF111A12)
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                "Familias con géneros venenosos registrados",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+            Text(
+                "Total: $familiesCount familias · $generaCount géneros · $speciesCount especies registradas",
+                color = Color(0xFFA5D6A7),
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                "Contenido editable. Los datos se guardan en la base Room local de la app.",
+                color = Color.LightGray,
+                fontSize = 13.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyPoisonousFamiliesCard(onAddGenus: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onAddGenus() },
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
+        shape = RoundedCornerShape(18.dp)
+    ) {
+        Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Sin familias todavía", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text(
+                "No he añadido familias inventadas. Pulsa + para meter tus 16 familias y sus géneros.",
+                color = Color.LightGray
+            )
+            Text("➕ Añadir primera familia/género", color = Color(0xFFFFCDD2), fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun FamilySummaryCard(family: PoisonousFamilySummary, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .background(PoisonCard, RoundedCornerShape(18.dp))
+            .padding(16.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("☠️", fontSize = 26.sp)
+                Spacer(Modifier.size(10.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        family.familyName,
+                        color = Color.White,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 21.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        "${family.generaCount} géneros · ${family.speciesCount} especies registradas",
+                        color = Color(0xFFFFCDD2),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+            Text("Toca para ver sus géneros", color = Color.LightGray, fontSize = 13.sp)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PoisonousFamilyGeneraScreen(
+    familyName: String,
+    viewModel: PoisonousFamilyViewModel,
+    onBack: () -> Unit,
+    onGenusClick: (Int) -> Unit,
+    onAddGenus: (String) -> Unit,
+) {
+    val genera by viewModel.generaForFamily(familyName).observeAsState(emptyList())
+    val speciesCount = genera.sumOf { it.genusSpeciesCount.coerceAtLeast(0) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(familyName, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text("${genera.size} géneros · $speciesCount especies registradas", fontSize = 12.sp, color = Color(0xFFA5D6A7))
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PoisonTopBar,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { onAddGenus(familyName) }, containerColor = Color(0xFFC62828)) {
+                Icon(Icons.Filled.Add, contentDescription = "Añadir género", tint = Color.White)
+            }
+        }
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(PoisonBg),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (genera.isEmpty()) {
+                item {
+                    EmptyPoisonousFamiliesCard(onAddGenus = { onAddGenus(familyName) })
+                }
+            } else {
+                items(genera, key = { it.id }) { genus ->
+                    GenusCard(genus = genus, onClick = { onGenusClick(genus.id) })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GenusCard(genus: PoisonousFamilyGenusEntity, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("🌿", fontSize = 24.sp)
+                Spacer(Modifier.size(10.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(genus.genusName, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text("${genus.genusSpeciesCount.coerceAtLeast(0)} especies registradas", color = Color(0xFFA5D6A7))
+                }
+                Icon(Icons.Filled.Edit, contentDescription = "Editar", tint = Color(0xFFFFCDD2))
+            }
+            if (genus.toxins.isNotBlank()) Text("Toxina: ${genus.toxins}", color = Color.LightGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (genus.toxicParts.isNotBlank()) Text("Parte tóxica: ${genus.toxicParts}", color = Color.LightGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PoisonousGenusEditScreen(
+    genusId: Int,
+    initialFamilyName: String,
+    viewModel: PoisonousFamilyViewModel,
+    onBack: () -> Unit,
+    onSaved: (String) -> Unit,
+) {
+    val allGenera by viewModel.allGenera.observeAsState(emptyList())
+    val current = allGenera.firstOrNull { it.id == genusId }
+
+    var familyName by remember(genusId, initialFamilyName) { mutableStateOf(initialFamilyName) }
+    var genusName by remember(genusId) { mutableStateOf("") }
+    var speciesCountText by remember(genusId) { mutableStateOf("0") }
+    var toxins by remember(genusId) { mutableStateOf("") }
+    var symptoms by remember(genusId) { mutableStateOf("") }
+    var toxicParts by remember(genusId) { mutableStateOf("") }
+    var notes by remember(genusId) { mutableStateOf("") }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(current?.id) {
+        current?.let {
+            familyName = it.familyName
+            genusName = it.genusName
+            speciesCountText = it.genusSpeciesCount.toString()
+            toxins = it.toxins
+            symptoms = it.symptoms
+            toxicParts = it.toxicParts
+            notes = it.notes
+        }
+    }
+
+    val canSave = familyName.trim().isNotBlank() && genusName.trim().isNotBlank()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(if (genusId == 0) "Nuevo género" else "Editar género", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    }
+                },
+                actions = {
+                    if (current != null) {
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Borrar", tint = Color(0xFFFFCDD2))
+                        }
+                    }
+                    IconButton(
+                        enabled = canSave,
+                        onClick = {
+                            val savedFamilyName = familyName.trim()
+                            viewModel.saveGenus(
+                                PoisonousFamilyGenusEntity(
+                                    id = if (genusId > 0) genusId else 0,
+                                    familyName = savedFamilyName,
+                                    genusName = genusName,
+                                    genusSpeciesCount = speciesCountText.toIntOrNull() ?: 0,
+                                    toxins = toxins,
+                                    symptoms = symptoms,
+                                    toxicParts = toxicParts,
+                                    notes = notes
+                                )
+                            )
+                            onSaved(savedFamilyName)
+                        }
+                    ) {
+                        Icon(Icons.Filled.Save, contentDescription = "Guardar", tint = if (canSave) Color(0xFFA5D6A7) else Color.Gray)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = PoisonTopBar,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
+            )
+        }
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(PoisonBg),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Text(
+                    "Familia y género",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            }
+            item {
+                PoisonTextField(
+                    value = familyName,
+                    onValueChange = { familyName = it },
+                    label = "Familia venenosa"
+                )
+            }
+            item {
+                PoisonTextField(
+                    value = genusName,
+                    onValueChange = { genusName = it },
+                    label = "Género"
+                )
+            }
+            item {
+                PoisonTextField(
+                    value = speciesCountText,
+                    onValueChange = { speciesCountText = it.filter { ch -> ch.isDigit() } },
+                    label = "Número de especies del género",
+                    keyboardType = KeyboardType.Number
+                )
+            }
+            item {
+                Text("Ficha toxicológica editable", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            }
+            item {
+                PoisonTextField(value = toxins, onValueChange = { toxins = it }, label = "Toxina(s)", minLines = 2)
+            }
+            item {
+                PoisonTextField(value = symptoms, onValueChange = { symptoms = it }, label = "Síntomas", minLines = 3)
+            }
+            item {
+                PoisonTextField(value = toxicParts, onValueChange = { toxicParts = it }, label = "Parte tóxica", minLines = 2)
+            }
+            item {
+                PoisonTextField(value = notes, onValueChange = { notes = it }, label = "Notas", minLines = 4)
+            }
+            item {
+                Text(
+                    if (canSave) "Pulsa el icono de guardar para conservar los cambios." else "Familia y género son obligatorios.",
+                    color = if (canSave) Color(0xFFA5D6A7) else Color(0xFFFFCDD2),
+                    fontStyle = FontStyle.Italic
+                )
+            }
+        }
+    }
+
+    if (showDeleteDialog && current != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Borrar ${current.genusName}?") },
+            text = { Text("Se eliminará este género de Familias venenosas.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteGenus(current)
+                    showDeleteDialog = false
+                    onBack()
+                }) { Text("Borrar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
+            }
+        )
+    }
+}
+
+@Composable
+private fun PoisonTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    minLines: Int = 1,
+    keyboardType: KeyboardType = KeyboardType.Text,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        minLines = minLines,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        singleLine = minLines == 1,
+        shape = RoundedCornerShape(14.dp)
+    )
+}

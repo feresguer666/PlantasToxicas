@@ -1,8 +1,5 @@
 package com.toxicplants.database.ui.screens
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,7 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,27 +58,6 @@ import androidx.compose.ui.unit.sp
 import com.toxicplants.database.PoisonousFamilyGenusEntity
 import com.toxicplants.database.PoisonousFamilySummary
 import com.toxicplants.database.ui.viewmodel.PoisonousFamilyViewModel
-
-private fun openGenusWikipedia(context: Context, genusName: String, familyName: String = "") {
-    val cleanName = genusName.trim()
-    if (cleanName.isBlank()) return
-
-    // La mayoría abren directo. Solo algunos géneros ambiguos van a búsqueda
-    // para evitar páginas de mitología/personajes que no son plantas.
-    val ambiguousGenera = setOf("Acis", "Ajax")
-    val url = if (cleanName in ambiguousGenera) {
-        val query = listOf(cleanName, familyName.trim(), "planta")
-            .filter { it.isNotBlank() }
-            .joinToString(" ")
-        "https://es.wikipedia.org/w/index.php?search=${Uri.encode(query)}"
-    } else {
-        "https://es.wikipedia.org/wiki/${Uri.encode(cleanName)}"
-    }
-
-    runCatching {
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-    }
-}
 
 private val PoisonBg = Brush.verticalGradient(
     listOf(Color(0xFF050B06), Color(0xFF0A1A0C), Color(0xFF102615))
@@ -300,8 +275,6 @@ fun PoisonousFamilyGeneraScreen(
 
 @Composable
 private fun GenusCard(genus: PoisonousFamilyGenusEntity, onClick: () -> Unit) {
-    val context = LocalContext.current
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -321,12 +294,6 @@ private fun GenusCard(genus: PoisonousFamilyGenusEntity, onClick: () -> Unit) {
             }
             if (genus.toxins.isNotBlank()) Text("Toxina: ${genus.toxins}", color = Color.LightGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (genus.toxicParts.isNotBlank()) Text("Parte tóxica: ${genus.toxicParts}", color = Color.LightGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            TextButton(
-                onClick = { openGenusWikipedia(context, genus.genusName, genus.familyName) },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text("Wikipedia", color = Color(0xFF90CAF9), fontWeight = FontWeight.Bold)
-            }
         }
     }
 }
@@ -340,7 +307,6 @@ fun PoisonousGenusEditScreen(
     onBack: () -> Unit,
     onSaved: (String) -> Unit,
 ) {
-    val context = LocalContext.current
     val allGenera by viewModel.allGenera.observeAsState(emptyList())
     val current = allGenera.firstOrNull { it.id == genusId }
 
@@ -377,12 +343,6 @@ fun PoisonousGenusEditScreen(
                     }
                 },
                 actions = {
-                    TextButton(
-                        enabled = genusName.trim().isNotBlank(),
-                        onClick = { openGenusWikipedia(context, genusName, familyName) }
-                    ) {
-                        Text("Wiki", color = if (genusName.trim().isNotBlank()) Color(0xFF90CAF9) else Color.Gray, fontWeight = FontWeight.Bold)
-                    }
                     if (current != null) {
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(Icons.Filled.Delete, contentDescription = "Borrar", tint = Color(0xFFFFCDD2))

@@ -63,22 +63,10 @@ import com.toxicplants.database.PoisonousFamilyGenusEntity
 import com.toxicplants.database.PoisonousFamilySummary
 import com.toxicplants.database.ui.viewmodel.PoisonousFamilyViewModel
 
-private fun openGenusWikipedia(context: Context, genusName: String, familyName: String = "") {
+private fun openGenusWikipedia(context: Context, genusName: String) {
     val cleanName = genusName.trim()
     if (cleanName.isBlank()) return
-
-    // La mayoría abren directo. Solo algunos géneros ambiguos van a búsqueda
-    // para evitar páginas de mitología/personajes que no son plantas.
-    val ambiguousGenera = setOf("Acis", "Ajax")
-    val url = if (cleanName in ambiguousGenera) {
-        val query = listOf(cleanName, familyName.trim(), "planta")
-            .filter { it.isNotBlank() }
-            .joinToString(" ")
-        "https://es.wikipedia.org/w/index.php?search=${Uri.encode(query)}"
-    } else {
-        "https://es.wikipedia.org/wiki/${Uri.encode(cleanName)}"
-    }
-
+    val url = "https://es.wikipedia.org/wiki/${Uri.encode(cleanName)}"
     runCatching {
         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
@@ -322,7 +310,7 @@ private fun GenusCard(genus: PoisonousFamilyGenusEntity, onClick: () -> Unit) {
             if (genus.toxins.isNotBlank()) Text("Toxina: ${genus.toxins}", color = Color.LightGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (genus.toxicParts.isNotBlank()) Text("Parte tóxica: ${genus.toxicParts}", color = Color.LightGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             TextButton(
-                onClick = { openGenusWikipedia(context, genus.genusName, genus.familyName) },
+                onClick = { openGenusWikipedia(context, genus.genusName) },
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Text("Wikipedia", color = Color(0xFF90CAF9), fontWeight = FontWeight.Bold)
@@ -379,7 +367,7 @@ fun PoisonousGenusEditScreen(
                 actions = {
                     TextButton(
                         enabled = genusName.trim().isNotBlank(),
-                        onClick = { openGenusWikipedia(context, genusName, familyName) }
+                        onClick = { openGenusWikipedia(context, genusName) }
                     ) {
                         Text("Wiki", color = if (genusName.trim().isNotBlank()) Color(0xFF90CAF9) else Color.Gray, fontWeight = FontWeight.Bold)
                     }

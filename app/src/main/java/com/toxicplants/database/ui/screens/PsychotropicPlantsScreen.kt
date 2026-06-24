@@ -1,5 +1,6 @@
 package com.toxicplants.database.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -53,12 +54,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import android.content.Context
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -240,7 +240,13 @@ fun PsychotropicPlantsScreen(
         PsychotropicUserStore.save(context, next)
     }
 
-    var precomputedItems by remember { mutableStateOf(buildSimplePsychotropicFallback(fallbackPsychotropicSeedPlants())) }
+    var precomputedItems by remember {
+        mutableStateOf(
+            buildSimplePsychotropicFallback(
+                fallbackPsychotropicSeedPlants()
+            )
+        )
+    }
     var assetLoadMessage by remember { mutableStateOf("Catálogo psicotrópico precalculado: fallback inicial") }
     var isLoadingPrecomputed by remember { mutableStateOf(true) }
 
@@ -251,7 +257,9 @@ fun PsychotropicPlantsScreen(
                 loadPrecomputedPsychotropicCatalog(appContext)
             }
         }.onSuccess { result ->
-            precomputedItems = result.items.ifEmpty { buildSimplePsychotropicFallback(fallbackPsychotropicSeedPlants()) }
+            precomputedItems = result.items.ifEmpty {
+                buildSimplePsychotropicFallback(fallbackPsychotropicSeedPlants())
+            }
             assetLoadMessage = result.message
         }.onFailure { precomputedError ->
             // Si el índice precalculado no está empaquetado en la APK, generamos la lista
@@ -261,7 +269,11 @@ fun PsychotropicPlantsScreen(
                     val catalog = loadCatalogDirectlyFromAssets(appContext)
                     val built = buildPsychotropicItems(catalog.plants, catalog.compounds)
                     PrecomputedPsychotropicCatalogResult(
-                        items = built.ifEmpty { buildSimplePsychotropicFallback(fallbackPsychotropicSeedPlants()) },
+                        items = built.ifEmpty {
+                            buildSimplePsychotropicFallback(
+                                fallbackPsychotropicSeedPlants()
+                            )
+                        },
                         message = "Índice precalculado no disponible; generado desde assets: ${catalog.message}"
                     )
                 }
@@ -270,7 +282,8 @@ fun PsychotropicPlantsScreen(
                 assetLoadMessage = generated.message
             }.onFailure { e ->
                 precomputedItems = buildSimplePsychotropicFallback(fallbackPsychotropicSeedPlants())
-                assetLoadMessage = "Fallback interno activo: ${(e.message ?: precomputedError.message) ?: e::class.java.simpleName}"
+                assetLoadMessage =
+                    "Fallback interno activo: ${(e.message ?: precomputedError.message) ?: e::class.java.simpleName}"
             }
         }
         isLoadingPrecomputed = false
@@ -288,7 +301,12 @@ fun PsychotropicPlantsScreen(
         (baseItems + customItems).map { item ->
             val roomPlant = roomPlantMap[item.plant.id]
             if (roomPlant != null) {
-                val searchText = buildPsychotropicSearchText(roomPlant, item.categories, item.compounds, item.reasons)
+                val searchText = buildPsychotropicSearchText(
+                    roomPlant,
+                    item.categories,
+                    item.compounds,
+                    item.reasons
+                )
                 item.copy(plant = roomPlant, searchText = searchText)
             } else item
         }
@@ -302,7 +320,8 @@ fun PsychotropicPlantsScreen(
     var collapseDuplicates by remember { mutableStateOf(true) }
 
     val allItems = remember(rawItemsForDisplay, collapseDuplicates) {
-        val base = if (collapseDuplicates) collapseDuplicateTaxa(rawItemsForDisplay) else rawItemsForDisplay
+        val base =
+            if (collapseDuplicates) collapseDuplicateTaxa(rawItemsForDisplay) else rawItemsForDisplay
         base.sortedWith(
             compareByDescending<PsychotropicPlantItem> { toxicityWeight(it.plant.toxicityLevel) }
                 .thenByDescending { it.score }
@@ -310,21 +329,27 @@ fun PsychotropicPlantsScreen(
         )
     }
 
-    val filteredItems = remember(allItems, query, selectedCategory, selectedHallucinogenSubtype, selectedRisk) {
-        val q = query.normalizedForSearch()
-        allItems.filter { item ->
-            val matchesCategory = selectedCategory == CAT_ALL || item.categories.contains(selectedCategory)
-            val matchesSubtype = selectedHallucinogenSubtype == HALL_SUB_ALL ||
-                hallucinogenSubtypesFor(item).contains(selectedHallucinogenSubtype)
-            val matchesRisk = matchesRiskFilter(item.plant.toxicityLevel, selectedRisk)
-            val matchesQuery = q.isBlank() || item.searchText.contains(q)
-            matchesCategory && matchesSubtype && matchesRisk && matchesQuery
+    val filteredItems =
+        remember(allItems, query, selectedCategory, selectedHallucinogenSubtype, selectedRisk) {
+            val q = query.normalizedForSearch()
+            allItems.filter { item ->
+                val matchesCategory =
+                    selectedCategory == CAT_ALL || item.categories.contains(selectedCategory)
+                val matchesSubtype = selectedHallucinogenSubtype == HALL_SUB_ALL ||
+                        hallucinogenSubtypesFor(item).contains(selectedHallucinogenSubtype)
+                val matchesRisk = matchesRiskFilter(item.plant.toxicityLevel, selectedRisk)
+                val matchesQuery = q.isBlank() || item.searchText.contains(q)
+                matchesCategory && matchesSubtype && matchesRisk && matchesQuery
+            }
         }
-    }
 
     val categoryCounts = remember(allItems) {
         psychotropicCategories.associate { category ->
-            category.id to if (category.id == CAT_ALL) allItems.size else allItems.count { it.categories.contains(category.id) }
+            category.id to if (category.id == CAT_ALL) allItems.size else allItems.count {
+                it.categories.contains(
+                    category.id
+                )
+            }
         }
     }
 
@@ -391,7 +416,11 @@ fun PsychotropicPlantsScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("🧠 Plantas psicotrópicas", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        Text(
+                            "🧠 Plantas psicotrópicas",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
                         Text(
                             "Alucinógenos · IMAO · Depresores · Estimulantes · Tropánicos",
                             fontSize = 11.sp,
@@ -408,7 +437,11 @@ fun PsychotropicPlantsScreen(
                 },
                 actions = {
                     IconButton(onClick = { showAddDialog = true }) {
-                        Icon(Icons.Filled.Add, contentDescription = "Añadir psicotrópica", tint = Color.White)
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Añadir psicotrópica",
+                            tint = Color.White
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -492,7 +525,9 @@ fun PsychotropicPlantsScreen(
 
             when {
                 isPreparing -> item {
-                    Box(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)) {
                         EmptyPsychotropicState(
                             icon = "🧠",
                             title = "Preparando buscador…",
@@ -500,8 +535,11 @@ fun PsychotropicPlantsScreen(
                         )
                     }
                 }
+
                 filteredItems.isEmpty() -> item {
-                    Box(modifier = Modifier.fillMaxWidth().height(300.dp)) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)) {
                         EmptyPsychotropicState(
                             icon = "🔎",
                             title = "Sin resultados",
@@ -509,6 +547,7 @@ fun PsychotropicPlantsScreen(
                         )
                     }
                 }
+
                 else -> items(filteredItems, key = { it.plant.id }) { item ->
                     PsychotropicPlantCard(
                         item = item,
@@ -532,8 +571,18 @@ private fun PsychotropicEditDialog(
 ) {
     var plantQuery by remember(initialItem) { mutableStateOf("") }
     var selectedPlant by remember(initialItem) { mutableStateOf(initialItem?.plant) }
-    var selectedCategories by remember(initialItem) { mutableStateOf(initialItem?.categories?.toSet() ?: emptySet()) }
-    var compoundsText by remember(initialItem) { mutableStateOf(initialItem?.compounds?.joinToString(", ") ?: "") }
+    var selectedCategories by remember(initialItem) {
+        mutableStateOf(
+            initialItem?.categories?.toSet() ?: emptySet()
+        )
+    }
+    var compoundsText by remember(initialItem) {
+        mutableStateOf(
+            initialItem?.compounds?.joinToString(
+                ", "
+            ) ?: ""
+        )
+    }
     var reasonText by remember(initialItem) {
         mutableStateOf(initialItem?.reasons?.joinToString("; ") ?: "Editado por usuario")
     }
@@ -552,7 +601,9 @@ private fun PsychotropicEditDialog(
         title = { Text(if (initialItem == null) "Añadir psicotrópica" else "Editar psicotrópica") },
         text = {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth().height(520.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(520.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 item {
@@ -577,10 +628,17 @@ private fun PsychotropicEditDialog(
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(selectedPlant!!.commonName, fontWeight = FontWeight.Bold)
-                                    Text(selectedPlant!!.scientificName, fontStyle = FontStyle.Italic, fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        selectedPlant!!.scientificName,
+                                        fontStyle = FontStyle.Italic,
+                                        fontSize = 12.sp,
+                                        color = Color.Gray
+                                    )
                                 }
                                 if (initialItem == null) {
-                                    TextButton(onClick = { selectedPlant = null }) { Text("Cambiar") }
+                                    TextButton(onClick = {
+                                        selectedPlant = null
+                                    }) { Text("Cambiar") }
                                 }
                             }
                         }
@@ -599,12 +657,26 @@ private fun PsychotropicEditDialog(
                     } else {
                         items(plantMatches, key = { it.id }) { plant ->
                             Card(
-                                modifier = Modifier.fillMaxWidth().clickable { selectedPlant = plant },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { selectedPlant = plant },
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                             ) {
                                 Column(Modifier.padding(10.dp)) {
-                                    Text(plant.commonName, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    Text(plant.scientificName, fontStyle = FontStyle.Italic, fontSize = 12.sp, color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(
+                                        plant.commonName,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        plant.scientificName,
+                                        fontStyle = FontStyle.Italic,
+                                        fontSize = 12.sp,
+                                        color = Color.Gray,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                 }
                             }
                         }
@@ -622,10 +694,16 @@ private fun PsychotropicEditDialog(
                             FilterChip(
                                 selected = selected,
                                 onClick = {
-                                    selectedCategories = if (selected) selectedCategories - category.id
-                                    else selectedCategories + category.id
+                                    selectedCategories =
+                                        if (selected) selectedCategories - category.id
+                                        else selectedCategories + category.id
                                 },
-                                label = { Text("${category.icon} ${category.label}", fontSize = 12.sp) },
+                                label = {
+                                    Text(
+                                        "${category.icon} ${category.label}",
+                                        fontSize = 12.sp
+                                    )
+                                },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = category.color,
                                     selectedLabelColor = Color.White,
@@ -664,7 +742,9 @@ private fun PsychotropicEditDialog(
                 enabled = selectedPlant != null && selectedCategories.isNotEmpty(),
                 onClick = {
                     val plant = selectedPlant ?: return@Button
-                    val cats = selectedCategories.sortedBy { categoryOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx } }
+                    val cats = selectedCategories.sortedBy {
+                        categoryOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx }
+                    }
                     val compounds = compoundsText.split(',', ';', '|')
                         .map { it.trim() }
                         .filter { it.isNotBlank() }
@@ -688,7 +768,6 @@ private fun PsychotropicEditDialog(
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } }
     )
 }
-
 
 
 @Composable
@@ -771,8 +850,14 @@ private fun ResultsSummaryCard(
                 } else {
                     activeFilters.forEach { label -> SummaryMiniChip(label, Color(0xFF455A64)) }
                 }
-                if (customCount > 0) SummaryMiniChip("✏️ $customCount editada${if (customCount == 1) "" else "s"}", Color(0xFF00695C))
-                if (hiddenCount > 0) SummaryMiniChip("🗑️ $hiddenCount oculta${if (hiddenCount == 1) "" else "s"}", Color(0xFF8D3A3A))
+                if (customCount > 0) SummaryMiniChip(
+                    "✏️ $customCount editada${if (customCount == 1) "" else "s"}",
+                    Color(0xFF00695C)
+                )
+                if (hiddenCount > 0) SummaryMiniChip(
+                    "🗑️ $hiddenCount oculta${if (hiddenCount == 1) "" else "s"}",
+                    Color(0xFF8D3A3A)
+                )
             }
         }
     }
@@ -809,7 +894,7 @@ private fun PsychotropicSearchBox(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        placeholder = { Text("Buscar por planta, familia, síntoma o compuesto…") },
+        placeholder = { Text("Buscar") },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         trailingIcon = {
             if (query.isNotBlank()) {
@@ -879,14 +964,18 @@ private fun PsychotropicCategoryDashboard(
             val selected = selectedCategory == category.id
             Card(
                 onClick = { onCategorySelected(category.id) },
-                modifier = Modifier.width(168.dp).height(92.dp),
+                modifier = Modifier
+                    .width(168.dp)
+                    .height(92.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = if (selected) category.color else category.color.copy(alpha = 0.42f),
                 ),
                 shape = RoundedCornerShape(16.dp),
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(12.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1033,7 +1122,12 @@ private fun PsychotropicFilters(
             FilterChip(
                 selected = collapseDuplicates,
                 onClick = { onCollapseDuplicatesChange(!collapseDuplicates) },
-                label = { Text(if (collapseDuplicates) "Duplicados: fusionados" else "Duplicados: visibles", fontSize = 12.sp) },
+                label = {
+                    Text(
+                        if (collapseDuplicates) "Duplicados: fusionados" else "Duplicados: visibles",
+                        fontSize = 12.sp
+                    )
+                },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = Color(0xFF00695C),
                     selectedLabelColor = Color.White,
@@ -1056,7 +1150,9 @@ private fun PsychotropicPlantCard(
     val riskColor = toxicityColor(plant.toxicityLevel)
 
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color(0xFF111B16)),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         shape = RoundedCornerShape(16.dp),
@@ -1082,7 +1178,10 @@ private fun PsychotropicPlantCard(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f),
                     )
-                    Surface(color = riskColor.copy(alpha = 0.18f), shape = RoundedCornerShape(8.dp)) {
+                    Surface(
+                        color = riskColor.copy(alpha = 0.18f),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
                         Text(
                             plant.toxicityLevel.ifBlank { "Sin nivel" },
                             modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
@@ -1092,10 +1191,20 @@ private fun PsychotropicPlantCard(
                         )
                     }
                     IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Filled.Edit, contentDescription = "Editar psicotrópica", tint = Color(0xFFB9F6CA), modifier = Modifier.size(17.dp))
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = "Editar psicotrópica",
+                            tint = Color(0xFFB9F6CA),
+                            modifier = Modifier.size(17.dp)
+                        )
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Eliminar de psicotrópicas", tint = Color(0xFFFF8A80), modifier = Modifier.size(17.dp))
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "Eliminar de psicotrópicas",
+                            tint = Color(0xFFFF8A80),
+                            modifier = Modifier.size(17.dp)
+                        )
                     }
                 }
 
@@ -1134,7 +1243,9 @@ private fun PsychotropicPlantCard(
                 if (item.compounds.isNotEmpty()) {
                     Spacer(Modifier.height(7.dp))
                     Text(
-                        "Compuestos: ${item.compounds.take(4).joinToString(", ")}${if (item.compounds.size > 4) "…" else ""}",
+                        "Compuestos: ${
+                            item.compounds.take(4).joinToString(", ")
+                        }${if (item.compounds.size > 4) "…" else ""}",
                         color = Color.White.copy(alpha = 0.72f),
                         fontSize = 11.sp,
                         maxLines = 2,
@@ -1199,7 +1310,10 @@ private fun EmptyPsychotropicState(
     subtitle: String,
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(24.dp)
+        ) {
             Text(icon, fontSize = 56.sp)
             Spacer(Modifier.height(12.dp))
             Text(title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -1210,15 +1324,15 @@ private fun EmptyPsychotropicState(
 }
 
 
-
-private fun PsychotropicOverrideItem.toPsychotropicPlantItem(): PsychotropicPlantItem = PsychotropicPlantItem(
-    plant = plant,
-    categories = categories,
-    compounds = compounds,
-    reasons = reasons,
-    score = score,
-    searchText = buildPsychotropicSearchText(plant, categories, compounds, reasons),
-)
+private fun PsychotropicOverrideItem.toPsychotropicPlantItem(): PsychotropicPlantItem =
+    PsychotropicPlantItem(
+        plant = plant,
+        categories = categories,
+        compounds = compounds,
+        reasons = reasons,
+        score = score,
+        searchText = buildPsychotropicSearchText(plant, categories, compounds, reasons),
+    )
 
 private fun loadPrecomputedPsychotropicCatalog(context: Context): PrecomputedPsychotropicCatalogResult {
     val items = ArrayList<PsychotropicPlantItem>()
@@ -1231,7 +1345,8 @@ private fun loadPrecomputedPsychotropicCatalog(context: Context): PrecomputedPsy
         if (item.categories.isNotEmpty()) items += item
     }
 
-    val finalItems = items.ifEmpty { buildSimplePsychotropicFallback(fallbackPsychotropicSeedPlants()) }
+    val finalItems =
+        items.ifEmpty { buildSimplePsychotropicFallback(fallbackPsychotropicSeedPlants()) }
     return PrecomputedPsychotropicCatalogResult(
         items = finalItems,
         message = if (items.isNotEmpty()) {
@@ -1278,7 +1393,9 @@ private fun loadCatalogDirectlyFromAssets(context: Context): AssetCatalogResult 
     val rootAssets = assetManager.list("")?.toList().orEmpty()
     val listedPlantFiles = rootAssets
         .filter { Regex("""plants_\d+\.json""").matches(it) }
-        .sortedBy { it.substringAfter("plants_").substringBefore(".json").toIntOrNull() ?: Int.MAX_VALUE }
+        .sortedBy {
+            it.substringAfter("plants_").substringBefore(".json").toIntOrNull() ?: Int.MAX_VALUE
+        }
 
     val plantFiles = listedPlantFiles.ifEmpty { (1..80).map { "plants_$it.json" } }
     val plants = ArrayList<PlantEntity>()
@@ -1288,7 +1405,8 @@ private fun loadCatalogDirectlyFromAssets(context: Context): AssetCatalogResult 
 
     for (fileName in plantFiles) {
         try {
-            val text = assetManager.open(fileName).bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val text =
+                assetManager.open(fileName).bufferedReader(Charsets.UTF_8).use { it.readText() }
             val arr = JSONArray(text)
             for (i in 0 until arr.length()) {
                 plants += arr.getJSONObject(i).toPlantEntityFromAsset()
@@ -1296,7 +1414,8 @@ private fun loadCatalogDirectlyFromAssets(context: Context): AssetCatalogResult 
             loadedPlantFiles++
             missingInARow = 0
         } catch (e: Exception) {
-            if (firstPlantError.isBlank()) firstPlantError = "$fileName: ${e.message ?: e::class.java.simpleName}"
+            if (firstPlantError.isBlank()) firstPlantError =
+                "$fileName: ${e.message ?: e::class.java.simpleName}"
             if (listedPlantFiles.isEmpty()) {
                 missingInARow++
                 if (missingInARow >= 3 && plants.isNotEmpty()) break
@@ -1308,7 +1427,8 @@ private fun loadCatalogDirectlyFromAssets(context: Context): AssetCatalogResult 
     val compounds = ArrayList<CompoundEntity>()
     var compoundError = ""
     try {
-        val text = assetManager.open("compounds.json").bufferedReader(Charsets.UTF_8).use { it.readText() }
+        val text =
+            assetManager.open("compounds.json").bufferedReader(Charsets.UTF_8).use { it.readText() }
         val arr = JSONArray(text)
         for (i in 0 until arr.length()) {
             compounds += arr.getJSONObject(i).toCompoundEntityFromAsset()
@@ -1393,40 +1513,346 @@ private fun JSONObject.optDoubleOrNullCompat(key: String): Double? =
     if (isNull(key) || !has(key)) null else optDouble(key).takeIf { !it.isNaN() }
 
 private fun fallbackPsychotropicSeedPlants(): List<PlantEntity> = listOf(
-    seedPsychPlant(900001, "Belladona", "Atropa belladonna", "Solanaceae", "Mortal", "Todas las partes, bayas", "Atropina, hiosciamina y escopolamina. Síndrome anticolinérgico: midriasis, taquicardia, delirio, alucinaciones, convulsiones y coma.", "Planta tropánica clásica de alta toxicidad."),
-    seedPsychPlant(900002, "Estramonio / Hierba del diablo", "Datura stramonium", "Solanaceae", "Mortal", "Toda la planta, especialmente semillas", "Atropina, escopolamina e hiosciamina. Delirio anticolinérgico, alucinaciones, hipertermia, retención urinaria, convulsiones, coma y muerte.", "Planta tropánica muy peligrosa."),
-    seedPsychPlant(900003, "Floripondio / Trompeta de ángel", "Brugmansia suaveolens", "Solanaceae", "Mortal", "Toda la planta", "Escopolamina, atropina e hiosciamina. Delirio, alucinaciones, amnesia, taquicardia y coma.", "Árbol ornamental con alcaloides tropánicos."),
-    seedPsychPlant(900004, "Beleño negro", "Hyoscyamus niger", "Solanaceae", "Alto", "Toda la planta", "Hiosciamina, escopolamina y atropina. Delirio anticolinérgico, alucinaciones, sequedad extrema y taquicardia.", "Solanácea tropánica histórica."),
-    seedPsychPlant(900005, "Mandrágora", "Mandragora officinarum", "Solanaceae", "Alto", "Raíz y hojas", "Atropina, escopolamina e hiosciamina. Sedación, delirio, alucinaciones y coma.", "Planta tropánica mediterránea."),
-    seedPsychPlant(900006, "Ayahuasca", "Banisteriopsis caapi", "Malpighiaceae", "Alto", "Tallo y corteza", "Harmina, harmalina y tetrahidroharmina. IMAO; riesgo de síndrome serotoninérgico e interacciones graves.", "Liana con beta-carbolinas IMAO."),
-    seedPsychPlant(900007, "Chacruna", "Psychotria viridis", "Rubiaceae", "Alto", "Hojas", "DMT. Alucinaciones intensas, taquicardia, hipertensión, ansiedad y riesgo serotoninérgico.", "Fuente vegetal de DMT."),
-    seedPsychPlant(900008, "Mimosa tenuiflora / Jurema", "Mimosa tenuiflora", "Fabaceae", "Alto", "Corteza de raíz", "DMT y NMT. Alucinaciones, taquicardia, hipertensión y riesgo serotoninérgico.", "Árbol rico en triptaminas."),
-    seedPsychPlant(900009, "Peganum harmala / Alharma", "Peganum harmala", "Zygophyllaceae", "Alto", "Semillas", "Harmina y harmalina. IMAO, náuseas, convulsiones, alucinaciones e interacciones peligrosas.", "Ruda siria con beta-carbolinas."),
-    seedPsychPlant(900010, "Pasionaria", "Passiflora incarnata", "Passifloraceae", "Bajo", "Partes aéreas", "Harman, harmina y sedantes suaves. Posible interacción con IMAO y depresores.", "Sedante vegetal de baja potencia."),
-    seedPsychPlant(900011, "Peyote", "Lophophora williamsii", "Cactaceae", "Alto", "Botones", "Mescalina. Alucinaciones intensas, náuseas, taquicardia, hipertensión, ansiedad y psicosis.", "Cactus alucinógeno con fenetilaminas."),
-    seedPsychPlant(900012, "Cactus San Pedro", "Echinopsis pachanoi", "Cactaceae", "Alto", "Corteza verde", "Mescalina. Alucinaciones, náuseas, taquicardia, hipertensión y ansiedad.", "Cactus andino con mescalina."),
-    seedPsychPlant(900013, "Cannabis", "Cannabis sativa", "Cannabaceae", "Moderado", "Flores y resina", "THC y cannabinoides. Alteración de percepción, ansiedad, taquicardia, somnolencia y paranoia.", "Planta con cannabinoides psicoactivos."),
-    seedPsychPlant(900014, "Adormidera / Amapola del opio", "Papaver somniferum", "Papaveraceae", "Mortal", "Látex y cápsulas", "Morfina, codeína, tebaína y papaverina. Opioides: depresión respiratoria, coma, dependencia y muerte por sobredosis.", "Fuente del opio."),
-    seedPsychPlant(900015, "Kratom", "Mitragyna speciosa", "Rubiaceae", "Alto", "Hojas", "Mitragynina y 7-hidroximitraginina. Efectos opioides, sedación, dependencia, convulsiones y hepatotoxicidad.", "Árbol con alcaloides opioides."),
-    seedPsychPlant(900016, "Iboga", "Tabernanthe iboga", "Apocynaceae", "Mortal", "Corteza de raíz", "Ibogaina y alcaloides de iboga. Alucinaciones, arritmias, convulsiones y muerte súbita.", "Arbusto africano de alto riesgo cardiaco."),
-    seedPsychPlant(900017, "Efedra", "Ephedra sinica", "Ephedraceae", "Alto", "Toda la planta", "Efedrina y pseudoefedrina. Estimulante: hipertensión, taquicardia, arritmias, infarto e ictus.", "Arbusto estimulante."),
-    seedPsychPlant(900018, "Cafeto", "Coffea arabica", "Rubiaceae", "Bajo", "Semillas", "Cafeína. Estimulante: insomnio, nerviosismo, taquicardia, temblores y ansiedad en exceso.", "Fuente de cafeína."),
-    seedPsychPlant(900019, "Planta del té", "Camellia sinensis", "Theaceae", "Bajo", "Hojas", "Cafeína/teína y teofilina. Estimulación, palpitaciones, nerviosismo e insomnio.", "Fuente de metilxantinas."),
-    seedPsychPlant(900020, "Guaraná", "Paullinia cupana", "Sapindaceae", "Moderado", "Semillas", "Cafeína. Estimulación intensa, hipertensión, taquicardia y convulsiones en exceso.", "Trepadora amazónica rica en cafeína."),
-    seedPsychPlant(900021, "Cacao", "Theobroma cacao", "Malvaceae", "Bajo", "Semillas", "Teobromina y cafeína. Estimulante suave; puede causar taquicardia, nerviosismo y toxicidad en animales.", "Árbol con metilxantinas."),
-    seedPsychPlant(900022, "Tabaco", "Nicotiana tabacum", "Solanaceae", "Alto", "Hojas", "Nicotina y nornicotina. Estimulante colinérgico: vómitos, hipertensión, convulsiones, arritmias y muerte.", "Solanácea rica en nicotina."),
-    seedPsychPlant(900023, "Betel", "Areca catechu", "Arecaceae", "Alto", "Semillas", "Arecolina. Estimulante colinérgico, náuseas, salivación, taquicardia y riesgo carcinógeno crónico.", "Palmera estimulante."),
-    seedPsychPlant(900024, "Khat", "Catha edulis", "Celastraceae", "Alto", "Hojas", "Catinona y catina. Estimulante: euforia, insomnio, hipertensión, taquicardia y ansiedad.", "Arbusto estimulante."),
-    seedPsychPlant(900025, "Gloria de la mañana", "Ipomoea tricolor", "Convolvulaceae", "Moderado", "Semillas", "Ergina/LSA. Alucinaciones, náuseas, vasoconstricción, confusión y ansiedad.", "Enredadera con alcaloides ergolínicos."),
-    seedPsychPlant(900026, "Hawaiian baby woodrose", "Argyreia nervosa", "Convolvulaceae", "Alto", "Semillas", "LSA/ergina. Alucinaciones, náuseas, vasoconstricción y alteraciones cardiovasculares.", "Convolvulácea ergolínica."),
-    seedPsychPlant(900027, "Yopo", "Anadenanthera peregrina", "Fabaceae", "Mortal", "Semillas", "Bufotenina, 5-MeO-DMT y DMT. Alucinaciones extremas, convulsiones, arritmias y paro cardiaco.", "Árbol con triptaminas."),
-    seedPsychPlant(900028, "Virola", "Virola theiodora", "Myristicaceae", "Alto", "Corteza y resina", "DMT y 5-MeO-DMT. Alucinaciones, hipertensión, convulsiones y síndrome serotoninérgico.", "Árbol amazónico con triptaminas."),
-    seedPsychPlant(900029, "Chaliponga", "Diplopterys cabrerana", "Malpighiaceae", "Alto", "Hojas", "DMT y 5-MeO-DMT. Alucinaciones intensas, taquicardia e interacciones con IMAO.", "Liana/fuente de triptaminas."),
-    seedPsychPlant(900030, "Acacia confusa", "Acacia confusa", "Fabaceae", "Alto", "Corteza", "DMT y NMT. Alucinaciones, hipertensión, náuseas y riesgo serotoninérgico.", "Acacia con triptaminas."),
-    seedPsychPlant(900031, "Phalaris arundinacea", "Phalaris arundinacea", "Poaceae", "Moderado", "Hojas y rizoma", "DMT, 5-MeO-DMT, bufotenina y gramina. Neurotoxicidad en animales y efectos psicoactivos.", "Gramínea con triptaminas variables."),
-    seedPsychPlant(900032, "Caña común", "Arundo donax", "Poaceae", "Moderado", "Rizoma", "DMT, bufotenina y gramina. Efectos psicoactivos y neurotóxicos.", "Caña con alcaloides indólicos."),
-    seedPsychPlant(900033, "Salvia divinorum", "Salvia divinorum", "Lamiaceae", "Alto", "Hojas", "Salvinorina A. Alucinógeno disociativo potente, confusión, ansiedad y pérdida de coordinación.", "Lamiácea con diterpenos psicoactivos."),
-    seedPsychPlant(900034, "Coca", "Erythroxylum coca", "Erythroxylaceae", "Alto", "Hojas", "Cocaína y alcaloides relacionados. Estimulante: hipertensión, taquicardia, arritmias, ansiedad y convulsiones.", "Arbusto estimulante."),
+    seedPsychPlant(
+        900001,
+        "Belladona",
+        "Atropa belladonna",
+        "Solanaceae",
+        "Mortal",
+        "Todas las partes, bayas",
+        "Atropina, hiosciamina y escopolamina. Síndrome anticolinérgico: midriasis, taquicardia, delirio, alucinaciones, convulsiones y coma.",
+        "Planta tropánica clásica de alta toxicidad."
+    ),
+    seedPsychPlant(
+        900002,
+        "Estramonio / Hierba del diablo",
+        "Datura stramonium",
+        "Solanaceae",
+        "Mortal",
+        "Toda la planta, especialmente semillas",
+        "Atropina, escopolamina e hiosciamina. Delirio anticolinérgico, alucinaciones, hipertermia, retención urinaria, convulsiones, coma y muerte.",
+        "Planta tropánica muy peligrosa."
+    ),
+    seedPsychPlant(
+        900003,
+        "Floripondio / Trompeta de ángel",
+        "Brugmansia suaveolens",
+        "Solanaceae",
+        "Mortal",
+        "Toda la planta",
+        "Escopolamina, atropina e hiosciamina. Delirio, alucinaciones, amnesia, taquicardia y coma.",
+        "Árbol ornamental con alcaloides tropánicos."
+    ),
+    seedPsychPlant(
+        900004,
+        "Beleño negro",
+        "Hyoscyamus niger",
+        "Solanaceae",
+        "Alto",
+        "Toda la planta",
+        "Hiosciamina, escopolamina y atropina. Delirio anticolinérgico, alucinaciones, sequedad extrema y taquicardia.",
+        "Solanácea tropánica histórica."
+    ),
+    seedPsychPlant(
+        900005,
+        "Mandrágora",
+        "Mandragora officinarum",
+        "Solanaceae",
+        "Alto",
+        "Raíz y hojas",
+        "Atropina, escopolamina e hiosciamina. Sedación, delirio, alucinaciones y coma.",
+        "Planta tropánica mediterránea."
+    ),
+    seedPsychPlant(
+        900006,
+        "Ayahuasca",
+        "Banisteriopsis caapi",
+        "Malpighiaceae",
+        "Alto",
+        "Tallo y corteza",
+        "Harmina, harmalina y tetrahidroharmina. IMAO; riesgo de síndrome serotoninérgico e interacciones graves.",
+        "Liana con beta-carbolinas IMAO."
+    ),
+    seedPsychPlant(
+        900007,
+        "Chacruna",
+        "Psychotria viridis",
+        "Rubiaceae",
+        "Alto",
+        "Hojas",
+        "DMT. Alucinaciones intensas, taquicardia, hipertensión, ansiedad y riesgo serotoninérgico.",
+        "Fuente vegetal de DMT."
+    ),
+    seedPsychPlant(
+        900008,
+        "Mimosa tenuiflora / Jurema",
+        "Mimosa tenuiflora",
+        "Fabaceae",
+        "Alto",
+        "Corteza de raíz",
+        "DMT y NMT. Alucinaciones, taquicardia, hipertensión y riesgo serotoninérgico.",
+        "Árbol rico en triptaminas."
+    ),
+    seedPsychPlant(
+        900009,
+        "Peganum harmala / Alharma",
+        "Peganum harmala",
+        "Zygophyllaceae",
+        "Alto",
+        "Semillas",
+        "Harmina y harmalina. IMAO, náuseas, convulsiones, alucinaciones e interacciones peligrosas.",
+        "Ruda siria con beta-carbolinas."
+    ),
+    seedPsychPlant(
+        900010,
+        "Pasionaria",
+        "Passiflora incarnata",
+        "Passifloraceae",
+        "Bajo",
+        "Partes aéreas",
+        "Harman, harmina y sedantes suaves. Posible interacción con IMAO y depresores.",
+        "Sedante vegetal de baja potencia."
+    ),
+    seedPsychPlant(
+        900011,
+        "Peyote",
+        "Lophophora williamsii",
+        "Cactaceae",
+        "Alto",
+        "Botones",
+        "Mescalina. Alucinaciones intensas, náuseas, taquicardia, hipertensión, ansiedad y psicosis.",
+        "Cactus alucinógeno con fenetilaminas."
+    ),
+    seedPsychPlant(
+        900012,
+        "Cactus San Pedro",
+        "Echinopsis pachanoi",
+        "Cactaceae",
+        "Alto",
+        "Corteza verde",
+        "Mescalina. Alucinaciones, náuseas, taquicardia, hipertensión y ansiedad.",
+        "Cactus andino con mescalina."
+    ),
+    seedPsychPlant(
+        900013,
+        "Cannabis",
+        "Cannabis sativa",
+        "Cannabaceae",
+        "Moderado",
+        "Flores y resina",
+        "THC y cannabinoides. Alteración de percepción, ansiedad, taquicardia, somnolencia y paranoia.",
+        "Planta con cannabinoides psicoactivos."
+    ),
+    seedPsychPlant(
+        900014,
+        "Adormidera / Amapola del opio",
+        "Papaver somniferum",
+        "Papaveraceae",
+        "Mortal",
+        "Látex y cápsulas",
+        "Morfina, codeína, tebaína y papaverina. Opioides: depresión respiratoria, coma, dependencia y muerte por sobredosis.",
+        "Fuente del opio."
+    ),
+    seedPsychPlant(
+        900015,
+        "Kratom",
+        "Mitragyna speciosa",
+        "Rubiaceae",
+        "Alto",
+        "Hojas",
+        "Mitragynina y 7-hidroximitraginina. Efectos opioides, sedación, dependencia, convulsiones y hepatotoxicidad.",
+        "Árbol con alcaloides opioides."
+    ),
+    seedPsychPlant(
+        900016,
+        "Iboga",
+        "Tabernanthe iboga",
+        "Apocynaceae",
+        "Mortal",
+        "Corteza de raíz",
+        "Ibogaina y alcaloides de iboga. Alucinaciones, arritmias, convulsiones y muerte súbita.",
+        "Arbusto africano de alto riesgo cardiaco."
+    ),
+    seedPsychPlant(
+        900017,
+        "Efedra",
+        "Ephedra sinica",
+        "Ephedraceae",
+        "Alto",
+        "Toda la planta",
+        "Efedrina y pseudoefedrina. Estimulante: hipertensión, taquicardia, arritmias, infarto e ictus.",
+        "Arbusto estimulante."
+    ),
+    seedPsychPlant(
+        900018,
+        "Cafeto",
+        "Coffea arabica",
+        "Rubiaceae",
+        "Bajo",
+        "Semillas",
+        "Cafeína. Estimulante: insomnio, nerviosismo, taquicardia, temblores y ansiedad en exceso.",
+        "Fuente de cafeína."
+    ),
+    seedPsychPlant(
+        900019,
+        "Planta del té",
+        "Camellia sinensis",
+        "Theaceae",
+        "Bajo",
+        "Hojas",
+        "Cafeína/teína y teofilina. Estimulación, palpitaciones, nerviosismo e insomnio.",
+        "Fuente de metilxantinas."
+    ),
+    seedPsychPlant(
+        900020,
+        "Guaraná",
+        "Paullinia cupana",
+        "Sapindaceae",
+        "Moderado",
+        "Semillas",
+        "Cafeína. Estimulación intensa, hipertensión, taquicardia y convulsiones en exceso.",
+        "Trepadora amazónica rica en cafeína."
+    ),
+    seedPsychPlant(
+        900021,
+        "Cacao",
+        "Theobroma cacao",
+        "Malvaceae",
+        "Bajo",
+        "Semillas",
+        "Teobromina y cafeína. Estimulante suave; puede causar taquicardia, nerviosismo y toxicidad en animales.",
+        "Árbol con metilxantinas."
+    ),
+    seedPsychPlant(
+        900022,
+        "Tabaco",
+        "Nicotiana tabacum",
+        "Solanaceae",
+        "Alto",
+        "Hojas",
+        "Nicotina y nornicotina. Estimulante colinérgico: vómitos, hipertensión, convulsiones, arritmias y muerte.",
+        "Solanácea rica en nicotina."
+    ),
+    seedPsychPlant(
+        900023,
+        "Betel",
+        "Areca catechu",
+        "Arecaceae",
+        "Alto",
+        "Semillas",
+        "Arecolina. Estimulante colinérgico, náuseas, salivación, taquicardia y riesgo carcinógeno crónico.",
+        "Palmera estimulante."
+    ),
+    seedPsychPlant(
+        900024,
+        "Khat",
+        "Catha edulis",
+        "Celastraceae",
+        "Alto",
+        "Hojas",
+        "Catinona y catina. Estimulante: euforia, insomnio, hipertensión, taquicardia y ansiedad.",
+        "Arbusto estimulante."
+    ),
+    seedPsychPlant(
+        900025,
+        "Gloria de la mañana",
+        "Ipomoea tricolor",
+        "Convolvulaceae",
+        "Moderado",
+        "Semillas",
+        "Ergina/LSA. Alucinaciones, náuseas, vasoconstricción, confusión y ansiedad.",
+        "Enredadera con alcaloides ergolínicos."
+    ),
+    seedPsychPlant(
+        900026,
+        "Hawaiian baby woodrose",
+        "Argyreia nervosa",
+        "Convolvulaceae",
+        "Alto",
+        "Semillas",
+        "LSA/ergina. Alucinaciones, náuseas, vasoconstricción y alteraciones cardiovasculares.",
+        "Convolvulácea ergolínica."
+    ),
+    seedPsychPlant(
+        900027,
+        "Yopo",
+        "Anadenanthera peregrina",
+        "Fabaceae",
+        "Mortal",
+        "Semillas",
+        "Bufotenina, 5-MeO-DMT y DMT. Alucinaciones extremas, convulsiones, arritmias y paro cardiaco.",
+        "Árbol con triptaminas."
+    ),
+    seedPsychPlant(
+        900028,
+        "Virola",
+        "Virola theiodora",
+        "Myristicaceae",
+        "Alto",
+        "Corteza y resina",
+        "DMT y 5-MeO-DMT. Alucinaciones, hipertensión, convulsiones y síndrome serotoninérgico.",
+        "Árbol amazónico con triptaminas."
+    ),
+    seedPsychPlant(
+        900029,
+        "Chaliponga",
+        "Diplopterys cabrerana",
+        "Malpighiaceae",
+        "Alto",
+        "Hojas",
+        "DMT y 5-MeO-DMT. Alucinaciones intensas, taquicardia e interacciones con IMAO.",
+        "Liana/fuente de triptaminas."
+    ),
+    seedPsychPlant(
+        900030,
+        "Acacia confusa",
+        "Acacia confusa",
+        "Fabaceae",
+        "Alto",
+        "Corteza",
+        "DMT y NMT. Alucinaciones, hipertensión, náuseas y riesgo serotoninérgico.",
+        "Acacia con triptaminas."
+    ),
+    seedPsychPlant(
+        900031,
+        "Phalaris arundinacea",
+        "Phalaris arundinacea",
+        "Poaceae",
+        "Moderado",
+        "Hojas y rizoma",
+        "DMT, 5-MeO-DMT, bufotenina y gramina. Neurotoxicidad en animales y efectos psicoactivos.",
+        "Gramínea con triptaminas variables."
+    ),
+    seedPsychPlant(
+        900032,
+        "Caña común",
+        "Arundo donax",
+        "Poaceae",
+        "Moderado",
+        "Rizoma",
+        "DMT, bufotenina y gramina. Efectos psicoactivos y neurotóxicos.",
+        "Caña con alcaloides indólicos."
+    ),
+    seedPsychPlant(
+        900033,
+        "Salvia divinorum",
+        "Salvia divinorum",
+        "Lamiaceae",
+        "Alto",
+        "Hojas",
+        "Salvinorina A. Alucinógeno disociativo potente, confusión, ansiedad y pérdida de coordinación.",
+        "Lamiácea con diterpenos psicoactivos."
+    ),
+    seedPsychPlant(
+        900034,
+        "Coca",
+        "Erythroxylum coca",
+        "Erythroxylaceae",
+        "Alto",
+        "Hojas",
+        "Cocaína y alcaloides relacionados. Estimulante: hipertensión, taquicardia, arritmias, ansiedad y convulsiones.",
+        "Arbusto estimulante."
+    ),
 )
 
 private fun seedPsychPlant(
@@ -1482,10 +1908,16 @@ private fun classifyPsychotropicPlant(
         compounds += match.compound.commonName
     }
     if (matchedCompounds.isNotEmpty()) {
-        reasons += "Cruce con fitoquímica: ${matchedCompounds.take(3).joinToString(", ") { it.compound.commonName }}"
+        reasons += "Cruce con fitoquímica: ${
+            matchedCompounds.take(3).joinToString(", ") { it.compound.commonName }
+        }"
     }
 
-    if (matchesAnyTaxon(scientific, common, HALLUCINOGEN_TAXA) || containsAny(haystack, HALLUCINOGEN_KEYWORDS)) {
+    if (matchesAnyTaxon(scientific, common, HALLUCINOGEN_TAXA) || containsAny(
+            haystack,
+            HALLUCINOGEN_KEYWORDS
+        )
+    ) {
         categories += CAT_HALLUCINOGENS
         reasons += "Indicadores de alucinógenos/psicodélicos en la ficha"
         compounds += extractDetectedCompounds(haystack, HALLUCINOGEN_COMPOUND_LABELS)
@@ -1497,19 +1929,31 @@ private fun classifyPsychotropicPlant(
         compounds += extractDetectedCompounds(haystack, IMAO_COMPOUND_LABELS)
     }
 
-    if (matchesAnyTaxon(scientific, common, DEPRESSANT_TAXA) || containsAny(haystack, DEPRESSANT_KEYWORDS)) {
+    if (matchesAnyTaxon(scientific, common, DEPRESSANT_TAXA) || containsAny(
+            haystack,
+            DEPRESSANT_KEYWORDS
+        )
+    ) {
         categories += CAT_DEPRESSANTS
         reasons += "Indicadores de depresores, sedantes u opioides"
         compounds += extractDetectedCompounds(haystack, DEPRESSANT_COMPOUND_LABELS)
     }
 
-    if (matchesAnyTaxon(scientific, common, STIMULANT_TAXA) || containsAny(haystack, STIMULANT_KEYWORDS)) {
+    if (matchesAnyTaxon(scientific, common, STIMULANT_TAXA) || containsAny(
+            haystack,
+            STIMULANT_KEYWORDS
+        )
+    ) {
         categories += CAT_STIMULANTS
         reasons += "Indicadores de estimulantes del sistema nervioso"
         compounds += extractDetectedCompounds(haystack, STIMULANT_COMPOUND_LABELS)
     }
 
-    if (matchesAnyTaxon(scientific, common, TROPANE_TAXA) || containsAny(haystack, TROPANE_KEYWORDS)) {
+    if (matchesAnyTaxon(scientific, common, TROPANE_TAXA) || containsAny(
+            haystack,
+            TROPANE_KEYWORDS
+        )
+    ) {
         categories += CAT_TROPANES
         reasons += "Indicadores de alcaloides tropánicos/anticolinérgicos"
         compounds += extractDetectedCompounds(haystack, TROPANE_COMPOUND_LABELS)
@@ -1517,8 +1961,10 @@ private fun classifyPsychotropicPlant(
 
     if (categories.isEmpty()) return null
 
-    val orderedCategories = categories.sortedBy { categoryOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx } }
-    val detailScore = plant.description.length + plant.symptoms.length + plant.toxicParts.length + compounds.size * 90 + categories.size * 45 + if (plant.id >= 10000) 900 else 0
+    val orderedCategories =
+        categories.sortedBy { categoryOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx } }
+    val detailScore =
+        plant.description.length + plant.symptoms.length + plant.toxicParts.length + compounds.size * 90 + categories.size * 45 + if (plant.id >= 10000) 900 else 0
 
     val compoundList = compounds.filter { it.isNotBlank() }.distinct().take(8)
     val reasonList = reasons.filter { it.isNotBlank() }.distinct().take(4)
@@ -1529,7 +1975,12 @@ private fun classifyPsychotropicPlant(
         compounds = compoundList,
         reasons = reasonList,
         score = detailScore,
-        searchText = buildPsychotropicSearchText(plant, orderedCategories, compoundList, reasonList),
+        searchText = buildPsychotropicSearchText(
+            plant,
+            orderedCategories,
+            compoundList,
+            reasonList
+        ),
     )
 }
 
@@ -1542,69 +1993,78 @@ private fun buildPsychotropicItems(
     return primary.ifEmpty { buildSimplePsychotropicFallback(plants) }
 }
 
-private fun buildSimplePsychotropicFallback(plants: List<PlantEntity>): List<PsychotropicPlantItem> = plants.mapNotNull { plant ->
-    val text = listOf(
-        plant.commonName,
-        plant.commonNames,
-        plant.scientificName,
-        plant.family,
-        plant.toxicParts,
-        plant.symptoms,
-        plant.description,
-        plant.category,
-    ).joinToString(" ").normalizedForSearch()
+private fun buildSimplePsychotropicFallback(plants: List<PlantEntity>): List<PsychotropicPlantItem> =
+    plants.mapNotNull { plant ->
+        val text = listOf(
+            plant.commonName,
+            plant.commonNames,
+            plant.scientificName,
+            plant.family,
+            plant.toxicParts,
+            plant.symptoms,
+            plant.description,
+            plant.category,
+        ).joinToString(" ").normalizedForSearch()
 
-    val categories = linkedSetOf<String>()
-    val compounds = linkedSetOf<String>()
-    val reasons = linkedSetOf<String>()
+        val categories = linkedSetOf<String>()
+        val compounds = linkedSetOf<String>()
+        val reasons = linkedSetOf<String>()
 
-    fun hasAny(words: List<String>) = words.any { text.contains(it) }
+        fun hasAny(words: List<String>) = words.any { text.contains(it) }
 
-    if (hasAny(SIMPLE_HALLUCINOGEN_TERMS)) {
-        categories += CAT_HALLUCINOGENS
-        reasons += "Coincidencia directa con términos psicodélicos/alucinógenos"
-        compounds += extractSimpleLabels(text, SIMPLE_HALLUCINOGEN_LABELS)
+        if (hasAny(SIMPLE_HALLUCINOGEN_TERMS)) {
+            categories += CAT_HALLUCINOGENS
+            reasons += "Coincidencia directa con términos psicodélicos/alucinógenos"
+            compounds += extractSimpleLabels(text, SIMPLE_HALLUCINOGEN_LABELS)
+        }
+        if (hasAny(SIMPLE_IMAO_TERMS)) {
+            categories += CAT_IMAO
+            reasons += "Coincidencia directa con IMAO/beta-carbolinas"
+            compounds += extractSimpleLabels(text, SIMPLE_IMAO_LABELS)
+        }
+        if (hasAny(SIMPLE_DEPRESSANT_TERMS)) {
+            categories += CAT_DEPRESSANTS
+            reasons += "Coincidencia directa con depresores/sedantes/opioides"
+            compounds += extractSimpleLabels(text, SIMPLE_DEPRESSANT_LABELS)
+        }
+        if (hasAny(SIMPLE_STIMULANT_TERMS)) {
+            categories += CAT_STIMULANTS
+            reasons += "Coincidencia directa con estimulantes"
+            compounds += extractSimpleLabels(text, SIMPLE_STIMULANT_LABELS)
+        }
+        if (hasAny(SIMPLE_TROPANE_TERMS)) {
+            categories += CAT_TROPANES
+            reasons += "Coincidencia directa con alcaloides tropánicos"
+            compounds += extractSimpleLabels(text, SIMPLE_TROPANE_LABELS)
+        }
+
+        if (categories.isEmpty()) return@mapNotNull null
+
+        val orderedCategories = categories.sortedBy {
+            categoryOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx }
+        }
+        val compoundList = compounds.filter { it.isNotBlank() }.distinct().take(8)
+        val reasonList = reasons.distinct().take(4)
+
+        PsychotropicPlantItem(
+            plant = plant,
+            categories = orderedCategories,
+            compounds = compoundList,
+            reasons = reasonList,
+            score = plant.description.length + plant.symptoms.length + compoundList.size * 80 + orderedCategories.size * 40,
+            searchText = buildPsychotropicSearchText(
+                plant,
+                orderedCategories,
+                compoundList,
+                reasonList
+            ),
+        )
     }
-    if (hasAny(SIMPLE_IMAO_TERMS)) {
-        categories += CAT_IMAO
-        reasons += "Coincidencia directa con IMAO/beta-carbolinas"
-        compounds += extractSimpleLabels(text, SIMPLE_IMAO_LABELS)
-    }
-    if (hasAny(SIMPLE_DEPRESSANT_TERMS)) {
-        categories += CAT_DEPRESSANTS
-        reasons += "Coincidencia directa con depresores/sedantes/opioides"
-        compounds += extractSimpleLabels(text, SIMPLE_DEPRESSANT_LABELS)
-    }
-    if (hasAny(SIMPLE_STIMULANT_TERMS)) {
-        categories += CAT_STIMULANTS
-        reasons += "Coincidencia directa con estimulantes"
-        compounds += extractSimpleLabels(text, SIMPLE_STIMULANT_LABELS)
-    }
-    if (hasAny(SIMPLE_TROPANE_TERMS)) {
-        categories += CAT_TROPANES
-        reasons += "Coincidencia directa con alcaloides tropánicos"
-        compounds += extractSimpleLabels(text, SIMPLE_TROPANE_LABELS)
-    }
 
-    if (categories.isEmpty()) return@mapNotNull null
-
-    val orderedCategories = categories.sortedBy { categoryOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx } }
-    val compoundList = compounds.filter { it.isNotBlank() }.distinct().take(8)
-    val reasonList = reasons.distinct().take(4)
-
-    PsychotropicPlantItem(
-        plant = plant,
-        categories = orderedCategories,
-        compounds = compoundList,
-        reasons = reasonList,
-        score = plant.description.length + plant.symptoms.length + compoundList.size * 80 + orderedCategories.size * 40,
-        searchText = buildPsychotropicSearchText(plant, orderedCategories, compoundList, reasonList),
-    )
-}
-
-private fun extractSimpleLabels(text: String, labels: Map<String, String>): List<String> = labels.mapNotNull { (needle, label) ->
-    if (text.contains(needle)) label else null
-}.distinct()
+private fun extractSimpleLabels(text: String, labels: Map<String, String>): List<String> =
+    labels.mapNotNull { (needle, label) ->
+        if (text.contains(needle)) label else null
+    }.distinct()
 
 private fun buildPsychotropicCompoundIndex(compounds: List<CompoundEntity>): PsychotropicCompoundIndex {
     val exact = mutableMapOf<String, MutableList<PsychotropicCompoundMatch>>()
@@ -1623,8 +2083,8 @@ private fun buildPsychotropicCompoundIndex(compounds: List<CompoundEntity>): Psy
                 val sourceClean = source.cleanedTaxonText()
                 val sourceGenus = sourceClean.firstWord()
                 val genericSource = sourceClean.contains(" spp") ||
-                    sourceClean.endsWith(" sp") ||
-                    sourceClean.contains(" sp ")
+                        sourceClean.endsWith(" sp") ||
+                        sourceClean.contains(" sp ")
 
                 if (genericSource) {
                     if (sourceGenus.isNotBlank() && sourceGenus in TRUSTED_GENERIC_SOURCE_GENERA) {
@@ -1688,8 +2148,9 @@ private fun PlantEntity.fullSearchText(): String = listOf(
 
 private fun hallucinogenSubtypesFor(item: PsychotropicPlantItem): Set<String> {
     if (!item.categories.contains(CAT_HALLUCINOGENS)) return emptySet()
-    val text = "${item.searchText} ${item.compounds.joinToString(" ")} ${item.plant.scientificName} ${item.plant.commonName} ${item.plant.family}"
-        .normalizedForSearch()
+    val text =
+        "${item.searchText} ${item.compounds.joinToString(" ")} ${item.plant.scientificName} ${item.plant.commonName} ${item.plant.family}"
+            .normalizedForSearch()
     val out = linkedSetOf<String>()
 
     if (containsAny(text, PSILOCYBINIC_TERMS) || matchesAnyTaxon(
@@ -1719,13 +2180,23 @@ private fun hallucinogenSubtypesFor(item: PsychotropicPlantItem): Set<String> {
         out += HALL_SUB_TRYPTAMINIC
     }
 
-    return out.sortedBy { hallucinogenSubtypeOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx } }.toSet()
+    return out.sortedBy {
+        hallucinogenSubtypeOrder.indexOf(it).let { idx -> if (idx < 0) 999 else idx }
+    }.toSet()
 }
 
 private fun matchesRiskFilter(level: String, filter: String): Boolean = when (filter) {
     "Mortal" -> level.equals("Mortal", ignoreCase = true)
-    "Alto/Muy alto" -> level.equals("Alto", ignoreCase = true) || level.equals("Muy alto", ignoreCase = true)
-    "Moderado/Bajo" -> level.equals("Moderado", ignoreCase = true) || level.equals("Bajo", ignoreCase = true)
+    "Alto/Muy alto" -> level.equals("Alto", ignoreCase = true) || level.equals(
+        "Muy alto",
+        ignoreCase = true
+    )
+
+    "Moderado/Bajo" -> level.equals("Moderado", ignoreCase = true) || level.equals(
+        "Bajo",
+        ignoreCase = true
+    )
+
     else -> true
 }
 
@@ -1761,16 +2232,19 @@ private fun compoundSourceMatchesPlant(compound: CompoundEntity, plant: PlantEnt
             val sourceClean = source.cleanedTaxonText()
             val sourceCanonical = canonicalTaxonFromText(source)
             val sourceGenus = sourceClean.firstWord()
-            val genericSource = sourceClean.contains(" spp") || sourceClean.endsWith(" sp") || sourceClean.contains(" sp ")
+            val genericSource =
+                sourceClean.contains(" spp") || sourceClean.endsWith(" sp") || sourceClean.contains(
+                    " sp "
+                )
 
             if (genericSource) {
                 sourceGenus.isNotBlank() && sourceGenus == plantGenus && sourceGenus in TRUSTED_GENERIC_SOURCE_GENERA
             } else {
                 sourceCanonical.isNotBlank() && (
-                    sourceCanonical == plantCanonical ||
-                        plantScientific == sourceCanonical ||
-                        plantScientific.startsWith("$sourceCanonical ")
-                    )
+                        sourceCanonical == plantCanonical ||
+                                plantScientific == sourceCanonical ||
+                                plantScientific.startsWith("$sourceCanonical ")
+                        )
             }
         }
 }
@@ -1796,26 +2270,31 @@ private fun psychotropicCategoriesForCompound(compound: CompoundEntity): Set<Str
     return categories
 }
 
-private fun matchesAnyTaxon(scientific: String, common: String, taxa: List<String>): Boolean = taxa.any { raw ->
-    val taxon = raw.normalizedForSearch().trim()
-    if (taxon.isBlank()) return@any false
-    val isGenusOnly = !taxon.contains(' ')
-    if (isGenusOnly) {
-        scientific == taxon || scientific.startsWith("$taxon ") || common.contains(" $taxon ") || common.startsWith("$taxon ")
-    } else {
-        scientific == taxon || scientific.startsWith("$taxon ") || common.contains(taxon)
+private fun matchesAnyTaxon(scientific: String, common: String, taxa: List<String>): Boolean =
+    taxa.any { raw ->
+        val taxon = raw.normalizedForSearch().trim()
+        if (taxon.isBlank()) return@any false
+        val isGenusOnly = !taxon.contains(' ')
+        if (isGenusOnly) {
+            scientific == taxon || scientific.startsWith("$taxon ") || common.contains(" $taxon ") || common.startsWith(
+                "$taxon "
+            )
+        } else {
+            scientific == taxon || scientific.startsWith("$taxon ") || common.contains(taxon)
+        }
     }
-}
 
 private fun containsAny(text: String, needles: List<String>): Boolean = needles.any { needle ->
     text.contains(needle.normalizedForSearch())
 }
 
-private fun extractDetectedCompounds(text: String, labels: Map<String, String>): List<String> = labels.mapNotNull { (needle, label) ->
-    if (text.contains(needle.normalizedForSearch())) label else null
-}.distinct()
+private fun extractDetectedCompounds(text: String, labels: Map<String, String>): List<String> =
+    labels.mapNotNull { (needle, label) ->
+        if (text.contains(needle.normalizedForSearch())) label else null
+    }.distinct()
 
-private fun canonicalTaxonKey(plant: PlantEntity): String = canonicalTaxonFromText(plant.scientificName)
+private fun canonicalTaxonKey(plant: PlantEntity): String =
+    canonicalTaxonFromText(plant.scientificName)
 
 private fun canonicalTaxonFromText(text: String): String {
     val parts = text.cleanedTaxonText()
@@ -1851,14 +2330,17 @@ private fun isLikelyFungus(plant: PlantEntity): Boolean {
     val scientific = plant.scientificName.normalizedForSearch()
     val family = plant.family.normalizedForSearch()
     return FUNGAL_GENERA.any { scientific == it || scientific.startsWith("$it ") } ||
-        family in FUNGAL_FAMILIES
+            family in FUNGAL_FAMILIES
 }
 
 private fun isPsilocybinicFungus(plant: PlantEntity): Boolean {
     val scientific = plant.scientificName.normalizedForSearch()
     val common = "${plant.commonName} ${plant.commonNames}".normalizedForSearch()
     val text = plant.fullSearchText()
-    return matchesAnyTaxon(scientific, common, PSILOCYBINIC_TAXA) || containsAny(text, PSILOCYBINIC_TERMS)
+    return matchesAnyTaxon(scientific, common, PSILOCYBINIC_TAXA) || containsAny(
+        text,
+        PSILOCYBINIC_TERMS
+    )
 }
 
 private val TAXON_STOP_WORDS = setOf(
@@ -2030,8 +2512,18 @@ private val HALLUCINOGEN_KEYWORDS = listOf(
 )
 
 private val IMAO_KEYWORDS = listOf(
-    "imao", "inhibicion mao", "inhibidor mao", "inhibidores mao", "monoaminooxidasa",
-    "harmina", "harmalina", "harman", "tetrahidroharmina", "beta-carbolina", "beta carbolina", "b-carbolina",
+    "imao",
+    "inhibicion mao",
+    "inhibidor mao",
+    "inhibidores mao",
+    "monoaminooxidasa",
+    "harmina",
+    "harmalina",
+    "harman",
+    "tetrahidroharmina",
+    "beta-carbolina",
+    "beta carbolina",
+    "b-carbolina",
 )
 
 private val DEPRESSANT_KEYWORDS = listOf(
@@ -2054,8 +2546,10 @@ private val TROPANE_KEYWORDS = listOf(
 
 private val HALLUCINOGEN_COMPOUND_KEYWORDS = HALLUCINOGEN_KEYWORDS
 private val IMAO_COMPOUND_KEYWORDS = IMAO_KEYWORDS
-private val DEPRESSANT_COMPOUND_KEYWORDS = DEPRESSANT_KEYWORDS + listOf("agonista gaba", "agonista opioide")
-private val STIMULANT_COMPOUND_KEYWORDS = STIMULANT_KEYWORDS + listOf("alcaloides xanticos", "metilxantina")
+private val DEPRESSANT_COMPOUND_KEYWORDS =
+    DEPRESSANT_KEYWORDS + listOf("agonista gaba", "agonista opioide")
+private val STIMULANT_COMPOUND_KEYWORDS =
+    STIMULANT_KEYWORDS + listOf("alcaloides xanticos", "metilxantina")
 private val TROPANE_COMPOUND_KEYWORDS = TROPANE_KEYWORDS + listOf("alcaloides tropanicos")
 
 private val SIMPLE_HALLUCINOGEN_TERMS = listOf(

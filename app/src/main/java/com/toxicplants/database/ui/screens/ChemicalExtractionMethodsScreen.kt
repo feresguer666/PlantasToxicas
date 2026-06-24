@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,18 +24,19 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,8 +83,16 @@ fun ChemicalExtractionMethodsScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = {
                     Column {
-                        Text("⚗️ Métodos de extracción (${allMethods.size})", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text("Alcaloides · Glucósidos · Saponinas · Flavonoides", fontSize = 12.sp, color = Color.White.copy(alpha = 0.82f))
+                        Text(
+                            "⚗️ Métodos de extracción (${allMethods.size})",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                        Text(
+                            "Alc. · Gluc · Sap · Flav",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.82f)
+                        )
                     }
                 },
                 navigationIcon = {
@@ -100,13 +108,17 @@ fun ChemicalExtractionMethodsScreen(onBack: () -> Unit) {
             )
         }
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
+        Column(Modifier
+            .fillMaxSize()
+            .padding(padding)) {
 
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Buscar método o compuesto…") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                placeholder = { Text("Buscar") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true
             )
@@ -156,9 +168,13 @@ fun ChemicalExtractionMethodsScreen(onBack: () -> Unit) {
 private fun SafetyCard() {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer)) {
         Column(Modifier.padding(14.dp)) {
-            Text("⚠️ Uso educativo y de laboratorio", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onTertiaryContainer)
             Text(
-                "Estos esquemas son orientativos para fitoquímica. La extracción real requiere campana, EPI, gestión de residuos y supervisión profesional. No usar para consumo ni automedicación.",
+                "⚠️ Uso educativo y de laboratorio",
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onTertiaryContainer
+            )
+            Text(
+                "",
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
                 color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -179,7 +195,12 @@ private fun ExtractionMethodCard(method: ExtractionMethod) {
                 Text("🧪", fontSize = 24.sp)
                 Spacer(Modifier.width(8.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(method.title, fontWeight = FontWeight.Bold, color = method.color, fontSize = 16.sp)
+                    Text(
+                        method.title,
+                        fontWeight = FontWeight.Bold,
+                        color = method.color,
+                        fontSize = 16.sp
+                    )
                     Text(method.group, color = Color.Gray, fontSize = 12.sp)
                 }
                 Text(if (expanded) "▲" else "▼", color = method.color, fontSize = 14.sp)
@@ -200,7 +221,12 @@ private fun ExtractionMethodCard(method: ExtractionMethod) {
             if (expanded) {
                 InfoLine("Equipo necesario", method.equipment, method.color)
                 InfoLine("Condiciones (tiempo / temperatura)", method.conditions, method.color)
-                Text("Esquema", fontWeight = FontWeight.Bold, color = method.color, fontSize = 13.sp)
+                Text(
+                    "Esquema",
+                    fontWeight = FontWeight.Bold,
+                    color = method.color,
+                    fontSize = 13.sp
+                )
                 method.steps.forEachIndexed { index, step ->
                     Text("${index + 1}. $step", fontSize = 13.sp, lineHeight = 18.sp)
                 }

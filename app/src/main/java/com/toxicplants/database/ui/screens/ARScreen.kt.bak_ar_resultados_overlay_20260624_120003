@@ -12,8 +12,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -169,8 +167,6 @@ fun ARScreen(
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
     val scope = rememberCoroutineScope()
 
-    val hasResultOverlay = showOverlay || (mode == "parts" && partsDetectionResult.isNotEmpty() && !isDetecting)
-
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -280,16 +276,14 @@ fun ARScreen(
                     onImageCaptureReady = { imageCaptureRef.value = it }
                 )
 
-                if (!hasResultOverlay) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Box(modifier = Modifier.size(280.dp, 200.dp).border(width = 3.dp, color = if (isDetecting) Color.Yellow else Color.Cyan, shape = RoundedCornerShape(16.dp)))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.size(280.dp, 200.dp).border(width = 3.dp, color = if (isDetecting) Color.Yellow else Color.Cyan, shape = RoundedCornerShape(16.dp)))
 
-                        if (isDetecting) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 280.dp)) {
-                                CircularProgressIndicator(color = Color.Yellow, modifier = Modifier.size(32.dp))
-                                Spacer(Modifier.height(8.dp))
-                                Text("Analizando...", color = Color.Yellow, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                            }
+                    if (isDetecting) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 280.dp)) {
+                            CircularProgressIndicator(color = Color.Yellow, modifier = Modifier.size(32.dp))
+                            Spacer(Modifier.height(8.dp))
+                            Text("Analizando...", color = Color.Yellow, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -304,41 +298,7 @@ fun ARScreen(
                     }
                 }
 
-                if (mode == "parts" && partsDetectionResult.isNotEmpty() && !isDetecting) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.78f))
-                            .padding(14.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF202020)), shape = RoundedCornerShape(18.dp)) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                                    .verticalScroll(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Text("🔍 Resultado de clave visual", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                                Text(partsDetectionResult, color = Color.White, fontSize = 14.sp)
-                                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    OutlinedButton(
-                                        onClick = { partsDetectionResult = ""; detectionMessage = "Pulsa el botón para detectar" },
-                                        modifier = Modifier.weight(1f)
-                                    ) { Text("Cerrar") }
-                                    Button(
-                                        onClick = { partsDetectionResult = ""; detectionMessage = "Pulsa el botón para detectar" },
-                                        modifier = Modifier.weight(1f)
-                                    ) { Text("Nuevo análisis") }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!hasResultOverlay) {
-                    Column(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).background(Color.Black.copy(alpha = 0.7f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).background(Color.Black.copy(alpha = 0.7f)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
                     // Switch modes
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -384,7 +344,6 @@ fun ARScreen(
 
                     Spacer(Modifier.height(8.dp))
                     Text("📷 Apunta a una planta y presiona el botón", color = Color.Yellow, fontSize = 11.sp, textAlign = TextAlign.Center)
-                    }
                 }
             } else {
                 Box(modifier = Modifier.fillMaxSize().background(Color(0xFF121212)), contentAlignment = Alignment.Center) {
@@ -563,7 +522,7 @@ fun PlantDetectionOverlay(plant: PlantEntity, onDismiss: () -> Unit, onViewDetai
     val toxicityEmoji = when (plant.toxicityLevel) { "Mortal" -> "💀"; "Muy alto" -> "☠️"; "Alto" -> "⚠️"; "Moderado" -> "⚡"; "Bajo" -> "🟢"; else -> "❓" }
 
     Card(modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), elevation = CardDefaults.cardElevation(defaultElevation = 12.dp), shape = RoundedCornerShape(20.dp)) {
-        Column(modifier = Modifier.padding(20.dp).verticalScroll(rememberScrollState())) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(toxicityEmoji, fontSize = 40.sp)
                 Spacer(Modifier.width(16.dp))

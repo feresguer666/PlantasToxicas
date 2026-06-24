@@ -1,21 +1,46 @@
 package com.toxicplants.database.ui.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items as lazyColumnItems
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Science
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.CompoundEntity
 import com.toxicplants.database.ui.viewmodel.CompoundViewModel
+import androidx.compose.foundation.lazy.items as lazyColumnItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,17 +73,20 @@ fun PhytochemistryScreen(
         val all = "$ld50 $dose"
         return when {
             all.contains("letal") || all.contains("mortal") || all.contains("fatal")
-                || Regex("""<\s*1\s*mg""").containsMatchIn(all)
-                || Regex("""\b0\.\d+\s*mg/kg""").containsMatchIn(all)
-                || all.contains("1 semilla") || all.contains("una semilla")
-                || all.contains("microg") -> "☠️ Extrema"
+                    || Regex("""<\s*1\s*mg""").containsMatchIn(all)
+                    || Regex("""\b0\.\d+\s*mg/kg""").containsMatchIn(all)
+                    || all.contains("1 semilla") || all.contains("una semilla")
+                    || all.contains("microg") -> "☠️ Extrema"
+
             Regex("""\b[1-9]\d?\s*mg/kg""").containsMatchIn(all)
-                || all.contains("muy tóxic") || all.contains("muy toxic")
-                || all.contains("paro") || all.contains("coma")
-                || all.contains("muerte") -> "💀 Alta"
+                    || all.contains("muy tóxic") || all.contains("muy toxic")
+                    || all.contains("paro") || all.contains("coma")
+                    || all.contains("muerte") -> "💀 Alta"
+
             all.contains("moderada") || all.contains("baja")
-                || Regex("""\b\d{3,}\s*mg/kg""").containsMatchIn(all)
-                || all.contains("leve") -> "⚠️ Moderada"
+                    || Regex("""\b\d{3,}\s*mg/kg""").containsMatchIn(all)
+                    || all.contains("leve") -> "⚠️ Moderada"
+
             ld50.isBlank() && dose.isBlank() -> "❓ Sin datos"
             else -> "⚠️ Moderada"
         }
@@ -75,8 +104,8 @@ fun PhytochemistryScreen(
         else if (query.isBlank()) all
         else all.filter {
             it.commonName.contains(query, ignoreCase = true) ||
-            it.iupacName.contains(query, ignoreCase = true) ||
-            it.groupName.contains(query, ignoreCase = true)
+                    it.iupacName.contains(query, ignoreCase = true) ||
+                    it.groupName.contains(query, ignoreCase = true)
         }
         if (selectedDanger != null) base.filter { dangerLevel(it) == selectedDanger }
         else base
@@ -108,7 +137,12 @@ fun PhytochemistryScreen(
                 },
                 actions = {
                     IconButton(onClick = onInteractionsClick) {
-                        Text("↔", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(
+                            "↔",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                     }
                     IconButton(onClick = onAddCompoundClick) {
                         Icon(Icons.Filled.Add, contentDescription = "Añadir")
@@ -134,7 +168,7 @@ fun PhytochemistryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                placeholder = { Text("Buscar grupo o componente…") },
+                placeholder = { Text("Buscar") },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
@@ -180,7 +214,7 @@ fun PhytochemistryScreen(
                     Text("↔", fontSize = 26.sp, color = Color.White)
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("Interacciones entre compuestos", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Interacciones", color = Color.White, fontWeight = FontWeight.Bold)
                         Text("", color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp)
                     }
                 }
@@ -196,7 +230,9 @@ fun PhytochemistryScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                 )
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
                     contentPadding = PaddingValues(bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
@@ -217,35 +253,57 @@ fun PhytochemistryScreen(
                 }
             } else if (query.isNotBlank() && (filteredGroups.isNotEmpty() || filteredCompounds.isNotEmpty())) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp),
                     contentPadding = PaddingValues(bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (filteredGroups.isNotEmpty()) {
                         item {
-                            Text("Grupos Encontrados", fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 8.dp))
+                            Text(
+                                "Grupos Encontrados",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
                         }
                         lazyColumnItems(filteredGroups) { group ->
                             val color = parseColor(colorByGroup[group] ?: "#7B1FA2")
                             Card(
                                 onClick = { onGroupClick(group) },
                                 colors = CardDefaults.cardColors(containerColor = color),
-                                modifier = Modifier.fillMaxWidth().height(60.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(60.dp),
                             ) {
                                 Row(
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(Icons.Filled.Science, contentDescription = null, tint = Color.White)
+                                    Icon(
+                                        Icons.Filled.Science,
+                                        contentDescription = null,
+                                        tint = Color.White
+                                    )
                                     Spacer(Modifier.width(8.dp))
-                                    Text(text = group, color = Color.White, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        text = group,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                         }
                     }
                     if (filteredCompounds.isNotEmpty()) {
                         item {
-                            Text("Componentes Encontrados", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+                            Text(
+                                "Componentes Encontrados",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                            )
                         }
                         lazyColumnItems(filteredCompounds) { compound ->
                             val mainColor = parseColor(compound.groupColor)

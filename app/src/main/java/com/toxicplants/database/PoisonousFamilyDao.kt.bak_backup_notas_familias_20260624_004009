@@ -14,9 +14,6 @@ interface PoisonousFamilyDao {
     @Query("SELECT * FROM poisonous_family_genera ORDER BY familyName COLLATE NOCASE ASC, genusName COLLATE NOCASE ASC")
     fun getAll(): LiveData<List<PoisonousFamilyGenusEntity>>
 
-    @Query("SELECT * FROM poisonous_family_genera ORDER BY familyName COLLATE NOCASE ASC, genusName COLLATE NOCASE ASC")
-    suspend fun getAllSync(): List<PoisonousFamilyGenusEntity>
-
     @Query("SELECT * FROM poisonous_family_genera WHERE familyName = :familyName ORDER BY genusName COLLATE NOCASE ASC")
     fun getByFamily(familyName: String): LiveData<List<PoisonousFamilyGenusEntity>>
 

@@ -18,8 +18,6 @@ import com.toxicplants.database.MushroomUserStore
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantDeletionStore
 import com.toxicplants.database.PlantEntity
-import com.toxicplants.database.PoisonousFamilyGenusEntity
-import com.toxicplants.database.PlantExtraDataSource
 import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.PlantUserEditStore
 import com.toxicplants.database.PsychotropicOverrides
@@ -58,13 +56,6 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
     // editados/añadidos manualmente. Guardamos el JSON crudo para no depender de la UI.
     private val ld50PrefsName = "ld50_presets_prefs"
     private val ld50UserPresetsKey = "user_presets_json"
-
-    // Bloc de notas de NotesScreen.
-    private val plantNotesPrefsName = "plant_notes_prefs"
-    private val plantNotesKey = "notes_json"
-
-    // Archivo editable usado por mascotas/niños/ganado/colores/confusables.
-    private val plantExtraFileName = "plant_extra.json"
 
     // ── Progreso ────────────────────────────────────────────────────────
 
@@ -127,9 +118,6 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             val calendarEvents = db.toxicCalendarDao().getAllEventsSync()
             val psychotropicOverrides = PsychotropicUserStore.load(context)
             val ld50UserPresets = loadLd50UserPresetsJson()
-            val plantNotesJson = loadPlantNotesJson()
-            val plantExtraJson = loadPlantExtraJson()
-            val poisonousFamilyGenera = db.poisonousFamilyDao().getAllSync()
             val deletedPlantIds = PlantDeletionStore.load(context).sorted()
             val editedPlantIds = PlantUserEditStore.load(context).sorted()
             val deletedCompoundIds = CompoundUserStateStore.loadDeleted(context).sorted()
@@ -245,17 +233,6 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     // Se guarda como string JSON para mantener compatibilidad y evitar acoplar
                     // BackupRepository con la pantalla de la calculadora.
                     w.name("ld50UserPresets").value(ld50UserPresets)
-
-                    // Bloc de notas libre de NotesScreen.
-                    w.name("plantNotes").value(plantNotesJson)
-
-                    // Datos extra editables: mascotas, niños, ganado, colores, confusables.
-                    w.name("plantExtraJson").value(plantExtraJson)
-
-                    // Nueva pantalla Familias venenosas.
-                    w.name("poisonousFamilyGenera").beginArray()
-                    for (g in poisonousFamilyGenera) gson.toJson(g, PoisonousFamilyGenusEntity::class.java, w)
-                    w.endArray()
 
                     // IDs de plantas del catálogo base borradas manualmente por el usuario.
                     // Es necesario guardarlos para que, al restaurar en otro móvil, no se
@@ -483,35 +460,6 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
             .edit()
             .putString(ld50UserPresetsKey, safeJson)
             .apply()
-    }
-
-
-    private fun loadPlantNotesJson(): String {
-        val raw = context.getSharedPreferences(plantNotesPrefsName, Context.MODE_PRIVATE)
-            .getString(plantNotesKey, "[]")
-            ?: "[]"
-        return raw.trim().takeIf { it.startsWith("[") && it.endsWith("]") } ?: "[]"
-    }
-
-    private fun savePlantNotesJson(rawJson: String) {
-        val safeJson = rawJson.trim().takeIf { it.startsWith("[") && it.endsWith("]") } ?: "[]"
-        context.getSharedPreferences(plantNotesPrefsName, Context.MODE_PRIVATE)
-            .edit()
-            .putString(plantNotesKey, safeJson)
-            .apply()
-    }
-
-    private fun loadPlantExtraJson(): String {
-        runCatching { PlantExtraDataSource.loadAll(context) }
-        val file = File(context.filesDir, plantExtraFileName)
-        val raw = if (file.exists()) file.readText(Charsets.UTF_8) else "[]"
-        return raw.trim().takeIf { it.startsWith("[") && it.endsWith("]") } ?: "[]"
-    }
-
-    private fun savePlantExtraJson(rawJson: String) {
-        val safeJson = rawJson.trim().takeIf { it.startsWith("[") && it.endsWith("]") } ?: "[]"
-        File(context.filesDir, plantExtraFileName).writeText(safeJson, Charsets.UTF_8)
-        PlantExtraDataSource.clearCache()
     }
 
     // ── RECOMPRESIÓN IN-PLACE de las fotos del móvil ────────────────────
@@ -873,33 +821,6 @@ class BackupRepository(private val context: Context, private val db: PlantDataba
                     val rawJson = if (r.peek() == JsonToken.STRING) r.nextString() else null
                     if (rawJson != null) saveLd50UserPresetsJson(rawJson)
                     else r.skipValue()
-                }
-
-
-                "plantNotes" -> {
-                    progress?.onProgress("Restaurando notas…", 0, 1)
-                    val rawJson = if (r.peek() == JsonToken.STRING) r.nextString() else null
-                    if (rawJson != null) savePlantNotesJson(rawJson)
-                    else r.skipValue()
-                }
-
-                "plantExtraJson" -> {
-                    progress?.onProgress("Restaurando datos extra…", 0, 1)
-                    val rawJson = if (r.peek() == JsonToken.STRING) r.nextString() else null
-                    if (rawJson != null) savePlantExtraJson(rawJson)
-                    else r.skipValue()
-                }
-
-                "poisonousFamilyGenera" -> {
-                    progress?.onProgress("Restaurando familias venenosas…", 0, 1)
-                    val list = ArrayList<PoisonousFamilyGenusEntity>()
-                    r.beginArray()
-                    while (r.hasNext()) {
-                        list += gson.fromJson<PoisonousFamilyGenusEntity>(r, PoisonousFamilyGenusEntity::class.java)
-                    }
-                    r.endArray()
-                    db.poisonousFamilyDao().deleteAll()
-                    if (list.isNotEmpty()) db.poisonousFamilyDao().insertAll(list)
                 }
 
                 "deletedPlantIds" -> {

@@ -66,19 +66,10 @@ import com.toxicplants.database.ui.viewmodel.PoisonousFamilyViewModel
 private fun openGenusWikipedia(context: Context, genusName: String, familyName: String = "") {
     val cleanName = genusName.trim()
     if (cleanName.isBlank()) return
-
-    // La mayoría abren directo. Solo algunos géneros ambiguos van a búsqueda
-    // para evitar páginas de mitología/personajes que no son plantas.
-    val ambiguousGenera = setOf("Acis", "Ajax")
-    val url = if (cleanName in ambiguousGenera) {
-        val query = listOf(cleanName, familyName.trim(), "planta")
-            .filter { it.isNotBlank() }
-            .joinToString(" ")
-        "https://es.wikipedia.org/w/index.php?search=${Uri.encode(query)}"
-    } else {
-        "https://es.wikipedia.org/wiki/${Uri.encode(cleanName)}"
-    }
-
+    val query = listOf(cleanName, familyName.trim(), "planta")
+        .filter { it.isNotBlank() }
+        .joinToString(" ")
+    val url = "https://es.wikipedia.org/w/index.php?search=${Uri.encode(query)}"
     runCatching {
         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }

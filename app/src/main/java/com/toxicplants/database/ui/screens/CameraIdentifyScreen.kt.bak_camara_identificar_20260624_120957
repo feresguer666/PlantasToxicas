@@ -85,17 +85,8 @@ fun CameraIdentifyScreen(
             try {
                 context.contentResolver.openInputStream(it)?.use { stream ->
                     selectedBitmap = BitmapFactory.decodeStream(stream)
-                    identificationResults = emptyList()
                 }
             } catch (e: Exception) { }
-        }
-    }
-
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        bitmap?.let {
-            selectedImageUri = null
-            selectedBitmap = it
-            identificationResults = emptyList()
         }
     }
 
@@ -110,10 +101,6 @@ fun CameraIdentifyScreen(
         } else {
             permissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
         }
-    }
-
-    fun openCamera() {
-        cameraLauncher.launch(null)
     }
 
     fun identifyPlant() {
@@ -166,14 +153,11 @@ fun CameraIdentifyScreen(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onClick = { selectImage() }, modifier = Modifier.weight(1f)) {
-                    Text("🖼️ Galería", fontSize = 12.sp)
-                }
-                OutlinedButton(onClick = { openCamera() }, modifier = Modifier.weight(1f)) {
-                    Text("📷 Cámara", fontSize = 12.sp)
+                    Text("🖼️ Galería", fontSize = 14.sp)
                 }
                 Button(onClick = { identifyPlant() }, modifier = Modifier.weight(1f), enabled = !isLoading && selectedBitmap != null, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))) {
                     if (isLoading) CircularProgressIndicator(modifier = Modifier.size(18.dp), color = Color.White)
-                    else Text("🌿 Identificar", fontSize = 12.sp)
+                    else Text("🌿 Identificar", fontSize = 14.sp)
                 }
             }
 
@@ -211,7 +195,7 @@ fun CameraIdentifyScreen(
                 }
             } else if (!isLoading) {
                 Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    Text("🔍 Elige galería o cámara y presiona identificar", fontSize = 14.sp, color = Color.Gray, textAlign = TextAlign.Center)
+                    Text("🔍 Selecciona una foto y presiona identificar", fontSize = 14.sp, color = Color.Gray, textAlign = TextAlign.Center)
                 }
             }
         }

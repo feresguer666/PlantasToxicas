@@ -62,7 +62,7 @@ fun ToxicGeneraScreen(onBack: () -> Unit, onGenusClick: (String) -> Unit, vm: To
             Text("Mantén pulsado un género para editar / borrar", fontSize = 11.sp, color = Color.Gray)
             Spacer(Modifier.height(4.dp))
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(filtered) { item ->
+                items(filtered, key = { it.genus.genus }) { item ->
                     Card(modifier = Modifier.fillMaxWidth().combinedClickable(
                         onClick = { onGenusClick(item.genus.genus) }, onLongClick = { editing = item.genus }),
                         colors = CardDefaults.cardColors(containerColor = if (item.isUserEdited) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant)

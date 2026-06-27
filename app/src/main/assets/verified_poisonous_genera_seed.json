@@ -1,0 +1,132 @@
+[
+  {
+    "familyName": "Gelsemiaceae",
+    "genusName": "Gelsemium",
+    "genusSpeciesCount": 3,
+    "toxins": "Alcaloides indólicos/oxindólicos: gelsemina, gelsemicina, gelsenicina y alcaloides relacionados.",
+    "symptoms": "Náuseas, vómitos, mareo, visión borrosa, debilidad muscular, midriasis, depresión respiratoria, convulsiones, coma y muerte en intoxicaciones graves.",
+    "toxicParts": "Toda la planta; hojas, tallos, raíces, flores y néctar. Riesgo también por preparaciones medicinales no controladas.",
+    "notes": "VERIFICADO ONLINE: las fuentes indican que las tres especies del género Gelsemium son venenosas/altamente venenosas. Fuentes: https://en.wikipedia.org/wiki/Gelsemium ; https://www.sciencedirect.com/science/article/abs/pii/S0378874114000129",
+    "catalogType": "partial"
+  },
+  {
+    "familyName": "Fabaceae",
+    "genusName": "Laburnum",
+    "genusSpeciesCount": 2,
+    "toxins": "Citisina y alcaloides quinolizidínicos relacionados.",
+    "symptoms": "Náuseas, vómitos, salivación, somnolencia intensa, convulsiones, midriasis, diarrea, depresión respiratoria, coma y muerte en casos graves.",
+    "toxicParts": "Todas las partes, especialmente semillas y vainas; también hojas, flores, corteza y madera/humo.",
+    "notes": "VERIFICADO ONLINE: el género Laburnum se describe como un género de especies venenosas; todas las partes de los laburnos son venenosas, especialmente las semillas. Fuentes: https://www.britannica.com/plant/laburnum ; https://www.wildfooduk.com/wild-plants/laburnum/",
+    "catalogType": "partial"
+  },
+  {
+    "familyName": "Plantaginaceae",
+    "genusName": "Digitalis",
+    "genusSpeciesCount": 35,
+    "toxins": "Glucósidos cardíacos: digitoxina, digoxina, gitoxina, lanatósidos y compuestos relacionados.",
+    "symptoms": "Náuseas, vómitos, diarrea, mareo, debilidad, alteraciones visuales, bradicardia o taquicardia, hiperpotasemia, arritmias potencialmente mortales y colapso.",
+    "toxicParts": "Todas las partes de la planta; hojas, flores y semillas. Riesgo elevado por margen terapéutico estrecho de los glucósidos cardíacos.",
+    "notes": "VERIFICADO ONLINE: Digitalis spp. contiene glucósidos cardíacos; las fuentes indican toxicidad de todas las partes de la planta y uso del género como fuente de glucósidos cardíacos. Fuentes: https://www.sciencedirect.com/topics/pharmacology-toxicology-and-pharmaceutical-science/digitalis-glycoside ; https://www.sciencedirect.com/science/article/pii/S0041010118311589",
+    "catalogType": "partial"
+  },
+  {
+    "familyName": "Scrophalariaceae",
+    "genusName": "Digitalis",
+    "genusSpeciesCount": 35,
+    "toxins": "Glucósidos cardíacos: digitoxina, digoxina, gitoxina, lanatósidos y compuestos relacionados.",
+    "symptoms": "Náuseas, vómitos, diarrea, mareo, debilidad, alteraciones visuales, bradicardia o taquicardia, hiperpotasemia, arritmias potencialmente mortales y colapso.",
+    "toxicParts": "Todas las partes de la planta; hojas, flores y semillas. Riesgo elevado por margen terapéutico estrecho de los glucósidos cardíacos.",
+    "notes": "VERIFICADO ONLINE: se incluye también con la familia antigua/variante presente en tu base local para que enlace con tus fichas. Fuentes: https://www.sciencedirect.com/topics/pharmacology-toxicology-and-pharmaceutical-science/digitalis-glycoside ; https://www.sciencedirect.com/science/article/pii/S0041010118311589",
+    "catalogType": "partial"
+  },
+  {
+    "familyName": "Ranunculaceae",
+    "genusName": "Aconitum",
+    "genusSpeciesCount": 318,
+    "toxins": "Alcaloides diterpénicos: aconitina, mesaconitina, hipaconitina y relacionados.",
+    "symptoms": "Parestesias, ardor oral, vómitos, diarrea, debilidad, hipotensión, arritmias ventriculares, parálisis respiratoria, convulsiones y muerte.",
+    "toxicParts": "Toda la planta, especialmente raíces tuberosas, semillas y hojas antes de la floración.",
+    "notes": "VERIFICADO ONLINE: las fuentes indican que todas las especies de Aconitum deben considerarse altamente tóxicas para humanos y animales. Fuentes: https://www.sciencedirect.com/topics/pharmacology-toxicology-and-pharmaceutical-science/aconitum-napellus ; https://poisonousplants.cvmbs.colostate.edu/plant/1",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Solanaceae",
+    "genusName": "Datura",
+    "genusSpeciesCount": 18,
+    "toxins": "Alcaloides tropánicos: atropina, hiosciamina, escopolamina y relacionados.",
+    "symptoms": "Síndrome anticolinérgico: midriasis, sequedad de boca, taquicardia, hipertermia, agitación, alucinaciones, delirio, convulsiones, depresión respiratoria, coma y muerte.",
+    "toxicParts": "Toda la planta, especialmente semillas y flores.",
+    "notes": "VERIFICADO ONLINE: las fuentes indican que todas las especies de Datura son extremadamente venenosas/psicoactivas. Fuentes: https://en.wikipedia.org/wiki/Datura ; https://www.sciencedirect.com/topics/pharmacology-toxicology-and-pharmaceutical-science/datura",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Solanaceae",
+    "genusName": "Brugmansia",
+    "genusSpeciesCount": 13,
+    "toxins": "Alcaloides tropánicos: escopolamina, hiosciamina, atropina y relacionados.",
+    "symptoms": "Alucinaciones, delirio, confusión, taquicardia, hipertensión o hipotensión, midriasis, hipertermia, parálisis, amnesia, coma y muerte.",
+    "toxicParts": "Todas las partes; hojas, flores, semillas, tallos y savia.",
+    "notes": "VERIFICADO ONLINE: las fuentes indican que todas las partes de Brugmansia son venenosas y que sus especies deben considerarse potencialmente psicotrópicas por alcaloides tropánicos. Fuentes: https://www.britannica.com/plant/angels-trumpet ; https://www.sciencedirect.com/topics/pharmacology-toxicology-and-pharmaceutical-science/brugmansia",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Apiaceae",
+    "genusName": "Cicuta",
+    "genusSpeciesCount": 11,
+    "toxins": "Cicutoxina, cicutol y poliacetilenos relacionados.",
+    "symptoms": "Salivación, vómitos, temblores, fasciculaciones, convulsiones violentas, opistótonos, parálisis respiratoria y muerte rápida.",
+    "toxicParts": "Todas las partes; raíces/tubérculos son especialmente peligrosos, también semillas y partes verdes.",
+    "notes": "VERIFICADO ONLINE: las fuentes indican que todas las especies de water hemlock/Cicuta y todas sus partes deben considerarse venenosas. Fuentes: https://www.ivis.org/library/guide-to-poisonous-house-and-garden-plants/cicuta-species-water-hemlock ; https://www.sciencedirect.com/science/article/abs/pii/S0041010110004058",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Amaryllidaceae",
+    "genusName": "Narcissus",
+    "genusSpeciesCount": 81,
+    "toxins": "Licorina, narcisina, narciclasina y alcaloides de Amaryllidaceae relacionados.",
+    "symptoms": "Náuseas, vómitos, diarrea, dolor abdominal, salivación, mareo; en ingestas importantes puede haber hipotensión, alteraciones cardíacas, convulsiones y dificultad respiratoria.",
+    "toxicParts": "Toda la planta; hojas, tallo y especialmente bulbo.",
+    "notes": "VERIFICADO ONLINE: Kew indica que todas las especies de daffodil/Narcissus son venenosas para humanos; hojas, bulbo y tallo contienen licorina. Fuente: https://www.kew.org/plants/daffodils",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Ericaceae",
+    "genusName": "Kalmia",
+    "genusSpeciesCount": 14,
+    "toxins": "Grayanotoxinas I y II / andromedotoxinas y diterpenoides relacionados.",
+    "symptoms": "Salivación, vómitos, diarrea, dolor abdominal, debilidad, hipotensión, bradicardia, arritmias, temblores, convulsiones, coma y muerte en casos graves.",
+    "toxicParts": "Todas las partes de los laureles, incluidas flores y hojas.",
+    "notes": "VERIFICADO ONLINE: NCBI indica que todas las especies de Kalmia parecen ser similarmente tóxicas en animales; IVIS indica que todas las partes de laurel/Kalmia son tóxicas. Fuentes: https://www.ncbi.nlm.nih.gov/books/NBK216056/ ; https://www.ivis.org/library/guide-to-poisonous-house-and-garden-plants/kalmia-species-laurel",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Sapindaceae",
+    "genusName": "Aesculus",
+    "genusSpeciesCount": 23,
+    "toxins": "Aesculina/hipocaesculina, escina/saponinas y glucósidos relacionados.",
+    "symptoms": "Vómitos, diarrea, dolor abdominal, salivación, depresión, debilidad, temblores, midriasis, incoordinación, convulsiones y, en animales, toxicosis grave o muerte.",
+    "toxicParts": "Semillas/castañas, corteza, hojas y brotes; las semillas son especialmente relevantes.",
+    "notes": "VERIFICADO ONLINE: ScienceDirect indica que todas las especies de Aesculus deben considerarse potencialmente venenosas si se ingieren. Fuente: https://www.sciencedirect.com/topics/pharmacology-toxicology-and-pharmaceutical-science/aesculus",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Taxaceae",
+    "genusName": "Taxus",
+    "genusSpeciesCount": 30,
+    "toxins": "Taxinas A y B, taxanos y alcaloides cardiotóxicos relacionados.",
+    "symptoms": "Náuseas, vómitos, mareo, debilidad, bradicardia o taquicardia, arritmias, colapso cardiovascular, convulsiones y muerte súbita.",
+    "toxicParts": "Todas las partes excepto el arilo carnoso; hojas/acículas y semillas son especialmente peligrosas.",
+    "notes": "VERIFICADO ONLINE: las fuentes indican que todas las especies de yew/Taxus contienen alcaloides taxina altamente venenosos. Fuentes: https://www.sciencedirect.com/science/article/abs/pii/S0041010124003519 ; https://en.wikipedia.org/wiki/Taxus",
+    "catalogType": "all"
+  },
+  {
+    "familyName": "Ranunculaceae",
+    "genusName": "Helleborus",
+    "genusSpeciesCount": 36,
+    "toxins": "Glucósidos cardíacos como helleborina, saponinas y compuestos irritantes relacionados.",
+    "symptoms": "Irritación oral, vómitos, diarrea, dolor abdominal, salivación, delirios, convulsiones, alteraciones cardíacas y muerte en intoxicaciones graves.",
+    "toxicParts": "Todas las especies y partes; hojas, savia, raíces y material seco también pueden ser peligrosos.",
+    "notes": "VERIFICADO ONLINE: NC State Extension indica que las plantas vivas y secas de todas las especies de Helleborus son extremadamente venenosas. Fuente: https://plants.ces.ncsu.edu/plants/helleborus/",
+    "catalogType": "all"
+  }
+]

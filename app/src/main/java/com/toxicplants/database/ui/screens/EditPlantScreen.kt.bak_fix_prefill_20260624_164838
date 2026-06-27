@@ -25,9 +25,8 @@ fun EditPlantScreen(
     viewModel: PlantViewModel,
     onBack: () -> Unit,
     onSaveAndNext: ((Int) -> Unit)? = null,
-    onSaved: ((Int) -> Unit)? = null,
-
-    prefillPlant: PlantEntity? = null) {
+    onSaved: ((Int) -> Unit)? = null
+) {
     val isNew = plantId == null || plantId == 0
     val existingPlant = if (!isNew) {
         viewModel.getPlantById(plantId!!).observeAsState().value
@@ -45,9 +44,7 @@ fun EditPlantScreen(
     }
     val canSaveAndNext = !isNew && onSaveAndNext != null && nextPlantInContext != null
 
-    val sourcePlant = existingPlant ?: prefillPlant
-
-    var commonName by remember(sourcePlant) { mutableStateOf(sourcePlant?.commonName ?: "") }
+    var commonName by remember(existingPlant) { mutableStateOf(existingPlant?.commonName ?: "") }
     var commonNames by remember(sourcePlant) { mutableStateOf(sourcePlant?.commonNames ?: "") }
     var scientificName by remember(sourcePlant) { mutableStateOf(sourcePlant?.scientificName ?: "") }
     var family by remember(sourcePlant) { mutableStateOf(sourcePlant?.family ?: "") }

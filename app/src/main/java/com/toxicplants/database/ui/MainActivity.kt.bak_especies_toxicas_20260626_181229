@@ -108,7 +108,6 @@ fun MainApp() {
                 onNavigateToMushrooms = { navController.navigate("toxic_mushrooms") },
                 onNavigateToLichens = { navController.navigate("toxic_lichens") },
                 onNavigateToPoisonousFamilies = { navController.navigate("poisonous_families") },
-                onNavigateToToxicSpecies = { navController.navigate("toxic_species") },
                 onNavigateToToxicGenera = { navController.navigate("toxic_genera") },
                 onNavigateToAR = { navController.navigate("ar") },
                 onNavigateToSettings = { navController.navigate("settings") },
@@ -146,20 +145,6 @@ fun MainApp() {
         }
 
 
-
-
-        // ── ESPECIES TÓXICAS ─────────────────────────────────────────
-        composable("toxic_species") {
-            ToxicSpeciesScreen(
-                plantViewModel = viewModel,
-                poisonousFamilyViewModel = poisonousFamilyViewModel,
-                onBack = { navController.popBackStack() },
-                onPlantClick = { plant ->
-                    viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail/${plant.id}")
-                }
-            )
-        }
 
         // ── FAMILIAS VENENOSAS ───────────────────────────────────────
         composable("poisonous_families") {

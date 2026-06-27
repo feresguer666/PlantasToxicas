@@ -8,7 +8,6 @@ object PoisonousFamilySeedDataSource {
 
     private const val ALL_ASSET_NAME = "poisonous_family_genera_seed.json"
     private const val PARTIAL_ASSET_NAME = "partially_poisonous_family_genera_seed.json"
-    private const val VERIFIED_ASSET_NAME = "verified_poisonous_genera_seed.json"
 
     data class SeedItem(
         val familyName: String = "",
@@ -27,11 +26,8 @@ object PoisonousFamilySeedDataSource {
     fun loadPartialCatalog(context: Context): List<PoisonousFamilyGenusEntity> =
         loadAsset(context, PARTIAL_ASSET_NAME, PoisonousFamilyCatalogType.PARTIAL)
 
-    fun loadVerifiedOnlineGenera(context: Context): List<PoisonousFamilyGenusEntity> =
-        loadAsset(context, VERIFIED_ASSET_NAME, PoisonousFamilyCatalogType.PARTIAL)
-
     fun loadEverything(context: Context): List<PoisonousFamilyGenusEntity> =
-        loadAllCatalog(context) + loadPartialCatalog(context) + loadVerifiedOnlineGenera(context)
+        loadAllCatalog(context) + loadPartialCatalog(context)
 
     /** Compatibilidad con versiones anteriores del ViewModel. */
     fun loadAll(context: Context): List<PoisonousFamilyGenusEntity> = loadEverything(context)

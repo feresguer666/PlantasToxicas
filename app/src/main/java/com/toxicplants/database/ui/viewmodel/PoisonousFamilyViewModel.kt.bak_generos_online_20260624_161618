@@ -5,8 +5,10 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.toxicplants.database.PlantDatabase
+import com.toxicplants.database.PoisonousFamilyCatalogType
 import com.toxicplants.database.PoisonousFamilyGenusEntity
 import com.toxicplants.database.PoisonousFamilySeedDataSource
 import com.toxicplants.database.PoisonousFamilySummary
@@ -21,23 +23,35 @@ class PoisonousFamilyViewModel(application: Application) : AndroidViewModel(appl
 
     val allGenera: LiveData<List<PoisonousFamilyGenusEntity>> = dao.getAll()
 
-    private val _familySummaries = MediatorLiveData<List<PoisonousFamilySummary>>().apply {
+    private val _allFamilySummaries = MediatorLiveData<List<PoisonousFamilySummary>>().apply {
         value = emptyList()
         addSource(allGenera) { items -> value = buildFamilySummaries(items.orEmpty()) }
     }
-    val familySummaries: LiveData<List<PoisonousFamilySummary>> = _familySummaries
+    val familySummaries: LiveData<List<PoisonousFamilySummary>> = _allFamilySummaries
+
+    val allPoisonousFamilySummaries: LiveData<List<PoisonousFamilySummary>> =
+        dao.getByCatalogType(PoisonousFamilyCatalogType.ALL).map { buildFamilySummaries(it.orEmpty()) }
+
+    val partialPoisonousFamilySummaries: LiveData<List<PoisonousFamilySummary>> =
+        dao.getByCatalogType(PoisonousFamilyCatalogType.PARTIAL).map { buildFamilySummaries(it.orEmpty()) }
 
     init {
         seedInitialCatalogIfNeeded()
     }
 
+    fun familySummariesFor(catalogType: String): LiveData<List<PoisonousFamilySummary>> =
+        dao.getByCatalogType(catalogType).map { buildFamilySummaries(it.orEmpty()) }
+
+    fun generaForFamily(familyName: String, catalogType: String): LiveData<List<PoisonousFamilyGenusEntity>> {
+        return dao.getByFamily(familyName, catalogType)
+    }
+
+    /** Compatibilidad con rutas antiguas. */
     fun generaForFamily(familyName: String): LiveData<List<PoisonousFamilyGenusEntity>> {
         return dao.getByFamily(familyName)
     }
 
-    fun genusById(id: Int): LiveData<PoisonousFamilyGenusEntity?> {
-        return dao.getById(id)
-    }
+    fun genusById(id: Int): LiveData<PoisonousFamilyGenusEntity?> = dao.getById(id)
 
     fun saveGenus(item: PoisonousFamilyGenusEntity) {
         val cleaned = item.copy(
@@ -48,6 +62,7 @@ class PoisonousFamilyViewModel(application: Application) : AndroidViewModel(appl
             symptoms = item.symptoms.trim(),
             toxicParts = item.toxicParts.trim(),
             notes = item.notes.trim(),
+            catalogType = item.catalogType.ifBlank { PoisonousFamilyCatalogType.ALL },
             updatedAt = System.currentTimeMillis()
         )
         if (cleaned.familyName.isBlank() || cleaned.genusName.isBlank()) return
@@ -58,21 +73,21 @@ class PoisonousFamilyViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun deleteGenus(item: PoisonousFamilyGenusEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.delete(item)
-        }
+        viewModelScope.launch(Dispatchers.IO) { dao.delete(item) }
+    }
+
+    fun deleteFamily(familyName: String, catalogType: String) {
+        viewModelScope.launch(Dispatchers.IO) { dao.deleteFamily(familyName.trim(), catalogType) }
     }
 
     fun deleteFamily(familyName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.deleteFamily(familyName.trim())
-        }
+        viewModelScope.launch(Dispatchers.IO) { dao.deleteFamily(familyName.trim()) }
     }
 
     fun resetToSeedCatalog() {
         viewModelScope.launch(Dispatchers.IO) {
             dao.deleteAll()
-            dao.insertAll(PoisonousFamilySeedDataSource.loadAll(app))
+            dao.insertAll(PoisonousFamilySeedDataSource.loadEverything(app))
             prefs.edit()
                 .putBoolean(SEED_PREF_KEY, true)
                 .putBoolean(OLD_SEED_PREF_KEY, true)
@@ -82,26 +97,27 @@ class PoisonousFamilyViewModel(application: Application) : AndroidViewModel(appl
 
     private fun seedInitialCatalogIfNeeded() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (prefs.getBoolean(SEED_PREF_KEY, false)) return@launch
-
+            val alreadySeeded = prefs.getBoolean(SEED_PREF_KEY, false)
             val currentCount = dao.count()
-            val shouldReplaceOldSmallSeed = prefs.getBoolean(OLD_SEED_PREF_KEY, false) && currentCount in 1..500
+            val needsPartial = dao.countByCatalogType(PoisonousFamilyCatalogType.PARTIAL) == 0
 
-            if (currentCount > 0 && !shouldReplaceOldSmallSeed) {
-                // Si el usuario ya tiene datos propios, no los pisamos.
-                prefs.edit().putBoolean(SEED_PREF_KEY, true).apply()
-                return@launch
+            if (alreadySeeded && !needsPartial) return@launch
+
+            if (currentCount == 0) {
+                dao.insertAll(PoisonousFamilySeedDataSource.loadEverything(app))
+            } else {
+                if (dao.countByCatalogType(PoisonousFamilyCatalogType.ALL) == 0) {
+                    dao.insertAll(PoisonousFamilySeedDataSource.loadAllCatalog(app))
+                }
+                if (needsPartial) {
+                    dao.insertAll(PoisonousFamilySeedDataSource.loadPartialCatalog(app))
+                }
             }
 
-            val seed = PoisonousFamilySeedDataSource.loadAll(app)
-            if (seed.isNotEmpty()) {
-                if (shouldReplaceOldSmallSeed) dao.deleteAll()
-                dao.insertAll(seed)
-                prefs.edit()
-                    .putBoolean(SEED_PREF_KEY, true)
-                    .putBoolean(OLD_SEED_PREF_KEY, true)
-                    .apply()
-            }
+            prefs.edit()
+                .putBoolean(SEED_PREF_KEY, true)
+                .putBoolean(OLD_SEED_PREF_KEY, true)
+                .apply()
         }
     }
 
@@ -125,6 +141,6 @@ class PoisonousFamilyViewModel(application: Application) : AndroidViewModel(appl
 
     private companion object {
         const val OLD_SEED_PREF_KEY = "seeded_v1"
-        const val SEED_PREF_KEY = "seeded_gbif_v2"
+        const val SEED_PREF_KEY = "seeded_two_catalogs_v3"
     }
 }

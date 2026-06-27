@@ -265,7 +265,7 @@ fun GenusDetailScreen(
                     Spacer(Modifier.height(8.dp))
                 }
             }
-            items(merged) { item ->
+            items(merged, key = { it.first }) { item ->
                 val sciName = item.first
                 val localPlant = item.second
                 val inDb = localPlant != null

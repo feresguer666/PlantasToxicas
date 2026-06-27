@@ -38,7 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel as composeViewModel
 private fun reviewGenusFromScientificName(scientificName: String): String =
     scientificName
         .trim()
-        .split(Regex("\\s+"))
+        .split(Regex("\s+"))
         .firstOrNull()
         ?.trim(' ', ',', '.', ';', ':', '(', ')', '[', ']')
         .orEmpty()
@@ -178,7 +178,7 @@ fun ReviewCenterScreen(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 ReviewStatCard("⚗️", reviewFormatInt(allCompounds.size), "Compuestos", Color(0xFF8E24AA), Modifier.weight(1f))
-                ReviewStatCard("☠️", reviewFormatInt(poisonousGenusKeys.size), "Géneros venenosos únicos", Color(0xFFC62828), Modifier.weight(1f))
+                ReviewStatCard("☠️", reviewFormatInt(poisonousGenera.size), "Géneros venenosos", Color(0xFFC62828), Modifier.weight(1f))
             }
 
             Spacer(Modifier.height(6.dp))

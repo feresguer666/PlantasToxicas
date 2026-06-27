@@ -108,7 +108,6 @@ fun MainApp() {
                 onNavigateToMushrooms = { navController.navigate("toxic_mushrooms") },
                 onNavigateToLichens = { navController.navigate("toxic_lichens") },
                 onNavigateToPoisonousFamilies = { navController.navigate("poisonous_families") },
-                onNavigateToToxicSpecies = { navController.navigate("toxic_species") },
                 onNavigateToToxicGenera = { navController.navigate("toxic_genera") },
                 onNavigateToAR = { navController.navigate("ar") },
                 onNavigateToSettings = { navController.navigate("settings") },
@@ -145,84 +144,53 @@ fun MainApp() {
             )
         }
 
-
-
-
-        // ── ESPECIES TÓXICAS ─────────────────────────────────────────
-        composable("toxic_species") {
-            ToxicSpeciesScreen(
-                plantViewModel = viewModel,
-                poisonousFamilyViewModel = poisonousFamilyViewModel,
-                onBack = { navController.popBackStack() },
-                onPlantClick = { plant ->
-                    viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail/${plant.id}")
-                }
-            )
-        }
-
         // ── FAMILIAS VENENOSAS ───────────────────────────────────────
         composable("poisonous_families") {
             PoisonousFamiliesScreen(
                 viewModel = poisonousFamilyViewModel,
                 onBack = { navController.popBackStack() },
-                onFamilyClick = { catalogType, familyName -> navController.navigate("poisonous_family/${Uri.encode(catalogType)}/${Uri.encode(familyName)}") },
-                onAddGenus = { catalogType -> navController.navigate("poisonous_genus/${Uri.encode(catalogType)}/0/__new__") }
+                onFamilyClick = { familyName -> navController.navigate("poisonous_family/${Uri.encode(familyName)}") },
+                onAddGenus = { navController.navigate("poisonous_genus/0/__new__") }
             )
         }
 
         composable(
-            "poisonous_family/{catalogType}/{familyName}",
-            arguments = listOf(
-                navArgument("catalogType") { type = NavType.StringType },
-                navArgument("familyName") { type = NavType.StringType }
-            )
+            "poisonous_family/{familyName}",
+            arguments = listOf(navArgument("familyName") { type = NavType.StringType })
         ) { backStackEntry ->
-            val catalogType = Uri.decode(backStackEntry.arguments?.getString("catalogType") ?: "all")
             val familyName = Uri.decode(backStackEntry.arguments?.getString("familyName") ?: "")
             PoisonousFamilyGeneraScreen(
                 familyName = familyName,
-                catalogType = catalogType,
                 viewModel = poisonousFamilyViewModel,
-                plantViewModel = viewModel,
                 onBack = { navController.popBackStack() },
-                onGenusClick = { genusId -> navController.navigate("poisonous_genus/${Uri.encode(catalogType)}/$genusId/${Uri.encode(familyName)}") },
-                onAddGenus = { type, fam -> navController.navigate("poisonous_genus/${Uri.encode(type)}/0/${Uri.encode(fam)}") },
-                onPlantClick = { plant ->
-                    viewModel.selectPlant(plant)
-                    navController.navigate("plant_detail/${plant.id}")
-                },
-                onCreatePlantFromGenus = { genus ->
-                    navController.navigate("new_plant_from_genus/${genus.id}")
-                }
+                onGenusClick = { genusId -> navController.navigate("poisonous_genus/$genusId/${Uri.encode(familyName)}") },
+                onAddGenus = { fam -> navController.navigate("poisonous_genus/0/${Uri.encode(fam)}") }
             )
         }
 
         composable(
-            "poisonous_genus/{catalogType}/{genusId}/{familyName}",
+            "poisonous_genus/{genusId}/{familyName}",
             arguments = listOf(
-                navArgument("catalogType") { type = NavType.StringType },
                 navArgument("genusId") { type = NavType.IntType },
                 navArgument("familyName") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val catalogType = Uri.decode(backStackEntry.arguments?.getString("catalogType") ?: "all")
             val genusId = backStackEntry.arguments?.getInt("genusId") ?: 0
             val familyArg = backStackEntry.arguments?.getString("familyName") ?: "__new__"
             val initialFamilyName = if (familyArg == "__new__") "" else Uri.decode(familyArg)
             PoisonousGenusEditScreen(
                 genusId = genusId,
                 initialFamilyName = initialFamilyName,
-                catalogType = catalogType,
                 viewModel = poisonousFamilyViewModel,
                 onBack = { navController.popBackStack() },
-                onSaved = { savedCatalogType, savedFamilyName ->
-                    navController.navigate("poisonous_family/${Uri.encode(savedCatalogType)}/${Uri.encode(savedFamilyName)}") {
+                onSaved = { savedFamilyName ->
+                    navController.navigate("poisonous_family/${Uri.encode(savedFamilyName)}") {
                         popUpTo("poisonous_families") { inclusive = false }
                     }
                 }
             )
         }
+
 
         // ── LISTA DE PLANTAS ─────────────────────────────────────────
         composable("plant_list") {
@@ -905,48 +873,6 @@ fun MainApp() {
                 compoundId = compoundId,
                 viewModel = compoundViewModel,
                 onBack = { navController.popBackStack() }
-            )
-        }
-
-
-        composable(
-            "new_plant_from_genus/{genusId}",
-            arguments = listOf(navArgument("genusId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val genusId = backStackEntry.arguments?.getInt("genusId") ?: 0
-            val genera by poisonousFamilyViewModel.allGenera.observeAsState(emptyList())
-            val genus = genera.firstOrNull { it.id == genusId }
-            val prefillPlant = genus?.let { g ->
-                PlantEntity(
-                    id = 0,
-                    commonName = g.genusName,
-                    commonNames = "",
-                    scientificName = "${g.genusName} sp.",
-                    family = g.familyName,
-                    toxicityLevel = if (g.catalogType == "all") "Alto" else "Moderado",
-                    toxicParts = g.toxicParts,
-                    symptoms = g.symptoms,
-                    description = listOf(
-                        "Ficha creada desde Familias venenosas.",
-                        "Género: ${g.genusName}",
-                        "Familia: ${g.familyName}",
-                        "Toxinas/principios: ${g.toxins}",
-                        "Notas: ${g.notes}"
-                    ).joinToString("\n\n"),
-                    habitat = "",
-                    geographicDistribution = "",
-                    firstAid = "",
-                    imageUrl = "",
-                    isFavorite = false,
-                    category = "Familias venenosas",
-                    notes = g.notes
-                )
-            }
-            EditPlantScreen(
-                plantId = null,
-                viewModel = viewModel,
-                onBack = { navController.popBackStack() },
-                prefillPlant = prefillPlant
             )
         }
 

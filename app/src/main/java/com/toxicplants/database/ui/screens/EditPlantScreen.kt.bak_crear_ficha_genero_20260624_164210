@@ -25,9 +25,8 @@ fun EditPlantScreen(
     viewModel: PlantViewModel,
     onBack: () -> Unit,
     onSaveAndNext: ((Int) -> Unit)? = null,
-    onSaved: ((Int) -> Unit)? = null,
-
-    prefillPlant: PlantEntity? = null) {
+    onSaved: ((Int) -> Unit)? = null
+) {
     val isNew = plantId == null || plantId == 0
     val existingPlant = if (!isNew) {
         viewModel.getPlantById(plantId!!).observeAsState().value
@@ -45,24 +44,22 @@ fun EditPlantScreen(
     }
     val canSaveAndNext = !isNew && onSaveAndNext != null && nextPlantInContext != null
 
-    val sourcePlant = existingPlant ?: prefillPlant
-
-    var commonName by remember(sourcePlant) { mutableStateOf(sourcePlant?.commonName ?: "") }
-    var commonNames by remember(sourcePlant) { mutableStateOf(sourcePlant?.commonNames ?: "") }
-    var scientificName by remember(sourcePlant) { mutableStateOf(sourcePlant?.scientificName ?: "") }
-    var family by remember(sourcePlant) { mutableStateOf(sourcePlant?.family ?: "") }
-    var toxicityLevel by remember(sourcePlant) { mutableStateOf(sourcePlant?.toxicityLevel ?: "Moderado") }
-    var toxicParts by remember(sourcePlant) { mutableStateOf(sourcePlant?.toxicParts ?: "") }
-    var symptoms by remember(sourcePlant) { mutableStateOf(sourcePlant?.symptoms ?: "") }
-    var description by remember(sourcePlant) { mutableStateOf(sourcePlant?.description ?: "") }
-    var habitat by remember(sourcePlant) { mutableStateOf(sourcePlant?.habitat ?: "") }
-    var geographicDistribution by remember(sourcePlant) { mutableStateOf(sourcePlant?.geographicDistribution ?: "") }
-    var firstAid by remember(sourcePlant) { mutableStateOf(sourcePlant?.firstAid ?: "") }
-    var imageUrl by remember(sourcePlant) { mutableStateOf(sourcePlant?.imageUrl ?: "") }
-    var category by remember(sourcePlant) { mutableStateOf(sourcePlant?.category ?: "") }
-    var floweringMonths by remember(sourcePlant) { mutableStateOf(sourcePlant?.floweringMonths ?: "") }
-    var fruitingMonths by remember(sourcePlant) { mutableStateOf(sourcePlant?.fruitingMonths ?: "") }
-    var maxToxicityMonths by remember(sourcePlant) { mutableStateOf(sourcePlant?.maxToxicityMonths ?: "") }
+    var commonName by remember(existingPlant) { mutableStateOf(existingPlant?.commonName ?: "") }
+    var commonNames by remember(existingPlant) { mutableStateOf(existingPlant?.commonNames ?: "") }
+    var scientificName by remember(existingPlant) { mutableStateOf(existingPlant?.scientificName ?: "") }
+    var family by remember(existingPlant) { mutableStateOf(existingPlant?.family ?: "") }
+    var toxicityLevel by remember(existingPlant) { mutableStateOf(existingPlant?.toxicityLevel ?: "Moderado") }
+    var toxicParts by remember(existingPlant) { mutableStateOf(existingPlant?.toxicParts ?: "") }
+    var symptoms by remember(existingPlant) { mutableStateOf(existingPlant?.symptoms ?: "") }
+    var description by remember(existingPlant) { mutableStateOf(existingPlant?.description ?: "") }
+    var habitat by remember(existingPlant) { mutableStateOf(existingPlant?.habitat ?: "") }
+    var geographicDistribution by remember(existingPlant) { mutableStateOf(existingPlant?.geographicDistribution ?: "") }
+    var firstAid by remember(existingPlant) { mutableStateOf(existingPlant?.firstAid ?: "") }
+    var imageUrl by remember(existingPlant) { mutableStateOf(existingPlant?.imageUrl ?: "") }
+    var category by remember(existingPlant) { mutableStateOf(existingPlant?.category ?: "") }
+    var floweringMonths by remember(existingPlant) { mutableStateOf(existingPlant?.floweringMonths ?: "") }
+    var fruitingMonths by remember(existingPlant) { mutableStateOf(existingPlant?.fruitingMonths ?: "") }
+    var maxToxicityMonths by remember(existingPlant) { mutableStateOf(existingPlant?.maxToxicityMonths ?: "") }
 
     fun buildPlantForSave(): PlantEntity = PlantEntity(
         id = existingPlant?.id ?: plantId ?: 0,

@@ -28,24 +28,6 @@ import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.RecentPlantStore
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
-import com.toxicplants.database.ui.viewmodel.PoisonousFamilyViewModel
-import com.toxicplants.database.ui.viewmodel.MushroomViewModel
-import com.toxicplants.database.ui.viewmodel.LichenViewModel
-import com.toxicplants.database.ui.viewmodel.CompoundViewModel
-import com.toxicplants.database.PoisonousFamilyCatalogType
-import androidx.lifecycle.viewmodel.compose.viewModel as composeViewModel
-
-private fun reviewGenusFromScientificName(scientificName: String): String =
-    scientificName
-        .trim()
-        .split(Regex("\\s+"))
-        .firstOrNull()
-        ?.trim(' ', ',', '.', ';', ':', '(', ')', '[', ']')
-        .orEmpty()
-
-private fun reviewNorm(value: String): String = value.trim().lowercase()
-
-private fun reviewFormatInt(value: Int): String = "%,d".format(value)
 
 private fun PlantEntity.hasQualityIssue(): Boolean =
     imageUrl.isBlank() || scientificName.isBlank() || family.isBlank() || category.isBlank() ||
@@ -70,16 +52,6 @@ fun ReviewCenterScreen(
 ) {
     val context = LocalContext.current
     val allPlants by viewModel.allPlants.observeAsState(emptyList())
-
-    val compoundViewModel: CompoundViewModel = composeViewModel()
-    val mushroomViewModel: MushroomViewModel = composeViewModel()
-    val lichenViewModel: LichenViewModel = composeViewModel()
-    val poisonousFamilyViewModel: PoisonousFamilyViewModel = composeViewModel()
-
-    val allCompounds by compoundViewModel.allCompounds.observeAsState(emptyList())
-    val allMushrooms by mushroomViewModel.allMushrooms.observeAsState(emptyList())
-    val allLichens by lichenViewModel.allLichens.observeAsState(emptyList())
-    val poisonousGenera by poisonousFamilyViewModel.allGenera.observeAsState(emptyList())
     val markerMap = remember(allPlants) { PlantMarkerStore.loadAll(context) }
     val recentCount = remember(allPlants) { RecentPlantStore.load(context).size }
     val deletedCount = remember(allPlants) { PlantDeletionStore.load(context).size }
@@ -88,49 +60,6 @@ fun ReviewCenterScreen(
     val noImageCount = remember(allPlants) { allPlants.count { it.imageUrl.isBlank() } }
     val notesCount = remember(allPlants) { allPlants.count { !it.notes.isNullOrBlank() } }
     val markerCount = markerMap.size
-
-    val plantFamilyKeys = remember(allPlants) {
-        allPlants.map { it.family }.filter { it.isNotBlank() }.map(::reviewNorm).toSet()
-    }
-    val plantGenusKeys = remember(allPlants) {
-        allPlants.map { reviewGenusFromScientificName(it.scientificName) }.filter { it.isNotBlank() }.map(::reviewNorm).toSet()
-    }
-
-    val poisonousFamilyKeys = remember(poisonousGenera) {
-        poisonousGenera.map { it.familyName }.filter { it.isNotBlank() }.map(::reviewNorm).toSet()
-    }
-    val poisonousGenusKeys = remember(poisonousGenera) {
-        poisonousGenera.map { it.genusName }.filter { it.isNotBlank() }.map(::reviewNorm).toSet()
-    }
-    val poisonousFamilyGenusKeys = remember(poisonousGenera) {
-        poisonousGenera.map { reviewNorm(it.familyName) + "|" + reviewNorm(it.genusName) }.toSet()
-    }
-
-    val allPoisonousSpeciesCount = remember(poisonousGenera) {
-        poisonousGenera
-            .filter { it.catalogType == PoisonousFamilyCatalogType.ALL }
-            .sumOf { it.genusSpeciesCount.coerceAtLeast(0) }
-    }
-    val partialPoisonousSpeciesCount = remember(poisonousGenera) {
-        poisonousGenera
-            .filter { it.catalogType == PoisonousFamilyCatalogType.PARTIAL }
-            .sumOf { it.genusSpeciesCount.coerceAtLeast(0) }
-    }
-    val extraBdSpeciesCount = remember(allPlants, poisonousFamilyGenusKeys) {
-        allPlants
-            .filter { plant ->
-                val key = reviewNorm(plant.family) + "|" + reviewNorm(reviewGenusFromScientificName(plant.scientificName))
-                key !in poisonousFamilyGenusKeys
-            }
-            .map { it.scientificName.trim().lowercase() }
-            .filter { it.isNotBlank() }
-            .distinct()
-            .size
-    }
-
-    val totalBotanicalFamilies = (plantFamilyKeys + poisonousFamilyKeys).size
-    val totalBotanicalGenera = (plantGenusKeys + poisonousGenusKeys).size
-    val totalBotanicalSpecies = allPoisonousSpeciesCount + partialPoisonousSpeciesCount + extraBdSpeciesCount
 
     Scaffold(
         topBar = {
@@ -163,37 +92,17 @@ fun ReviewCenterScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text("Resumen", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                ReviewStatCard("🌿", reviewFormatInt(allPlants.size), "Fichas de plantas", Color(0xFF2E7D32), Modifier.weight(1f))
-                ReviewStatCard("🧬", reviewFormatInt(totalBotanicalFamilies), "Familias", Color(0xFF00897B), Modifier.weight(1f))
+                ReviewStatCard("🌿", allPlants.size.toString(), "Plantas", Color(0xFF2E7D32), Modifier.weight(1f))
+                ReviewStatCard("⚠️", incompleteCount.toString(), "Incompletas", Color(0xFFF57C00), Modifier.weight(1f))
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                ReviewStatCard("🌱", reviewFormatInt(totalBotanicalGenera), "Géneros", Color(0xFF43A047), Modifier.weight(1f))
-                ReviewStatCard("🔬", reviewFormatInt(totalBotanicalSpecies), "Especies/registros", Color(0xFF3949AB), Modifier.weight(1f))
+                ReviewStatCard("📷", noImageCount.toString(), "Sin imagen", Color(0xFF1565C0), Modifier.weight(1f))
+                ReviewStatCard("📝", notesCount.toString(), "Con notas", Color(0xFF6A1B9A), Modifier.weight(1f))
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                ReviewStatCard("🍄", reviewFormatInt(allMushrooms.size), "Setas", Color(0xFF6D4C41), Modifier.weight(1f))
-                ReviewStatCard("🪨", reviewFormatInt(allLichens.size), "Líquenes", Color(0xFF607D8B), Modifier.weight(1f))
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                ReviewStatCard("⚗️", reviewFormatInt(allCompounds.size), "Compuestos", Color(0xFF8E24AA), Modifier.weight(1f))
-                ReviewStatCard("☠️", reviewFormatInt(poisonousGenusKeys.size), "Géneros venenosos únicos", Color(0xFFC62828), Modifier.weight(1f))
-            }
-
-            Spacer(Modifier.height(6.dp))
-            Text("Revisión de fichas", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                ReviewStatCard("⚠️", reviewFormatInt(incompleteCount), "Incompletas", Color(0xFFF57C00), Modifier.weight(1f))
-                ReviewStatCard("📷", reviewFormatInt(noImageCount), "Sin imagen", Color(0xFF1565C0), Modifier.weight(1f))
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                ReviewStatCard("📝", reviewFormatInt(notesCount), "Con notas", Color(0xFF6A1B9A), Modifier.weight(1f))
-                ReviewStatCard("🏷️", reviewFormatInt(markerCount), "Marcadas", Color(0xFF00897B), Modifier.weight(1f))
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                ReviewStatCard("🗑️", reviewFormatInt(deletedCount), "Borradas", Color(0xFFD32F2F), Modifier.weight(1f))
-                ReviewStatCard("🕘", reviewFormatInt(recentCount), "Recientes", Color(0xFF1565C0), Modifier.weight(1f))
+                ReviewStatCard("🏷️", markerCount.toString(), "Marcadas", Color(0xFF00897B), Modifier.weight(1f))
+                ReviewStatCard("🗑️", deletedCount.toString(), "Borradas", Color(0xFFD32F2F), Modifier.weight(1f))
             }
 
             Spacer(Modifier.height(6.dp))

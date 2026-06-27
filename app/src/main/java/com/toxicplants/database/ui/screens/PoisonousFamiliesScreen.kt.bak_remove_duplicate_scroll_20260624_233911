@@ -130,7 +130,6 @@ fun PoisonousFamiliesScreen(
     val families = if (catalogType == PoisonousFamilyCatalogType.PARTIAL) partialFamilies else allFamilies
     val totalGenera = families.sumOf { it.generaCount }
     val totalSpecies = families.sumOf { it.speciesCount }
-    val bulkCreationMessage by viewModel.bulkCreationMessage.observeAsState(null)
 
     Scaffold(
         topBar = {
@@ -165,15 +164,6 @@ fun PoisonousFamiliesScreen(
                 item { PoisonousCatalogChooser(allFamilies, partialFamilies) { catalogType = it } }
             } else {
                 item { TotalFamiliesHeader(catalogType!!, families.size, totalGenera, totalSpecies) }
-                item {
-                    Button(
-                        onClick = { viewModel.createMissingPlantSheetsFromGenera(catalogType!!) },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A))
-                    ) {
-                        Text("Crear fichas faltantes de esta lista", color = Color.White, fontWeight = FontWeight.Bold)
-                    }
-                }
                 if (families.isEmpty()) {
                     item { EmptyPoisonousFamiliesCard(onAddGenus = { onAddGenus(catalogType!!) }) }
                 } else {
@@ -183,17 +173,6 @@ fun PoisonousFamiliesScreen(
                 }
             }
         }
-    }
-
-    bulkCreationMessage?.let { message ->
-        AlertDialog(
-            onDismissRequest = { viewModel.clearBulkCreationMessage() },
-            title = { Text("Crear fichas") },
-            text = { Text(message) },
-            confirmButton = {
-                TextButton(onClick = { viewModel.clearBulkCreationMessage() }) { Text("OK") }
-            }
-        )
     }
 }
 
@@ -296,7 +275,6 @@ fun PoisonousFamilyGeneraScreen(
     val effectivePlantViewModel: PlantViewModel = plantViewModel ?: androidx.lifecycle.viewmodel.compose.viewModel()
     val genera by viewModel.generaForFamily(familyName, catalogType).observeAsState(emptyList())
     val allPlants by effectivePlantViewModel.allPlants.observeAsState(emptyList())
-    var localPlantsDialog by remember { mutableStateOf<List<PlantEntity>?>(null) }
     val speciesCount = genera.sumOf { it.genusSpeciesCount.coerceAtLeast(0) }
     val generaScrollKey = "$catalogType|$familyName"
     val savedGeneraScroll = PoisonousGeneraScrollStore.positions[generaScrollKey]
@@ -339,6 +317,27 @@ fun PoisonousFamilyGeneraScreen(
         onDispose { saveGeneraListScroll() }
     }
 
+
+    val savedGeneraScroll = PoisonousGeneraScrollStore.positions[generaScrollKey]
+    val generaListState = remember(catalogType, familyName) {
+        LazyListState(
+            firstVisibleItemIndex = savedGeneraScroll?.index ?: 0,
+            firstVisibleItemScrollOffset = savedGeneraScroll?.offset ?: 0
+        )
+    }
+
+    fun saveGeneraListScroll() {
+        PoisonousGeneraScrollStore.positions[generaScrollKey] = SavedGeneraScroll(
+            index = generaListState.firstVisibleItemIndex,
+            offset = generaListState.firstVisibleItemScrollOffset
+        )
+    }
+
+    DisposableEffect(generaScrollKey) {
+        onDispose { saveGeneraListScroll() }
+    }
+    var localPlantsDialog by remember { mutableStateOf<List<PlantEntity>?>(null) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -359,8 +358,7 @@ fun PoisonousFamilyGeneraScreen(
         }
     ) { padding ->
         LazyColumn(
-            state = generaListState,
-modifier = Modifier.fillMaxSize().padding(padding).background(PoisonBg), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            state = generaListState,modifier = Modifier.fillMaxSize().padding(padding).background(PoisonBg), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (genera.isEmpty()) item { EmptyPoisonousFamiliesCard(onAddGenus = { onAddGenus(catalogType, familyName) }) }
             else items(genera, key = { it.id }) { genus ->
                 val localMatches = allPlants.filter { plant ->

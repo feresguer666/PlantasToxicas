@@ -669,7 +669,7 @@ fun NavigationGrid(
                     ) {
                         DialogOptionCompactCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF37474F), Color(0xFF607D8B))), icon = "🪨", title = "Líquenes tóxicos", onClick  = { showBotanicaDialog = false; onNavigateToLichens() })
                         DialogOptionCompactCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF4E342E), Color(0xFF795548))), icon = "🍄", title = "Setas tóxicas", onClick  = { showBotanicaDialog = false; onNavigateToMushrooms() })
-                        DialogOptionCompactCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B3A1E), Color(0xFF2E5232))), icon = "🌿", title = "Fichas en BD", onClick  = { showBotanicaDialog = false; onNavigateToList() })
+                        DialogOptionCompactCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF1B3A1E), Color(0xFF2E5232))), icon = "🌿", title = "Plantas", onClick  = { showBotanicaDialog = false; onNavigateToList() })
                         DialogOptionCompactCard(gradient = Brush.horizontalGradient(listOf(Color(0xFFB71C1C), Color(0xFFD32F2F))), icon = "🧬", title = "Géneros tóxicos", onClick  = { showBotanicaDialog = false; onNavigateToToxicGenera() })
                         DialogOptionCompactCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF4A0E0E), Color(0xFFC62828))), icon = "☠️", title = "Familias venenosas", onClick  = { showBotanicaDialog = false; onNavigateToPoisonousFamilies() })
                         DialogOptionCompactCard(gradient = Brush.horizontalGradient(listOf(Color(0xFF0D47A1), Color(0xFF1976D2))), icon = "🧪", title = "Especies tóxicas", onClick = { showBotanicaDialog = false; onNavigateToToxicSpecies() })

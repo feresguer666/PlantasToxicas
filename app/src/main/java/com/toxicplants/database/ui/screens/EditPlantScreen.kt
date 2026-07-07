@@ -14,9 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import com.toxicplants.database.ui.LocalImageCache
+import kotlinx.coroutines.launch
 import com.toxicplants.database.PlantEntity
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,74 +31,51 @@ fun EditPlantScreen(
     onBack: () -> Unit,
     onSaveAndNext: ((Int) -> Unit)? = null,
     onSaved: ((Int) -> Unit)? = null,
-
-    prefillPlant: PlantEntity? = null) {
+    prefillPlant: PlantEntity? = null
+) {
     val isNew = plantId == null || plantId == 0
     val existingPlant = if (!isNew) {
         viewModel.getPlantById(plantId!!).observeAsState().value
-    } else null
-    val saveScope = rememberCoroutineScope()
-    val navigationPlants by viewModel.detailNavigationPlantsData.collectAsState()
-    val currentIndexInContext = remember(navigationPlants, existingPlant?.id, plantId) {
-        val currentId = existingPlant?.id ?: plantId ?: 0
-        navigationPlants.indexOfFirst { it.id == currentId }
-    }
-    val nextPlantInContext = remember(navigationPlants, currentIndexInContext) {
-        if (currentIndexInContext >= 0 && currentIndexInContext < navigationPlants.lastIndex) {
-            navigationPlants[currentIndexInContext + 1]
-        } else null
-    }
-    val canSaveAndNext = !isNew && onSaveAndNext != null && nextPlantInContext != null
+    } else prefillPlant
 
-    val sourcePlant = existingPlant ?: prefillPlant
-
-    var commonName by remember(sourcePlant) { mutableStateOf(sourcePlant?.commonName ?: "") }
-    var commonNames by remember(sourcePlant) { mutableStateOf(sourcePlant?.commonNames ?: "") }
-    var scientificName by remember(sourcePlant) { mutableStateOf(sourcePlant?.scientificName ?: "") }
-    var family by remember(sourcePlant) { mutableStateOf(sourcePlant?.family ?: "") }
-    var toxicityLevel by remember(sourcePlant) { mutableStateOf(sourcePlant?.toxicityLevel ?: "Moderado") }
-    var toxicParts by remember(sourcePlant) { mutableStateOf(sourcePlant?.toxicParts ?: "") }
-    var symptoms by remember(sourcePlant) { mutableStateOf(sourcePlant?.symptoms ?: "") }
-    var description by remember(sourcePlant) { mutableStateOf(sourcePlant?.description ?: "") }
-    var habitat by remember(sourcePlant) { mutableStateOf(sourcePlant?.habitat ?: "") }
-    var geographicDistribution by remember(sourcePlant) { mutableStateOf(sourcePlant?.geographicDistribution ?: "") }
-    var firstAid by remember(sourcePlant) { mutableStateOf(sourcePlant?.firstAid ?: "") }
-    var imageUrl by remember(sourcePlant) { mutableStateOf(sourcePlant?.imageUrl ?: "") }
-    var category by remember(sourcePlant) { mutableStateOf(sourcePlant?.category ?: "") }
-    var floweringMonths by remember(sourcePlant) { mutableStateOf(sourcePlant?.floweringMonths ?: "") }
-    var fruitingMonths by remember(sourcePlant) { mutableStateOf(sourcePlant?.fruitingMonths ?: "") }
-    var maxToxicityMonths by remember(sourcePlant) { mutableStateOf(sourcePlant?.maxToxicityMonths ?: "") }
-
-    fun buildPlantForSave(): PlantEntity = PlantEntity(
-        id = existingPlant?.id ?: plantId ?: 0,
-        commonName = commonName,
-        commonNames = commonNames,
-        scientificName = scientificName,
-        family = family,
-        toxicityLevel = toxicityLevel,
-        toxicParts = toxicParts,
-        symptoms = symptoms,
-        description = description,
-        habitat = habitat,
-        geographicDistribution = geographicDistribution,
-        firstAid = firstAid,
-        imageUrl = imageUrl,
-        isFavorite = existingPlant?.isFavorite ?: false,
-        category = category,
-        latitude = existingPlant?.latitude,
-        longitude = existingPlant?.longitude,
-        locationName = existingPlant?.locationName,
-        foundDate = existingPlant?.foundDate,
-        notes = existingPlant?.notes,
-        floweringMonths = floweringMonths,
-        fruitingMonths = fruitingMonths,
-        maxToxicityMonths = maxToxicityMonths,
-        mythsAndLegends = existingPlant?.mythsAndLegends ?: ""
-    )
-
+    var commonName by remember(existingPlant) { mutableStateOf(existingPlant?.commonName ?: "") }
+    var commonNames by remember(existingPlant) { mutableStateOf(existingPlant?.commonNames ?: "") }
+    var scientificName by remember(existingPlant) { mutableStateOf(existingPlant?.scientificName ?: "") }
+    var family by remember(existingPlant) { mutableStateOf(existingPlant?.family ?: "") }
+    var toxicityLevel by remember(existingPlant) { mutableStateOf(existingPlant?.toxicityLevel ?: "Moderado") }
+    var toxicParts by remember(existingPlant) { mutableStateOf(existingPlant?.toxicParts ?: "") }
+    var symptoms by remember(existingPlant) { mutableStateOf(existingPlant?.symptoms ?: "") }
+    var description by remember(existingPlant) { mutableStateOf(existingPlant?.description ?: "") }
+    var habitat by remember(existingPlant) { mutableStateOf(existingPlant?.habitat ?: "") }
+    var geographicDistribution by remember(existingPlant) { mutableStateOf(existingPlant?.geographicDistribution ?: "") }
+    var firstAid by remember(existingPlant) { mutableStateOf(existingPlant?.firstAid ?: "") }
+    var imageUrl by remember(existingPlant) { mutableStateOf(existingPlant?.imageUrl ?: "") }
+    var category by remember(existingPlant) { mutableStateOf(existingPlant?.category ?: "") }
+    var floweringMonths by remember(existingPlant) { mutableStateOf(existingPlant?.floweringMonths ?: "") }
+    var fruitingMonths by remember(existingPlant) { mutableStateOf(existingPlant?.fruitingMonths ?: "") }
+    var maxToxicityMonths by remember(existingPlant) { mutableStateOf(existingPlant?.maxToxicityMonths ?: "") }
 
     var expanded by remember { mutableStateOf(false) }
     val toxicityOptions = listOf("Mortal", "Alto", "Moderado", "Bajo")
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            scope.launch {
+                val tempId = plantId ?: (100000..999999).random()
+                val newPath = LocalImageCache.saveAdditionalFromUri(context, tempId, uri)
+                if (newPath != null) {
+                    imageUrl = if (imageUrl.isBlank()) newPath else "${imageUrl.trim()} | $newPath"
+                    Toast.makeText(context, "Foto añadida a la galería", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Error al cargar la foto", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     // Colores personalizados para los campos de texto (Modo Oscuro)
     val textFieldColors = OutlinedTextFieldDefaults.colors(
@@ -130,12 +112,39 @@ fun EditPlantScreen(
                     IconButton(
                         onClick = {
                             if (commonName.isNotBlank()) {
-                                val plant = buildPlantForSave()
-                                viewModel.insertPlant(plant)
-                                if (onSaved != null && plant.id != 0) {
-                                    onSaved(plant.id)
-                                } else {
-                                    onBack()
+                                val plant = PlantEntity(
+                                    id = existingPlant?.id ?: 0,
+                                    commonName = commonName,
+                                    commonNames = commonNames,
+                                    scientificName = scientificName,
+                                    family = family,
+                                    toxicityLevel = toxicityLevel,
+                                    toxicParts = toxicParts,
+                                    symptoms = symptoms,
+                                    description = description,
+                                    habitat = habitat,
+                                    geographicDistribution = geographicDistribution,
+                                    firstAid = firstAid,
+                                    imageUrl = imageUrl,
+                                    isFavorite = existingPlant?.isFavorite ?: false,
+                                    category = category,
+                                    latitude = existingPlant?.latitude,
+                                    longitude = existingPlant?.longitude,
+                                    locationName = existingPlant?.locationName,
+                                    foundDate = existingPlant?.foundDate,
+                                    notes = existingPlant?.notes,
+                                    floweringMonths = floweringMonths,
+                                    fruitingMonths = fruitingMonths,
+                                    maxToxicityMonths = maxToxicityMonths
+                                )
+                                scope.launch {
+                                    viewModel.insertPlantSync(plant)
+                                    val savedId = if (plant.id != 0) plant.id else ((viewModel.allPlants.value?.maxOfOrNull { it.id } ?: 0) + 1)
+                                    if (onSaved != null) {
+                                        onSaved(savedId)
+                                    } else {
+                                        onBack()
+                                    }
                                 }
                             }
                         }
@@ -259,6 +268,42 @@ fun EditPlantScreen(
                 minLines = 3,
                 colors = textFieldColors
             )
+            OutlinedButton(
+                onClick = {
+                    if (scientificName.isNotBlank() || commonName.isNotBlank()) {
+                        scope.launch {
+                            Toast.makeText(context, "Buscando síntomas con IA...", Toast.LENGTH_SHORT).show()
+                            val res = com.toxicplants.database.ui.GeminiNameHelper.generateField(
+                                type = com.toxicplants.database.ui.GeminiNameHelper.FieldType.SYMPTOMS,
+                                scientificName = scientificName,
+                                commonName = commonName
+                            )
+                            if (res is com.toxicplants.database.ui.GeminiNameHelper.TextResult.Success) {
+                                symptoms = res.text
+                                Toast.makeText(context, "✅ Síntomas generados", Toast.LENGTH_SHORT).show()
+                            } else if (res is com.toxicplants.database.ui.GeminiNameHelper.TextResult.Error) {
+                                Toast.makeText(context, res.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Escribe el nombre de la planta primero", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(top = 2.dp, bottom = 4.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7))
+            ) {
+                Text("🤖 Rellenar Síntomas con IA interna", fontSize = 12.sp)
+            }
+            OutlinedButton(
+                onClick = {
+                    val q = android.net.Uri.encode("$scientificName $commonName planta tóxica síntomas de intoxicación")
+                    context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://www.google.com/search?q=$q")))
+                },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF80CBC4))
+            ) {
+                Text("🌐 Abrir navegador: Google IA (Síntomas)", fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = description,
@@ -268,6 +313,42 @@ fun EditPlantScreen(
                 minLines = 3,
                 colors = textFieldColors
             )
+            OutlinedButton(
+                onClick = {
+                    if (scientificName.isNotBlank() || commonName.isNotBlank()) {
+                        scope.launch {
+                            Toast.makeText(context, "Buscando descripción con IA...", Toast.LENGTH_SHORT).show()
+                            val res = com.toxicplants.database.ui.GeminiNameHelper.generateField(
+                                type = com.toxicplants.database.ui.GeminiNameHelper.FieldType.DESCRIPTION,
+                                scientificName = scientificName,
+                                commonName = commonName
+                            )
+                            if (res is com.toxicplants.database.ui.GeminiNameHelper.TextResult.Success) {
+                                description = res.text
+                                Toast.makeText(context, "✅ Descripción generada", Toast.LENGTH_SHORT).show()
+                            } else if (res is com.toxicplants.database.ui.GeminiNameHelper.TextResult.Error) {
+                                Toast.makeText(context, res.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(context, "Escribe el nombre de la planta primero", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(top = 2.dp, bottom = 4.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7))
+            ) {
+                Text("🤖 Rellenar Descripción con IA interna", fontSize = 12.sp)
+            }
+            OutlinedButton(
+                onClick = {
+                    val q = android.net.Uri.encode("$scientificName $commonName planta tóxica descripción botánica y características")
+                    context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://www.google.com/search?q=$q")))
+                },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF80CBC4))
+            ) {
+                Text("🌐 Abrir navegador: Google IA (Descripción)", fontSize = 12.sp)
+            }
 
             OutlinedTextField(
                 value = habitat,
@@ -299,11 +380,46 @@ fun EditPlantScreen(
             OutlinedTextField(
                 value = imageUrl,
                 onValueChange = { imageUrl = it },
-                label = { Text("URL de imagen") },
+                label = { Text("URLs o rutas de fotos (separadas por | )") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                singleLine = false,
+                minLines = 2,
+                maxLines = 4,
                 colors = textFieldColors
             )
+            Text(
+                "💡 Tip: Para poner hojas, flor y fruto, separa las URLs o rutas con el carácter | (tubería) o usa el botón de abajo para añadir desde el móvil.",
+                fontSize = 11.sp,
+                color = Color.LightGray
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { galleryLauncher.launch("image/*") },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF81C784))
+                ) {
+                    Text("➕ Añadir foto del móvil", fontSize = 12.sp)
+                }
+                if (imageUrl.contains("|")) {
+                    OutlinedButton(
+                        onClick = {
+                            val list = imageUrl.split("|").map { it.trim() }.filter { it.isNotBlank() }
+                            if (list.size > 1) {
+                                imageUrl = list.dropLast(1).joinToString(" | ")
+                            } else {
+                                imageUrl = ""
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFFF8A80))
+                    ) {
+                        Text("🗑️ Quitar última foto", fontSize = 12.sp)
+                    }
+                }
+            }
 
             // ══════════════════════════════════════════════════════════
             // CAMPOS DE FENOLOGÍA
@@ -355,12 +471,39 @@ fun EditPlantScreen(
             Button(
                 onClick = {
                     if (commonName.isNotBlank()) {
-                        val plant = buildPlantForSave()
-                        viewModel.insertPlant(plant)
-                        if (onSaved != null && plant.id != 0) {
-                            onSaved(plant.id)
-                        } else {
-                            onBack()
+                        val plant = PlantEntity(
+                            id = existingPlant?.id ?: 0,
+                            commonName = commonName,
+                            commonNames = commonNames,
+                            scientificName = scientificName,
+                            family = family,
+                            toxicityLevel = toxicityLevel,
+                            toxicParts = toxicParts,
+                            symptoms = symptoms,
+                            description = description,
+                            habitat = habitat,
+                            geographicDistribution = geographicDistribution,
+                            firstAid = firstAid,
+                            imageUrl = imageUrl,
+                            isFavorite = existingPlant?.isFavorite ?: false,
+                            category = category,
+                            latitude = existingPlant?.latitude,
+                            longitude = existingPlant?.longitude,
+                            locationName = existingPlant?.locationName,
+                            foundDate = existingPlant?.foundDate,
+                            notes = existingPlant?.notes,
+                            floweringMonths = floweringMonths,
+                            fruitingMonths = fruitingMonths,
+                            maxToxicityMonths = maxToxicityMonths
+                        )
+                        scope.launch {
+                            viewModel.insertPlantSync(plant)
+                            val savedId = if (plant.id != 0) plant.id else ((viewModel.allPlants.value?.maxOfOrNull { it.id } ?: 0) + 1)
+                            if (onSaved != null) {
+                                onSaved(savedId)
+                            } else {
+                                onBack()
+                            }
                         }
                     }
                 },
@@ -377,23 +520,46 @@ fun EditPlantScreen(
                 )
             }
 
-            if (canSaveAndNext) {
+            if (!isNew && onSaveAndNext != null) {
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(
                     onClick = {
-                        val nextId = nextPlantInContext?.id ?: return@OutlinedButton
-                        if (commonName.isNotBlank()) {
-                            val plant = buildPlantForSave()
-                            saveScope.launch {
+                        if (commonName.isNotBlank() && scientificName.isNotBlank() && family.isNotBlank()) {
+                            val plant = PlantEntity(
+                                id = existingPlant?.id ?: 0,
+                                commonName = commonName,
+                                commonNames = commonNames,
+                                scientificName = scientificName,
+                                family = family,
+                                toxicityLevel = toxicityLevel,
+                                toxicParts = toxicParts,
+                                symptoms = symptoms,
+                                description = description,
+                                habitat = habitat,
+                                geographicDistribution = geographicDistribution,
+                                firstAid = firstAid,
+                                imageUrl = imageUrl,
+                                isFavorite = existingPlant?.isFavorite ?: false,
+                                category = category,
+                                latitude = existingPlant?.latitude,
+                                longitude = existingPlant?.longitude,
+                                locationName = existingPlant?.locationName,
+                                foundDate = existingPlant?.foundDate,
+                                notes = existingPlant?.notes,
+                                floweringMonths = floweringMonths,
+                                fruitingMonths = fruitingMonths,
+                                maxToxicityMonths = maxToxicityMonths
+                            )
+                            scope.launch {
                                 viewModel.insertPlantSync(plant)
-                                onSaveAndNext?.invoke(nextId)
+                                onSaveAndNext(plant.id + 1)
                             }
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp)
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF81C784))
                 ) {
-                    Text("Guardar y siguiente", fontSize = 16.sp)
+                    Text("Guardar y Siguiente ➡️", fontSize = 16.sp)
                 }
             }
 

@@ -239,12 +239,12 @@ fun VisualComparatorDialog(toxicPlant: PlantEntity, targetName: String, allPlant
     val toxicImageUrl = remember(toxicPlant.scientificName, toxicPlant.commonName, toxicPlant.imageUrl) {
         fixedComparatorPhoto(toxicPlant.scientificName)
             ?: fixedComparatorPhoto(toxicPlant.commonName)
-            ?: toxicPlant.imageUrl.takeIf { it.isUsableComparatorImageUrl() }
+            ?: toxicPlant.imageUrl.split("|").map { it.trim() }.firstOrNull { it.isUsableComparatorImageUrl() }
     }
     val targetImageUrl = remember(targetName, targetPlant?.scientificName, targetPlant?.imageUrl) {
         fixedComparatorPhoto(targetName)
             ?: targetPlant?.scientificName?.let { fixedComparatorPhoto(it) }
-            ?: targetPlant?.imageUrl?.takeIf { it.isUsableComparatorImageUrl() }
+            ?: targetPlant?.imageUrl?.split("|")?.map { it.trim() }?.firstOrNull { it.isUsableComparatorImageUrl() }
     }
     var expandedPhoto by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -336,8 +336,9 @@ private fun FullScreenComparatorImage(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
+            val context = LocalContext.current
             AsyncImage(
-                model = imageUrl,
+                model = remember(imageUrl, context) { com.toxicplants.database.ui.PlantImageHelper.getModelForUrl(context, imageUrl) },
                 contentDescription = title,
                 modifier = Modifier
                     .fillMaxSize()
@@ -394,8 +395,9 @@ private fun ComparatorFixedImage(
         contentAlignment = Alignment.Center
     ) {
         if (!imageUrl.isNullOrBlank() && !failed) {
+            val context = LocalContext.current
             AsyncImage(
-                model = imageUrl,
+                model = remember(imageUrl, context) { com.toxicplants.database.ui.PlantImageHelper.getModelForUrl(context, imageUrl) },
                 contentDescription = fallbackText,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,

@@ -20,7 +20,48 @@ object PlantImageHelper {
         return false
     }
 
+    fun getModelForUrl(context: Context, url: String): Any {
+        val trimmed = url.trim()
+        if (trimmed.startsWith("file://", ignoreCase = true)) {
+            val cleanPath = trimmed.removePrefix("file://").removePrefix("FILE://")
+            val directFile = java.io.File(cleanPath)
+            if (directFile.exists() && directFile.length() > 0L) {
+                return android.net.Uri.fromFile(directFile)
+            }
+            val fileName = cleanPath.substringAfterLast("/")
+            val fallbackFile = java.io.File(java.io.File(context.filesDir, "plant_images"), fileName)
+            if (fallbackFile.exists() && fallbackFile.length() > 0L) {
+                return android.net.Uri.fromFile(fallbackFile)
+            }
+            return android.net.Uri.parse(trimmed)
+        } else if (trimmed.startsWith("content://", ignoreCase = true) ||
+                   trimmed.startsWith("android.resource://", ignoreCase = true) ||
+                   trimmed.startsWith("asset://", ignoreCase = true)) {
+            return android.net.Uri.parse(trimmed)
+        } else {
+            return trimmed
+        }
+    }
+
+    fun parseImageUrls(imageUrl: String): List<String> {
+        return imageUrl.split("|").map { it.trim() }.filter { it.isNotBlank() }
+    }
+
+    suspend fun resolveAllImageUrls(context: Context, plant: PlantEntity): List<String> {
+        val urls = parseImageUrls(plant.imageUrl)
+        if (urls.size > 1 || (urls.size == 1 && plant.imageUrl.contains("|"))) {
+            return urls
+        }
+        val single = resolveImageUrl(context, plant)
+        return if (single.isNotBlank()) listOf(single) else emptyList()
+    }
+
     suspend fun resolveImageUrl(context: Context, plant: PlantEntity): String {
+        val urls = parseImageUrls(plant.imageUrl)
+        if (urls.size > 1 || (urls.size == 1 && plant.imageUrl.contains("|"))) {
+            return urls.first()
+        }
+
         // 1. Verificar si ya hay una imagen local guardada.
         if (LocalImageCache.hasLocalImage(context, plant.id)) {
             return "file://${LocalImageCache.getLocalImagePath(context, plant.id)}"

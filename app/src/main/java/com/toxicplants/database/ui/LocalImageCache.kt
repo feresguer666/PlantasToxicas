@@ -41,6 +41,11 @@ object LocalImageCache {
     private fun getImageFile(context: Context, plantId: Int): File =
         File(getImageDir(context), "plant_$plantId.jpg")
 
+    private fun getAdditionalImageFile(context: Context, plantId: Int): File {
+        val timestamp = System.currentTimeMillis()
+        return File(getImageDir(context), "plant_${plantId}_${timestamp}.jpg")
+    }
+
     // ── API pública ───────────────────────────────────────────────────
 
     fun hasLocalImage(context: Context, plantId: Int): Boolean =
@@ -64,12 +69,35 @@ object LocalImageCache {
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(file).use { output ->
                         input.copyTo(output)
+                        output.flush()
                     }
                 } ?: return@withContext false
                 file.exists() && file.length() > 0L
             } catch (e: Exception) {
                 e.printStackTrace()
                 false
+            }
+        }
+
+    /**
+     * Guarda una imagen ADICIONAL (sin sobreescribir la anterior) y devuelve su ruta local.
+     */
+    suspend fun saveAdditionalFromUri(context: Context, plantId: Int, uri: Uri): String? =
+        withContext(Dispatchers.IO) {
+            try {
+                val file = getAdditionalImageFile(context, plantId)
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    FileOutputStream(file).use { output ->
+                        input.copyTo(output)
+                        output.flush()
+                    }
+                } ?: return@withContext uri.toString()
+                if (file.exists() && file.length() > 0L) {
+                    "file://${file.absolutePath}"
+                } else uri.toString()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                uri.toString()
             }
         }
 
@@ -138,6 +166,53 @@ object LocalImageCache {
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        }
+    }
+
+    /**
+     * Descarga y guarda una imagen ADICIONAL (para galerías de varias fotos) sin borrar las anteriores.
+     */
+    suspend fun downloadAndSaveAdditional(
+        context: Context,
+        plantId: Int,
+        imageUrl: String
+    ): String? = withContext(Dispatchers.IO) {
+        try {
+            val directUrl = convertToDirectUrl(imageUrl)
+            if (directUrl.isBlank()) return@withContext null
+
+            val connection = URL(directUrl).openConnection() as HttpURLConnection
+            connection.apply {
+                setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 " +
+                            "(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36")
+                setRequestProperty("Accept", "image/*")
+                setRequestProperty("Referer", "https://en.wikipedia.org/")
+                connectTimeout = 20_000
+                readTimeout    = 20_000
+                instanceFollowRedirects = true
+            }
+
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                connection.disconnect()
+                return@withContext null
+            }
+
+            val file = getAdditionalImageFile(context, plantId)
+            connection.inputStream.use { input ->
+                FileOutputStream(file).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            connection.disconnect()
+
+            if (file.exists() && file.length() > 0L) {
+                "file://${file.absolutePath}"
+            } else null
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 

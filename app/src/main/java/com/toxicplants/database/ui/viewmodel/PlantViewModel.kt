@@ -1,14 +1,14 @@
 package com.toxicplants.database.ui.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.toxicplants.database.CompoundDataSource
+import com.toxicplants.database.PlantDataSource
 import com.toxicplants.database.PlantDatabase
 import com.toxicplants.database.PlantEntity
-import com.toxicplants.database.PlantUserEditStore
-import com.toxicplants.database.PlantDataSource
-import com.toxicplants.database.PlantDeletionStore
-import com.toxicplants.database.CompoundDataSource
-import com.toxicplants.database.CompoundUserStateStore
 import com.toxicplants.database.data.repository.PlantRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +33,9 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     private val selectedPlant = MutableStateFlow<PlantEntity?>(null)
     val selectedPlantData: StateFlow<PlantEntity?> = selectedPlant
 
+    private val detailNavigationPlants = MutableStateFlow<List<PlantEntity>>(emptyList())
+    val detailNavigationPlantsData: StateFlow<List<PlantEntity>> = detailNavigationPlants
+
     private val selectedCategory = MutableStateFlow<String?>(null)
     val selectedCategoryData: StateFlow<String?> = selectedCategory
 
@@ -47,45 +50,6 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
     private val plants = MutableStateFlow<List<PlantEntity>>(emptyList())
     val plantsData: StateFlow<List<PlantEntity>> = plants
-
-    private val detailNavigationPlants = MutableStateFlow<List<PlantEntity>>(emptyList())
-    val detailNavigationPlantsData: StateFlow<List<PlantEntity>> = detailNavigationPlants
-
-
-    // ── Caché: plantas ornamentales peligrosas ───────────────────────────
-    // Evita recalcular en cada entrada a la pantalla. Se invalida al editar/borrar/restaurar plantas.
-    private var ornamentalDangerCache: List<PlantEntity>? = null
-    private val ornamentalDangerLevels = setOf("Mortal", "Muy alto", "Alto", "Moderado")
-    private val ornamentalKeywords = listOf(
-        "ornamental", "ornamentales", "jardín", "jardin", "jardinería", "jardineria",
-        "interior", "doméstica", "domestica", "casa", "maceta", "cultivada", "cultivo",
-        "parque", "seto", "decorativa", "decorativo", "patio", "terraza", "balcón", "balcon"
-    )
-
-    suspend fun getOrnamentalDangerPlantsCached(): List<PlantEntity> = withContext(Dispatchers.IO) {
-        ornamentalDangerCache ?: repository.getAllPlantsSync()
-            .filter { it.toxicityLevel in ornamentalDangerLevels }
-            .filter { it.isLikelyOrnamentalForCache() }
-            .sortedWith(
-                compareBy<PlantEntity> {
-                    listOf("Mortal", "Muy alto", "Alto", "Moderado").indexOf(it.toxicityLevel).let { idx ->
-                        if (idx < 0) 99 else idx
-                    }
-                }.thenBy { it.commonName.lowercase() }
-            )
-            .also { ornamentalDangerCache = it }
-    }
-
-    fun invalidateOrnamentalDangerCache() {
-        ornamentalDangerCache = null
-    }
-
-    private fun PlantEntity.isLikelyOrnamentalForCache(): Boolean {
-        val haystack = listOf(category, habitat, description, geographicDistribution, commonName, commonNames)
-            .joinToString(" ")
-            .lowercase()
-        return ornamentalKeywords.any { it in haystack }
-    }
 
     init {
         val db = PlantDatabase.getDatabase(application)
@@ -103,15 +67,13 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             // Si el usuario ya tenía la app instalada, añadimos las plantas nuevas del JSON
             // sin sobrescribir las existentes ni sus favoritos/ubicaciones/notas.
             val seedPlants = PlantDataSource.loadAll(application)
-            val deletedSeedIds = PlantDeletionStore.load(application)
-            val userEditedIds = PlantUserEditStore.load(application)
             if (repository.getPlantCount() == 0) {
-                repository.insertAll(seedPlants.filter { it.id !in deletedSeedIds })
+                repository.insertAll(seedPlants)
             } else {
                 val existingList = repository.getAllPlantsSync()
                 val existingIds = existingList.map { it.id }.toHashSet()
 
-                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds && it.id !in deletedSeedIds }
+                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds }
                 if (missingPlants.isNotEmpty()) {
                     repository.insertAll(missingPlants)
                 }
@@ -122,7 +84,7 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
                 val updatedList = existingList.map { p ->
                     val seed = seedMap[p.id]
-                    if (seed != null && p.id !in userEditedIds && p.mythsAndLegends != seed.mythsAndLegends) {
+                    if (seed != null && p.mythsAndLegends != seed.mythsAndLegends) {
                         needsUpdate = true
                         p.copy(mythsAndLegends = seed.mythsAndLegends)
                     } else {
@@ -135,20 +97,19 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             val seedCompounds = CompoundDataSource.loadAll(application)
-            val deletedCompoundIds = CompoundUserStateStore.loadDeleted(application)
-            val editedCompoundIds = CompoundUserStateStore.loadEdited(application)
             if (compoundDao.count() == 0) {
-                compoundDao.insertAll(seedCompounds.filter { it.id !in deletedCompoundIds })
+                compoundDao.insertAll(seedCompounds)
             } else {
-                // Añade compuestos nuevos del JSON sin tocar los existentes ni los borrados por el usuario.
+                // Añade compuestos nuevos del JSON sin tocar los existentes.
                 val existingCompoundIds = compoundDao.getAllSync().map { it.id }.toHashSet()
-                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds && it.id !in deletedCompoundIds }
+                val missingCompounds =
+                    seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds }
                 if (missingCompounds.isNotEmpty()) {
                     compoundDao.insertAll(missingCompounds)
                 }
-                // Actualiza pubchemCid desde el JSON solo para compuestos no editados manualmente.
+                // Actualiza los pubchemCid desde el JSON para compuestos que aún tengan CID = 0
                 for (c in seedCompounds) {
-                    if (c.pubchemCid != 0 && c.id !in editedCompoundIds && c.id !in deletedCompoundIds) {
+                    if (c.pubchemCid != 0) {
                         compoundDao.updatePubchemCid(c.id, c.pubchemCid)
                     }
                 }
@@ -192,12 +153,113 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         selectedPlant.value = plant
     }
 
-    fun setDetailNavigationPlants(list: List<PlantEntity>) {
-        detailNavigationPlants.value = list.distinctBy { it.id }
+    fun setDetailNavigationPlants(plants: List<PlantEntity>) {
+        detailNavigationPlants.value = plants
     }
 
     fun clearDetailNavigationPlants() {
         detailNavigationPlants.value = emptyList()
+    }
+
+    suspend fun getDeletedSeedPlants(): List<PlantEntity> = withContext(Dispatchers.IO) {
+        val app = getApplication<Application>()
+        val seedPlants = PlantDataSource.loadAll(app)
+        val existingIds = repository.getAllPlantsSync()
+            .map { it.id }
+            .toHashSet()
+
+        seedPlants
+            .filter { it.id != 0 && it.id !in existingIds }
+            .sortedBy { it.commonName.lowercase() }
+    }
+
+    fun restoreDeletedPlant(plantId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val app = getApplication<Application>()
+            val seedPlant = PlantDataSource.loadAll(app)
+                .firstOrNull { it.id == plantId }
+
+            if (seedPlant != null) {
+                repository.insert(seedPlant)
+                plants.value = repository.getAllPlantsSync()
+            }
+        }
+    }
+
+    fun restoreAllDeletedPlants() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val app = getApplication<Application>()
+            val seedPlants = PlantDataSource.loadAll(app)
+            val existingIds = repository.getAllPlantsSync()
+                .map { it.id }
+                .toHashSet()
+
+            val deletedPlants = seedPlants
+                .filter { it.id != 0 && it.id !in existingIds }
+
+            if (deletedPlants.isNotEmpty()) {
+                repository.insertAll(deletedPlants)
+                plants.value = repository.getAllPlantsSync()
+            }
+        }
+    }
+
+    fun updatePlantNotes(plantId: Int, notes: String?) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val plant = repository.getPlantById(plantId)
+            if (plant != null) {
+                repository.insert(plant.copy(notes = notes))
+                plants.value = repository.getAllPlantsSync()
+            }
+        }
+    }
+
+    fun getOrnamentalDangerPlantsCached(): List<PlantEntity> {
+        val source = plants.value.ifEmpty {
+            allPlants.value ?: emptyList()
+        }
+
+        return source
+            .filter { plant ->
+                val text = listOf(
+                    plant.commonName,
+                    plant.commonNames,
+                    plant.scientificName,
+                    plant.category,
+                    plant.description,
+                    plant.habitat,
+                    plant.geographicDistribution
+                ).joinToString(" ").lowercase()
+
+                val isOrnamental =
+                    text.contains("ornamental") ||
+                            text.contains("jardín") ||
+                            text.contains("jardin") ||
+                            text.contains("cultivada") ||
+                            text.contains("cultivado") ||
+                            text.contains("maceta") ||
+                            text.contains("decorativa") ||
+                            text.contains("seto")
+
+                val isDangerous =
+                    plant.toxicityLevel.equals("Mortal", ignoreCase = true) ||
+                            plant.toxicityLevel.equals("Muy alto", ignoreCase = true) ||
+                            plant.toxicityLevel.equals("Alto", ignoreCase = true)
+
+                isOrnamental && isDangerous
+            }
+            .sortedWith(
+                compareByDescending<PlantEntity> {
+                    when (it.toxicityLevel) {
+                        "Mortal" -> 5
+                        "Muy alto" -> 4
+                        "Alto" -> 3
+                        "Moderado" -> 2
+                        "Bajo" -> 1
+                        else -> 0
+                    }
+                }.thenBy { it.commonName.lowercase() }
+            )
     }
 
     fun setCategory(category: String) {
@@ -212,11 +274,14 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
     fun searchPlants(query: String): LiveData<List<PlantEntity>> = repository.searchPlants(query)
 
-    fun getPlantsByToxicity(level: String): LiveData<List<PlantEntity>> = repository.getPlantsByToxicity(level)
+    fun getPlantsByToxicity(level: String): LiveData<List<PlantEntity>> =
+        repository.getPlantsByToxicity(level)
 
-    fun getPlantsByCategory(category: String): LiveData<List<PlantEntity>> = repository.getPlantsByCategory(category)
+    fun getPlantsByCategory(category: String): LiveData<List<PlantEntity>> =
+        repository.getPlantsByCategory(category)
 
-    fun getPlantsByFamily(family: String): LiveData<List<PlantEntity>> = repository.getPlantsByFamily(family)
+    fun getPlantsByFamily(family: String): LiveData<List<PlantEntity>> =
+        repository.getPlantsByFamily(family)
 
     fun toggleFavorite(plantId: Int, currentStatus: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -231,9 +296,6 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     fun insertPlant(plant: PlantEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(plant)
-            invalidateOrnamentalDangerCache()
-            PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
-            PlantUserEditStore.markEdited(getApplication(), plant.id)
         }
     }
 
@@ -247,13 +309,12 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
             val app = getApplication<Application>()
 
             val seedPlants = PlantDataSource.loadAll(app)
-            val deletedSeedIds = PlantDeletionStore.load(app)
             val existingPlants = repository.getAllPlantsSync()
             if (existingPlants.isEmpty()) {
-                repository.insertAll(seedPlants.filter { it.id !in deletedSeedIds })
+                repository.insertAll(seedPlants)
             } else {
                 val existingIds = existingPlants.map { it.id }.toHashSet()
-                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds && it.id !in deletedSeedIds }
+                val missingPlants = seedPlants.filter { it.id != 0 && it.id !in existingIds }
                 if (missingPlants.isNotEmpty()) {
                     repository.insertAll(missingPlants)
                 }
@@ -261,13 +322,13 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
 
             val compoundDao = PlantDatabase.getDatabase(app).compoundDao()
             val seedCompounds = CompoundDataSource.loadAll(app)
-            val deletedCompoundIds = CompoundUserStateStore.loadDeleted(app)
             val existingCompounds = compoundDao.getAllSync()
             if (existingCompounds.isEmpty()) {
-                compoundDao.insertAll(seedCompounds.filter { it.id !in deletedCompoundIds })
+                compoundDao.insertAll(seedCompounds)
             } else {
                 val existingCompoundIds = existingCompounds.map { it.id }.toHashSet()
-                val missingCompounds = seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds && it.id !in deletedCompoundIds }
+                val missingCompounds =
+                    seedCompounds.filter { it.id != 0 && it.id !in existingCompoundIds }
                 if (missingCompounds.isNotEmpty()) {
                     compoundDao.insertAll(missingCompounds)
                 }
@@ -282,89 +343,100 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun insertPlantSync(plant: PlantEntity) {
         withContext(Dispatchers.IO) {
             repository.insert(plant)
-            invalidateOrnamentalDangerCache()
-            PlantDeletionStore.unmarkDeleted(getApplication(), plant.id)
-            PlantUserEditStore.markEdited(getApplication(), plant.id)
         }
     }
 
     fun deletePlant(plant: PlantEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.delete(plant)
-            invalidateOrnamentalDangerCache()
-            PlantDeletionStore.markDeleted(getApplication(), plant.id)
-            if (selectedPlant.value?.id == plant.id) selectedPlant.value = null
+        }
+    }
+
+    fun deletePlants(plantsToDelete: List<PlantEntity>) {
+        if (plantsToDelete.isEmpty()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            plantsToDelete.forEach { repository.delete(it) }
             plants.value = repository.getAllPlantsSync()
         }
     }
 
-
-    suspend fun getDeletedSeedPlants(): List<PlantEntity> = withContext(Dispatchers.IO) {
-        val app = getApplication<Application>()
-        val deletedIds = PlantDeletionStore.load(app)
-        if (deletedIds.isEmpty()) return@withContext emptyList()
-        PlantDataSource.loadAll(app)
-            .filter { it.id in deletedIds }
-            .sortedBy { it.commonName.lowercase() }
-    }
-
-    fun restoreDeletedPlant(plantId: Int) {
+    fun bulkUpdatePlants(
+        plantsToUpdate: List<PlantEntity>,
+        field: String,
+        value: String,
+        append: Boolean = false
+    ) {
+        if (plantsToUpdate.isEmpty()) return
         viewModelScope.launch(Dispatchers.IO) {
-            val app = getApplication<Application>()
-            val seedPlant = PlantDataSource.loadAll(app).firstOrNull { it.id == plantId }
-            if (seedPlant != null) {
-                repository.insert(seedPlant)
-                invalidateOrnamentalDangerCache()
-                PlantDeletionStore.unmarkDeleted(app, plantId)
-                PlantUserEditStore.unmarkEdited(app, plantId)
-                plants.value = repository.getAllPlantsSync()
-            }
-        }
-    }
+            fun merged(oldValue: String): String = when {
+                !append -> value
+                oldValue.isBlank() -> value
+                value.isBlank() -> oldValue
+                oldValue.split(';', ',').map { it.trim() }
+                    .any { it.equals(value.trim(), ignoreCase = true) } -> oldValue
 
-    fun restoreAllDeletedPlants() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val app = getApplication<Application>()
-            val deletedIds = PlantDeletionStore.load(app)
-            if (deletedIds.isEmpty()) return@launch
-            val seedPlants = PlantDataSource.loadAll(app).filter { it.id in deletedIds }
-            if (seedPlants.isNotEmpty()) {
-                repository.insertAll(seedPlants)
-                invalidateOrnamentalDangerCache()
+                else -> "$oldValue; $value"
             }
-            PlantDeletionStore.clear(app)
-            for (id in deletedIds) PlantUserEditStore.unmarkEdited(app, id)
+
+            val updatedPlants = plantsToUpdate.map { plant ->
+                when (field) {
+                    "commonNames" -> plant.copy(commonNames = merged(plant.commonNames))
+                    "family" -> plant.copy(family = merged(plant.family))
+                    "toxicityLevel" -> plant.copy(toxicityLevel = merged(plant.toxicityLevel))
+                    "toxicParts" -> plant.copy(toxicParts = merged(plant.toxicParts))
+                    "symptoms" -> plant.copy(symptoms = merged(plant.symptoms))
+                    "description" -> plant.copy(description = merged(plant.description))
+                    "category" -> plant.copy(category = merged(plant.category))
+                    "habitat" -> plant.copy(habitat = merged(plant.habitat))
+                    "geographicDistribution" -> plant.copy(geographicDistribution = merged(plant.geographicDistribution))
+                    "firstAid" -> plant.copy(firstAid = merged(plant.firstAid))
+                    "floweringMonths" -> plant.copy(floweringMonths = merged(plant.floweringMonths))
+                    "fruitingMonths" -> plant.copy(fruitingMonths = merged(plant.fruitingMonths))
+                    "maxToxicityMonths" -> plant.copy(maxToxicityMonths = merged(plant.maxToxicityMonths))
+                    "notes" -> plant.copy(notes = merged(plant.notes.orEmpty()))
+                    "mythsAndLegends" -> plant.copy(mythsAndLegends = merged(plant.mythsAndLegends))
+                    else -> plant
+                }
+            }
+            repository.insertAll(updatedPlants)
             plants.value = repository.getAllPlantsSync()
         }
     }
-
 
     suspend fun getAllPlantsForDownload(): List<PlantEntity> = withContext(Dispatchers.IO) {
         repository.getAllPlantsSync()
     }
 
     // ✅ FUNCIÓN PARA ACTUALIZAR UBICACIÓN
-    fun updatePlantLocation(plantId: Int, latitude: Double?, longitude: Double?, locationName: String?, notes: String?) {
+    fun updatePlantLocation(
+        plantId: Int,
+        latitude: Double?,
+        longitude: Double?,
+        locationName: String?,
+        notes: String?
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateLocation(plantId, latitude, longitude, locationName, notes)
         }
     }
 
-    fun updatePlantNotes(plantId: Int, notes: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.updateNotesOnly(plantId, notes?.trim()?.takeIf { it.isNotBlank() })
-            plants.value = repository.getAllPlantsSync()
-        }
-    }
-
     // ✅ FORZAR REGENERACIÓN DE IMAGEN IA
-    suspend fun forceAiImageGeneration(plantId: Int, context: android.content.Context, plant: PlantEntity) {
+    suspend fun forceAiImageGeneration(
+        plantId: Int,
+        context: android.content.Context,
+        plant: PlantEntity
+    ) {
         // 1. Descargamos la imagen de la IA y la guardamos en disco
         val success = com.toxicplants.database.ui.ImageDownloader.forceAiImage(context, plant)
 
         if (success) {
             // 2. ACTUALIZAMOS LA BASE DE DATOS y ESPERAMOS (sync)
-            val localPath = "file://${com.toxicplants.database.ui.LocalImageCache.getLocalImagePath(context, plantId)}"
+            val localPath = "file://${
+                com.toxicplants.database.ui.LocalImageCache.getLocalImagePath(
+                    context,
+                    plantId
+                )
+            }"
             insertPlantSync(plant.copy(imageUrl = localPath))
         }
     }
@@ -379,23 +451,35 @@ class PlantViewModel(application: Application) : AndroidViewModel(application) {
         phenologySeeded = true
         viewModelScope.launch(Dispatchers.IO) {
             val all = repository.getAllPlantsSync()
-            val needsSeed = all.any { it.floweringMonths.isBlank() && it.toxicityLevel in listOf("Mortal", "Muy alto", "Alto") }
+            val needsSeed = all.any {
+                it.floweringMonths.isBlank() && it.toxicityLevel in listOf(
+                    "Mortal",
+                    "Muy alto",
+                    "Alto"
+                )
+            }
             if (!needsSeed) return@launch
 
-            val phenologyMap = ToxicCalendarViewModel.getPhenologySeedData()
+            val phenologyMap =
+                ToxicCalendarViewModel.getPhenologySeedData()
             var updated = 0
             for (plant in all) {
                 if (plant.floweringMonths.isNotBlank()) continue
-                val norm = plant.scientificName.trim().lowercase().split(Regex("\\s+")).let { parts ->
-                    if (parts.size >= 2) "${parts[0]} ${parts[1]}" else plant.scientificName.trim().lowercase()
-                }
-                val entry = phenologyMap[norm] ?: phenologyMap[plant.scientificName.lowercase().trim()]
+                val norm =
+                    plant.scientificName.trim().lowercase().split(Regex("\\s+")).let { parts ->
+                        if (parts.size >= 2) "${parts[0]} ${parts[1]}" else plant.scientificName.trim()
+                            .lowercase()
+                    }
+                val entry =
+                    phenologyMap[norm] ?: phenologyMap[plant.scientificName.lowercase().trim()]
                 if (entry != null) {
-                    repository.insert(plant.copy(
-                        floweringMonths = entry.flowering,
-                        fruitingMonths = entry.fruiting,
-                        maxToxicityMonths = entry.maxToxicity
-                    ))
+                    repository.insert(
+                        plant.copy(
+                            floweringMonths = entry.flowering,
+                            fruitingMonths = entry.fruiting,
+                            maxToxicityMonths = entry.maxToxicity
+                        )
+                    )
                     updated++
                 }
             }

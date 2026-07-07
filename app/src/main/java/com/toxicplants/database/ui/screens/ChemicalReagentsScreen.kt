@@ -1,7 +1,7 @@
 package com.toxicplants.database.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +27,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -63,7 +65,7 @@ private val REAGENT_GROUPS = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChemicalReagentsScreen(onBack: () -> Unit) {
+fun ChemicalReagentsScreen(onBack: () -> Unit, onNavigateToHomePhytoTests: () -> Unit = {}) {
     val allReagents = remember { phytochemicalReagents() }
     var query by remember { mutableStateOf("") }
     var selectedGroup by remember { mutableStateOf("Todos") }
@@ -83,16 +85,8 @@ fun ChemicalReagentsScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = {
                     Column {
-                        Text(
-                            "🧫 Reactivos fitoquímicos (${allReagents.size})",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                        Text(
-                            "Precipitación · Coloración ",
-                            fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.82f)
-                        )
+                        Text("🧫 Reactivos fitoquímicos (${allReagents.size})", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("Precipitación · Coloración · Cribado cualitativo", fontSize = 12.sp, color = Color.White.copy(alpha = 0.82f))
                     }
                 },
                 navigationIcon = {
@@ -108,18 +102,14 @@ fun ChemicalReagentsScreen(onBack: () -> Unit) {
             )
         }
     ) { padding ->
-        Column(Modifier
-            .fillMaxSize()
-            .padding(padding)) {
+        Column(Modifier.fillMaxSize().padding(padding)) {
 
             // Buscador
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Buscar") },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                placeholder = { Text("Buscar reactivo o qué detecta…") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 singleLine = true
             )
@@ -150,6 +140,24 @@ fun ChemicalReagentsScreen(onBack: () -> Unit) {
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().clickable { onNavigateToHomePhytoTests() },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF004D40)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    ) {
+                        Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text("🔦", fontSize = 28.sp)
+                            Spacer(Modifier.width(12.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text("¿No tienes reactivos de laboratorio?", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 15.sp)
+                                Text("Toca aquí para ver Pruebas Fitoquímicas Caseras (Linterna UV, Vinagre, Espuma...)", fontSize = 12.sp, color = Color(0xFFA5D6A7))
+                            }
+                            Text("➡️", fontSize = 18.sp)
+                        }
+                    }
+                }
                 item { SafetyReagentCard() }
                 if (filtered.isEmpty()) {
                     item {
@@ -170,13 +178,9 @@ fun ChemicalReagentsScreen(onBack: () -> Unit) {
 private fun SafetyReagentCard() {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
         Column(Modifier.padding(14.dp)) {
+            Text("⚠️ Seguridad", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer)
             Text(
-                "⚠️ Seguridad",
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onErrorContainer
-            )
-            Text(
-                "Solo laboratorio equipado, campana, EPI y residuos gestionados.",
+                "Muchos reactivos usan ácidos concentrados, sales de mercurio, bismuto, yodo o metales pesados. Solo laboratorio equipado, campana, EPI y residuos gestionados. Los resultados son orientativos y requieren confirmación instrumental.",
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
                 color = MaterialTheme.colorScheme.onErrorContainer
@@ -197,12 +201,7 @@ private fun ReagentCard(reagent: ReagentInfo) {
                 Text(if (reagent.category.contains("recipitación")) "⚪" else "🎨", fontSize = 22.sp)
                 Spacer(Modifier.width(8.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        reagent.name,
-                        fontWeight = FontWeight.Bold,
-                        color = reagent.color,
-                        fontSize = 16.sp
-                    )
+                    Text(reagent.name, fontWeight = FontWeight.Bold, color = reagent.color, fontSize = 16.sp)
                     Text(reagent.category, color = Color.Gray, fontSize = 12.sp)
                 }
                 Text(if (expanded) "▲" else "▼", color = reagent.color, fontSize = 14.sp)

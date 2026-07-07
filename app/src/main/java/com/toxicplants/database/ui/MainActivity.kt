@@ -100,11 +100,13 @@ fun MainApp() {
                 onNavigateToDownloadImages = { navController.navigate("download_images") },
                 onNavigateToNewPlant = { navController.navigate("new_plant") },
                 onNavigateToCamera = { navController.navigate("camera_identify") },
+                onNavigateToTextScanner = { navController.navigate("text_scanner") },
                 onNavigateToNatureIdentify = { navController.navigate("nature_photo_identify") },
                 onNavigateToPhytochemistry = { navController.navigate("phytochemistry") },
                 onNavigateToPsychotropicPlants = { navController.navigate("psychotropic_plants") },
                 onNavigateToExtractionMethods = { navController.navigate("chemical_extraction_methods") },
                 onNavigateToChemicalReagents = { navController.navigate("chemical_reagents") },
+                onNavigateToHomePhytoTests = { navController.navigate("home_phyto_tests") },
                 onNavigateToMushrooms = { navController.navigate("toxic_mushrooms") },
                 onNavigateToLichens = { navController.navigate("toxic_lichens") },
                 onNavigateToPoisonousFamilies = { navController.navigate("poisonous_families") },
@@ -112,6 +114,7 @@ fun MainApp() {
                 onNavigateToToxicGenera = { navController.navigate("toxic_genera") },
                 onNavigateToAR = { navController.navigate("ar") },
                 onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToFieldMode = { navController.navigate("field_mode") },
                 onNavigateToBerries = { navController.navigate("berries") },
                 onNavigateToNotes = { navController.navigate("notes") },
                 onNavigateToFamilies = { navController.navigate("family_list") },
@@ -129,12 +132,30 @@ fun MainApp() {
                     if (query.isBlank()) navController.navigate("global_search")
                     else navController.navigate("global_search/${Uri.encode(query)}")
                 },
+                onNavigateToMultitarea = { navController.navigate("multitarea") },
                 onNavigateToCalendar = { navController.navigate("toxic_calendar") },
                 onNavigateToGBIF = { navController.navigate("gbif_enrichment") },
                 onPlantClick = { plant ->
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 }
+            )
+        }
+
+        // ── MODO CAMPO ──────────────────────────────────────────────
+        composable("field_mode") {
+            FieldModeScreen(
+                onBack = { navController.popBackStack() },
+                onIdentifyPlants = { navController.navigate("camera_identify") },
+                onIdentifyFungiLichens = { navController.navigate("nature_photo_identify") },
+                onTextScanner = { navController.navigate("text_scanner") },
+                onColorSearch = { navController.navigate("color_search") },
+                onSymptomsSearch = { navController.navigate("search_symptoms") },
+                onMap = { navController.navigate("sightings_history") },
+                onNotes = { navController.navigate("notes") },
+                onEmergency = { navController.navigate("emergency") },
+                onGlobalSearch = { navController.navigate("global_search") },
+                onEmergencyMap = { navController.navigate("emergency_map") }
             )
         }
 
@@ -147,6 +168,29 @@ fun MainApp() {
 
 
 
+
+
+        // ── MULTITAREA: pestañas internas ───────────────────────────
+        composable("multitarea") {
+            MultitareaScreen(
+                plantViewModel = viewModel,
+                compoundViewModel = compoundViewModel,
+                poisonousFamilyViewModel = poisonousFamilyViewModel,
+                onBack = { navController.popBackStack() },
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
+                },
+                onCompoundClick = { compound ->
+                    navController.navigate("compound_detail/${compound.id}")
+                },
+                onFamilyClick = { family ->
+                    navController.navigate("plants_by_family/${Uri.encode(family)}")
+                },
+                onIntoxicationClick = { navController.navigate("intoxication") },
+                onDichotomousKeysClick = { navController.navigate("dichotomous_keys") }
+            )
+        }
 
         // ── ESPECIES TÓXICAS ─────────────────────────────────────────
         composable("toxic_species") {
@@ -281,6 +325,13 @@ fun MainApp() {
                     viewModel.selectPlant(plant)
                     navController.navigate("plant_detail/${plant.id}")
                 },
+                onBack = { navController.popBackStack() },
+                onNavigateToEmergencyMap = { navController.navigate("emergency_map") }
+            )
+        }
+
+        composable("emergency_map") {
+            EmergencyMapScreen(
                 onBack = { navController.popBackStack() }
             )
         }
@@ -444,6 +495,18 @@ fun MainApp() {
                             )
                         }"
                     )
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── ESCÁNER DE TEXTO OCR ─────────────────────────────────────
+        composable("text_scanner") {
+            TextScannerScreen(
+                viewModel = viewModel,
+                onPlantClick = { plant ->
+                    viewModel.selectPlant(plant)
+                    navController.navigate("plant_detail/${plant.id}")
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -812,7 +875,14 @@ fun MainApp() {
         }
 
         composable("chemical_reagents") {
-            ChemicalReagentsScreen(onBack = { navController.popBackStack() })
+            ChemicalReagentsScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToHomePhytoTests = { navController.navigate("home_phyto_tests") }
+            )
+        }
+
+        composable("home_phyto_tests") {
+            HomePhytoTestsScreen(onBack = { navController.popBackStack() })
         }
 
         composable("phytochemistry") {
@@ -1273,3 +1343,4 @@ fun CategoryPlantCard(
         }
     }
 }
+

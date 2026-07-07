@@ -305,7 +305,7 @@ private fun InputBar(
     enabled: Boolean
 ) {
     Surface(shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface) {
-        Column(Modifier.padding(8.dp)) {
+        Column(Modifier.navigationBarsPadding().padding(8.dp)) {
             // Vista previa de la imagen adjunta
             attached?.let { bmp ->
                 Row(Modifier.padding(bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {

@@ -63,6 +63,10 @@ fun GlobalSearchScreen(
     var familyResults by remember { mutableStateOf<List<String>>(emptyList()) }
     var isSearching by remember { mutableStateOf(false) }
     var usedFuzzySearch by remember { mutableStateOf(false) }
+    var selectionMode by remember { mutableStateOf(false) }
+    val selectedPlantIds = remember { mutableStateListOf<Int>() }
+    var showBulkDeleteDialog by remember { mutableStateOf(false) }
+    var showBulkEditDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(searchQuery, allPlants, allCompounds, nameSearchMode, alphabetFilter) {
         if (searchQuery.normalized.length < 2) {
@@ -94,14 +98,16 @@ fun GlobalSearchScreen(
                     if (score > 0) score to compound else null
                 }
 
-            val exactFamilyMatches = plantsSnapshot.map { it.family }.filter { it.isNotBlank() }.distinct()
-                .mapNotNull { family ->
-                    currentCoroutineContext().ensureActive()
-                    val score = familyGlobalExactSearchScore(family, searchQuery)
-                    if (score > 0) score to family else null
-                }
+            val exactFamilyMatches =
+                plantsSnapshot.map { it.family }.filter { it.isNotBlank() }.distinct()
+                    .mapNotNull { family ->
+                        currentCoroutineContext().ensureActive()
+                        val score = familyGlobalExactSearchScore(family, searchQuery)
+                        if (score > 0) score to family else null
+                    }
 
-            val exactTotal = exactPlantMatches.size + exactCompoundMatches.size + exactFamilyMatches.size
+            val exactTotal =
+                exactPlantMatches.size + exactCompoundMatches.size + exactFamilyMatches.size
             val shouldUseFuzzy = exactTotal < 20 && searchQuery.normalized.length >= 4
 
             val exactPlantIds = exactPlantMatches.map { it.second.id }.toHashSet()
@@ -150,7 +156,12 @@ fun GlobalSearchScreen(
                 .take(80)
                 .map { it.second }
 
-            GlobalSearchResultSet(plants = plants, compounds = compounds, families = families, usedFuzzy = shouldUseFuzzy)
+            GlobalSearchResultSet(
+                plants = plants,
+                compounds = compounds,
+                families = families,
+                usedFuzzy = shouldUseFuzzy
+            )
         }
 
         plantResults = result.plants
@@ -166,8 +177,12 @@ fun GlobalSearchScreen(
         } else {
             plantResults.filter { plant ->
                 val firstChar = when (nameSearchMode) {
-                    GlobalNameSearchMode.CommonName -> plant.commonName.firstOrNull()?.uppercaseChar()
-                    GlobalNameSearchMode.ScientificName -> plant.scientificName.firstOrNull()?.uppercaseChar()
+                    GlobalNameSearchMode.CommonName -> plant.commonName.firstOrNull()
+                        ?.uppercaseChar()
+
+                    GlobalNameSearchMode.ScientificName -> plant.scientificName.firstOrNull()
+                        ?.uppercaseChar()
+
                     GlobalNameSearchMode.All -> plant.commonName.firstOrNull()?.uppercaseChar()
                         ?: plant.scientificName.firstOrNull()?.uppercaseChar()
                 }
@@ -176,64 +191,191 @@ fun GlobalSearchScreen(
         }
     }
 
-    val showPlants = selectedFilter == GlobalSearchFilter.All || selectedFilter == GlobalSearchFilter.Plants
-    val showCompounds = selectedFilter == GlobalSearchFilter.All || selectedFilter == GlobalSearchFilter.Compounds
-    val showFamilies = selectedFilter == GlobalSearchFilter.All || selectedFilter == GlobalSearchFilter.Families
+    val showPlants =
+        selectedFilter == GlobalSearchFilter.All || selectedFilter == GlobalSearchFilter.Plants
+    val showCompounds =
+        selectedFilter == GlobalSearchFilter.All || selectedFilter == GlobalSearchFilter.Compounds
+    val showFamilies =
+        selectedFilter == GlobalSearchFilter.All || selectedFilter == GlobalSearchFilter.Families
 
     val visiblePlantResults = if (showPlants) filteredPlants else emptyList()
     val visibleCompoundResults = if (showCompounds) compoundResults else emptyList()
     val visibleFamilyResults = if (showFamilies) familyResults else emptyList()
-    val totalResults = visiblePlantResults.size + visibleCompoundResults.size + visibleFamilyResults.size
+    val totalResults =
+        visiblePlantResults.size + visibleCompoundResults.size + visibleFamilyResults.size
+
+    val selectedPlants = remember(visiblePlantResults, selectedPlantIds.toList()) {
+        visiblePlantResults.filter { it.id in selectedPlantIds }
+    }
+
+    LaunchedEffect(visiblePlantResults) {
+        val visibleIds = visiblePlantResults.map { it.id }.toSet()
+        selectedPlantIds.removeAll { it !in visibleIds }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // ── TopBar ───────────────────────────────────────────────
-        Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSecondaryContainer) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = Color.Black)
-                }
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("Buscar plantas, compuestos, síntomas…", fontSize = 14.sp) },
-                    leadingIcon = { Icon(Icons.Filled.Search, null, tint = Color.Black.copy(alpha = 0.7f)) },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) {
-                            IconButton(onClick = { query = "" }) {
-                                Icon(Icons.Filled.Clear, "Limpiar", tint = Color.Black.copy(alpha = 0.7f))
-                            }
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.onSecondaryContainer
+        ) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 4.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = {
+                        if (selectionMode) {
+                            selectionMode = false
+                            selectedPlantIds.clear()
+                        } else {
+                            onBack()
                         }
-                    },
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        cursorColor = Color.Black,
-                        focusedBorderColor = Color.Black.copy(alpha = 0.5f),
-                        unfocusedBorderColor = Color.Black.copy(alpha = 0.3f),
-                        focusedPlaceholderColor = Color.Black.copy(alpha = 0.5f),
-                        unfocusedPlaceholderColor = Color.Black.copy(alpha = 0.5f),
-                    ),
-                    shape = RoundedCornerShape(24.dp),
-                )
-                Spacer(Modifier.width(4.dp))
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            if (selectionMode) "Cancelar selección" else "Volver",
+                            tint = Color.Black
+                        )
+                    }
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        modifier = Modifier.weight(1f),
+                        enabled = !selectionMode,
+                        placeholder = { Text("", fontSize = 14.sp) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Search,
+                                null,
+                                tint = Color.Black.copy(alpha = 0.7f)
+                            )
+                        },
+                        trailingIcon = {
+                            if (query.isNotEmpty() && !selectionMode) {
+                                IconButton(onClick = { query = "" }) {
+                                    Icon(
+                                        Icons.Filled.Clear,
+                                        "Limpiar",
+                                        tint = Color.Black.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            disabledTextColor = Color.Black.copy(alpha = 0.65f),
+                            cursorColor = Color.Black,
+                            focusedBorderColor = Color.Black.copy(alpha = 0.5f),
+                            unfocusedBorderColor = Color.Black.copy(alpha = 0.3f),
+                            disabledBorderColor = Color.Black.copy(alpha = 0.2f),
+                            focusedPlaceholderColor = Color.Black.copy(alpha = 0.5f),
+                            unfocusedPlaceholderColor = Color.Black.copy(alpha = 0.5f),
+                        ),
+                        shape = RoundedCornerShape(24.dp),
+                    )
+                    TextButton(onClick = {
+                        if (selectionMode) {
+                            selectionMode = false
+                            selectedPlantIds.clear()
+                        } else {
+                            selectedFilter = GlobalSearchFilter.Plants
+                            selectionMode = true
+                        }
+                    }) {
+                        Text(
+                            if (selectionMode) "Cancelar" else "Seleccionar",
+                            color = Color.Black,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+
+                if (selectionMode) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            "${selectedPlantIds.size} plantas seleccionadas",
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TextButton(onClick = {
+                            val visibleIds = visiblePlantResults.map { it.id }
+                            val allVisibleSelected =
+                                visibleIds.isNotEmpty() && visibleIds.all { it in selectedPlantIds }
+                            if (allVisibleSelected) {
+                                selectedPlantIds.removeAll(visibleIds.toSet())
+                            } else {
+                                visibleIds.forEach { id ->
+                                    if (id !in selectedPlantIds) selectedPlantIds.add(
+                                        id
+                                    )
+                                }
+                            }
+                        }) { Text("Todas", color = Color.Black, fontSize = 12.sp) }
+                        TextButton(
+                            enabled = selectedPlantIds.isNotEmpty(),
+                            onClick = { showBulkEditDialog = true }
+                        ) {
+                            Text(
+                                "Editar",
+                                color = if (selectedPlantIds.isNotEmpty()) Color.Black else Color.Black.copy(
+                                    alpha = 0.35f
+                                ),
+                                fontSize = 12.sp
+                            )
+                        }
+                        TextButton(
+                            enabled = selectedPlantIds.isNotEmpty(),
+                            onClick = { showBulkDeleteDialog = true }
+                        ) {
+                            Text(
+                                "Eliminar",
+                                color = if (selectedPlantIds.isNotEmpty()) Color.Black else Color.Black.copy(
+                                    alpha = 0.35f
+                                ),
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
             }
         }
 
         // ── Filtro de Nombre (Modo) ──────────────────────────────────────────────
-        Surface(color = colors.surfaceVariant.copy(alpha = 0.3f), modifier = Modifier.fillMaxWidth()) {
+        Surface(
+            color = colors.surfaceVariant.copy(alpha = 0.3f),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 item {
-                    Box(modifier = Modifier.height(28.dp).padding(end = 4.dp), contentAlignment = Alignment.Center) {
-                        Text("🔤 Nombre:", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = colors.onSurfaceVariant)
+                    Box(
+                        modifier = Modifier
+                            .height(28.dp)
+                            .padding(end = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "🔤 Nombre:",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = colors.onSurfaceVariant
+                        )
                     }
                 }
                 items(GlobalNameSearchMode.entries) { mode ->
@@ -256,15 +398,31 @@ fun GlobalSearchScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 item {
-                    Box(modifier = Modifier.height(28.dp).padding(end = 4.dp), contentAlignment = Alignment.Center) {
-                        Text("A-Z:", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = colors.onSurfaceVariant)
+                    Box(
+                        modifier = Modifier
+                            .height(28.dp)
+                            .padding(end = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "A-Z:",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = colors.onSurfaceVariant
+                        )
                     }
                 }
                 items(GlobalAlphabetFilter.entries) { letter ->
                     FilterChip(
                         selected = alphabetFilter == letter,
                         onClick = { alphabetFilter = letter },
-                        label = { Text(letter.label, fontSize = 12.sp, fontWeight = if (letter == GlobalAlphabetFilter.All) FontWeight.Normal else FontWeight.Bold) },
+                        label = {
+                            Text(
+                                letter.label,
+                                fontSize = 12.sp,
+                                fontWeight = if (letter == GlobalAlphabetFilter.All) FontWeight.Normal else FontWeight.Bold
+                            )
+                        },
                         modifier = Modifier.height(28.dp),
                         colors = FilterChipDefaults.filterChipColors(selectedContainerColor = colors.primaryContainer)
                     )
@@ -273,7 +431,10 @@ fun GlobalSearchScreen(
         }
 
         // ── Filtros principales ──────────────────────────────────────────────
-        Surface(color = colors.surfaceVariant.copy(alpha = 0.5f), modifier = Modifier.fillMaxWidth()) {
+        Surface(
+            color = colors.surfaceVariant.copy(alpha = 0.5f),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -297,9 +458,13 @@ fun GlobalSearchScreen(
 
         // ── Contador ─────────────────────────────────────────────
         if (query.length >= 2) {
-            Surface(color = colors.surfaceVariant.copy(alpha = 0.5f), modifier = Modifier.fillMaxWidth()) {
+            Surface(
+                color = colors.surfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     if (isSearching) "🔎 Buscando…"
+                    else if (selectionMode) "☑️ ${selectedPlantIds.size} seleccionadas de ${visiblePlantResults.size} plantas visibles"
                     else buildString {
                         append("📋 $totalResults resultados")
                         if (alphabetFilter != GlobalAlphabetFilter.All) append(" · $alphabetFilter")
@@ -321,8 +486,8 @@ fun GlobalSearchScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("🔍", fontSize = 48.sp)
                     Spacer(Modifier.height(8.dp))
-                    Text("Escribe al menos 2 caracteres", color = colors.onSurfaceVariant, fontSize = 14.sp)
-                    Text("o usa el micrófono para buscar por voz", color = colors.onSurfaceVariant.copy(alpha = 0.6f), fontSize = 12.sp)
+                    Text("", color = colors.onSurfaceVariant, fontSize = 14.sp)
+                    Text("", color = colors.onSurfaceVariant.copy(alpha = 0.6f), fontSize = 12.sp)
                 }
             }
         } else if (isSearching && totalResults == 0) {
@@ -350,16 +515,28 @@ fun GlobalSearchScreen(
             ) {
                 if (visibleFamilyResults.isNotEmpty()) {
                     item {
-                        Text("📚 Familias (${visibleFamilyResults.size})", fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp))
+                        Text(
+                            "📚 Familias (${visibleFamilyResults.size})",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp)
+                        )
                     }
                     items(visibleFamilyResults) { family ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1565C0).copy(alpha = 0.08f)),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF1565C0).copy(
+                                    alpha = 0.08f
+                                )
+                            ),
                             elevation = CardDefaults.cardElevation(1.dp),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Text("📚", fontSize = 16.sp)
                                 Spacer(Modifier.width(8.dp))
                                 Text(family, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
@@ -371,24 +548,85 @@ fun GlobalSearchScreen(
                 if (visiblePlantResults.isNotEmpty()) {
                     item {
                         Spacer(Modifier.height(8.dp))
-                        Text("🌿 Plantas (${visiblePlantResults.size})", fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp))
+                        Text(
+                            "🌿 Plantas (${visiblePlantResults.size})",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp)
+                        )
                     }
                     items(visiblePlantResults) { plant ->
-                        CompactPlantCard(plant = plant, query = query, onClick = { plantViewModel.setDetailNavigationPlants(visiblePlantResults); onPlantClick(plant) })
+                        GlobalSelectablePlantResultCard(
+                            plant = plant,
+                            query = query,
+                            onClick = {
+                                plantViewModel.setDetailNavigationPlants(visiblePlantResults)
+                                onPlantClick(plant)
+                            },
+                            selectionMode = selectionMode,
+                            selected = plant.id in selectedPlantIds,
+                            onSelectionChange = { checked ->
+                                if (checked) {
+                                    if (plant.id !in selectedPlantIds) selectedPlantIds.add(plant.id)
+                                } else {
+                                    selectedPlantIds.remove(plant.id)
+                                }
+                            }
+                        )
                     }
                 }
 
                 if (visibleCompoundResults.isNotEmpty()) {
                     item {
                         Spacer(Modifier.height(8.dp))
-                        Text("🧪 Compuestos (${visibleCompoundResults.size})", fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp))
+                        Text(
+                            "🧪 Compuestos (${visibleCompoundResults.size})",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp)
+                        )
                     }
                     items(visibleCompoundResults) { compound ->
-                        CompactCompoundCard(compound = compound, query = query, onClick = { onCompoundClick(compound) })
+                        CompactCompoundCard(
+                            compound = compound,
+                            query = query,
+                            onClick = { onCompoundClick(compound) })
                     }
                 }
             }
         }
+    }
+
+    if (showBulkDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showBulkDeleteDialog = false },
+            title = { Text("¿Eliminar ${selectedPlantIds.size} plantas?") },
+            text = { Text("Se eliminarán las plantas marcadas dentro de la búsqueda global. Esta acción no se puede deshacer.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    plantViewModel.deletePlants(selectedPlants)
+                    selectedPlantIds.clear()
+                    selectionMode = false
+                    showBulkDeleteDialog = false
+                }) { Text("Eliminar", color = colors.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBulkDeleteDialog = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
+    if (showBulkEditDialog) {
+        GlobalBulkEditPlantsDialog(
+            selectedCount = selectedPlantIds.size,
+            onDismiss = { showBulkEditDialog = false },
+            onConfirm = { field, value, append ->
+                plantViewModel.bulkUpdatePlants(selectedPlants, field.id, value, append)
+                selectedPlantIds.clear()
+                selectionMode = false
+                showBulkEditDialog = false
+            }
+        )
     }
 }
 
@@ -427,7 +665,11 @@ private data class GlobalSearchResultSet(
 
 // ── Funciones de búsqueda actualizadas ─────────────────────────────────
 
-private fun plantGlobalExactSearchScore(plant: PlantEntity, query: SearchQuery, nameMode: GlobalNameSearchMode): Int {
+private fun plantGlobalExactSearchScore(
+    plant: PlantEntity,
+    query: SearchQuery,
+    nameMode: GlobalNameSearchMode
+): Int {
     val q = query.normalized
     if (q.length < 2) return 0
 
@@ -438,11 +680,13 @@ private fun plantGlobalExactSearchScore(plant: PlantEntity, query: SearchQuery, 
             score = maxOf(score, exactFieldScore(plant.scientificName, q, 11_500))
             score = maxOf(score, exactFieldScore(plant.commonNames, q, 10_500))
         }
+
         GlobalNameSearchMode.CommonName -> {
             score = maxOf(score, exactFieldScore(plant.commonName, q, 14_000))
             score = maxOf(score, exactFieldScore(plant.commonNames, q, 12_000))
             score = maxOf(score, exactFieldScore(plant.scientificName, q, 7_000))
         }
+
         GlobalNameSearchMode.ScientificName -> {
             score = maxOf(score, exactFieldScore(plant.scientificName, q, 14_000))
             score = maxOf(score, exactFieldScore(plant.commonName, q, 7_000))
@@ -453,7 +697,9 @@ private fun plantGlobalExactSearchScore(plant: PlantEntity, query: SearchQuery, 
     score = maxOf(score, exactFieldScore(plant.family, q, 7_000))
     score = maxOf(score, exactFieldScore(plant.category, q, 5_000))
 
-    val nameText = listOf(plant.commonName, plant.commonNames, plant.scientificName).joinToString(" ").normalizeForSearch()
+    val nameText =
+        listOf(plant.commonName, plant.commonNames, plant.scientificName).joinToString(" ")
+            .normalizeForSearch()
     if (score == 0 && allTokensMatchCheap(nameText, query.tokens)) {
         score = 9_000 + query.tokens.size * 200
     }
@@ -469,7 +715,11 @@ private fun plantGlobalExactSearchScore(plant: PlantEntity, query: SearchQuery, 
     return score
 }
 
-private fun plantGlobalFuzzyFallbackScore(plant: PlantEntity, query: SearchQuery, nameMode: GlobalNameSearchMode): Int {
+private fun plantGlobalFuzzyFallbackScore(
+    plant: PlantEntity,
+    query: SearchQuery,
+    nameMode: GlobalNameSearchMode
+): Int {
     return when (nameMode) {
         GlobalNameSearchMode.All -> maxOf(
             fuzzyTextScore(plant.commonName, query) * 80,
@@ -477,12 +727,14 @@ private fun plantGlobalFuzzyFallbackScore(plant: PlantEntity, query: SearchQuery
             fuzzyTextScore(plant.commonNames, query) * 60,
             fuzzyTextScore(plant.family, query) * 35
         )
+
         GlobalNameSearchMode.CommonName -> maxOf(
             fuzzyTextScore(plant.commonName, query) * 100,
             fuzzyTextScore(plant.commonNames, query) * 85,
             fuzzyTextScore(plant.scientificName, query) * 40,
             fuzzyTextScore(plant.family, query) * 20
         )
+
         GlobalNameSearchMode.ScientificName -> maxOf(
             fuzzyTextScore(plant.scientificName, query) * 100,
             fuzzyTextScore(plant.commonName, query) * 40,
@@ -522,8 +774,11 @@ private fun compoundGlobalFuzzyFallbackScore(compound: CompoundEntity, query: Se
     )
 }
 
-private fun familyGlobalExactSearchScore(family: String, query: SearchQuery): Int = exactFieldScore(family, query.normalized, 7_000)
-private fun familyGlobalFuzzyFallbackScore(family: String, query: SearchQuery): Int = fuzzyTextScore(family, query) * 35
+private fun familyGlobalExactSearchScore(family: String, query: SearchQuery): Int =
+    exactFieldScore(family, query.normalized, 7_000)
+
+private fun familyGlobalFuzzyFallbackScore(family: String, query: SearchQuery): Int =
+    fuzzyTextScore(family, query) * 35
 
 private fun exactFieldScore(field: String, normalizedQuery: String, base: Int): Int {
     if (field.isBlank()) return 0
@@ -544,4 +799,272 @@ private fun allTokensMatchCheap(normalizedField: String, tokens: List<String>): 
     return tokens.all { token ->
         normalizedField.contains(token) || fieldTokens.any { it.startsWith(token) }
     }
+}
+
+@Composable
+private fun GlobalSelectablePlantResultCard(
+    plant: PlantEntity,
+    onClick: () -> Unit,
+    query: String = "",
+    selectionMode: Boolean = false,
+    selected: Boolean = false,
+    onSelectionChange: (Boolean) -> Unit = {}
+) {
+    val colors = MaterialTheme.colorScheme
+    val toxicityColor = when (plant.toxicityLevel) {
+        "Mortal" -> colors.error
+        "Alto" -> Color(0xFFE65100)
+        "Muy alto" -> Color(0xFFFF5722)
+        "Moderado" -> Color(0xFFF57C00)
+        "Bajo" -> colors.primary
+        else -> colors.onSurfaceVariant
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { if (selectionMode) onSelectionChange(!selected) else onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = if (selected) colors.primaryContainer.copy(alpha = 0.55f) else colors.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (selected) 6.dp else 1.dp),
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (selectionMode) {
+                Checkbox(checked = selected, onCheckedChange = { onSelectionChange(it) })
+                Spacer(Modifier.width(6.dp))
+            }
+            Text(
+                when (plant.toxicityLevel) {
+                    "Mortal" -> "💀"
+                    "Muy alto" -> "☠️"
+                    "Alto" -> "⚠️"
+                    "Moderado" -> "⚡"
+                    "Bajo" -> "🟢"
+                    else -> "ℹ️"
+                },
+                fontSize = 18.sp,
+                modifier = Modifier.width(28.dp)
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        plant.commonName,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Surface(
+                        color = toxicityColor.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            plant.toxicityLevel,
+                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp),
+                            fontSize = 9.sp,
+                            color = toxicityColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Text(
+                    plant.scientificName,
+                    color = colors.onSurfaceVariant,
+                    fontStyle = FontStyle.Italic,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 11.sp
+                )
+                if (plant.symptoms.isNotBlank()) {
+                    val q = query.trim()
+                    if (q.isNotBlank()) {
+                        val symptomText = plant.symptoms
+                        val idx = symptomText.indexOf(q, ignoreCase = true)
+                        if (idx >= 0) {
+                            val start = maxOf(0, idx - 15)
+                            val end = minOf(symptomText.length, idx + q.length + 40)
+                            val prefix = if (start > 0) "…" else ""
+                            val suffix = if (end < symptomText.length) "…" else ""
+                            val snippet = prefix + symptomText.substring(start, end) + suffix
+                            Row {
+                                val snipIdx = snippet.indexOf(q, ignoreCase = true)
+                                if (snipIdx >= 0) {
+                                    Text(
+                                        snippet.substring(0, snipIdx),
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF888888),
+                                        maxLines = 1
+                                    )
+                                    Text(
+                                        snippet.substring(snipIdx, snipIdx + q.length),
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = colors.tertiary,
+                                        maxLines = 1
+                                    )
+                                    Text(
+                                        snippet.substring(snipIdx + q.length),
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF888888),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                } else {
+                                    Text(
+                                        snippet,
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF888888),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        } else {
+                            Text(
+                                plant.symptoms,
+                                color = Color(0xFF888888),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontSize = 11.sp
+                            )
+                        }
+                    } else {
+                        Text(
+                            plant.symptoms,
+                            color = Color(0xFF888888),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            }
+            if (selectionMode) {
+                Text(
+                    if (selected) "✓" else "",
+                    color = colors.primary,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+private data class GlobalBulkEditField(val id: String, val label: String, val hint: String)
+
+private val GLOBAL_BULK_EDIT_FIELDS = listOf(
+    GlobalBulkEditField("commonNames", "Otros nombres comunes", "Ej: belladona, tabaco borde"),
+    GlobalBulkEditField("family", "Familia", "Ej: Solanaceae"),
+    GlobalBulkEditField("toxicityLevel", "Nivel de toxicidad", "Ej: Alto, Mortal..."),
+    GlobalBulkEditField("toxicParts", "Partes tóxicas", "Ej: hojas; semillas; raíz"),
+    GlobalBulkEditField("symptoms", "Síntomas", "Ej: náuseas, vómitos, arritmias"),
+    GlobalBulkEditField("description", "Descripción", "Descripción común para las fichas"),
+    GlobalBulkEditField("category", "Categoría", "Ej: Ornamental"),
+    GlobalBulkEditField("habitat", "Hábitat", "Ej: bosques húmedos"),
+    GlobalBulkEditField("geographicDistribution", "Distribución", "Ej: Mediterráneo"),
+    GlobalBulkEditField("firstAid", "Primeros auxilios", "Texto de primeros auxilios"),
+    GlobalBulkEditField("floweringMonths", "Meses de floración", "Ej: 3,4,5,6"),
+    GlobalBulkEditField("fruitingMonths", "Meses de fructificación", "Ej: 8,9,10"),
+    GlobalBulkEditField("maxToxicityMonths", "Meses máxima toxicidad", "Ej: 6,7,8"),
+    GlobalBulkEditField("notes", "Notas", "Nota común para las fichas"),
+    GlobalBulkEditField("mythsAndLegends", "Mitos y curiosidades", "Texto cultural común")
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GlobalBulkEditPlantsDialog(
+    selectedCount: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (GlobalBulkEditField, String, Boolean) -> Unit
+) {
+    var selectedField by remember { mutableStateOf(GLOBAL_BULK_EDIT_FIELDS.first()) }
+    var value by remember { mutableStateOf("") }
+    var append by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar $selectedCount plantas") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    "Elige el campo y el dato que quieres aplicar a todas las plantas marcadas en la búsqueda global.",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = selectedField.label,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Campo") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        GLOBAL_BULK_EDIT_FIELDS.forEach { field ->
+                            DropdownMenuItem(
+                                text = { Text(field.label) },
+                                onClick = {
+                                    selectedField = field
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { value = it },
+                    label = { Text("Dato a aplicar") },
+                    placeholder = { Text(selectedField.hint) },
+                    minLines = 2,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Añadir sin borrar lo anterior", fontWeight = FontWeight.Medium)
+                        Text(
+                            if (append) "Se agrega al final si no existe" else "Se reemplaza el campo completo",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(checked = append, onCheckedChange = { append = it })
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = value.isNotBlank(),
+                onClick = { onConfirm(selectedField, value.trim(), append) }
+            ) { Text("Aplicar") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancelar") }
+        }
+    )
 }

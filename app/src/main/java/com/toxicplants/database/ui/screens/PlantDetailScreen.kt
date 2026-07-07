@@ -14,12 +14,10 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,24 +30,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.CompoundEntity
 import com.toxicplants.database.PlantEntity
-import com.toxicplants.database.RecentPlantStore
-import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.ui.theme.carbonEffectSubtle
+import java.io.File
+import com.toxicplants.database.ui.PlantImageHelper
 import com.toxicplants.database.ui.LocalImageCache
 import com.toxicplants.database.ui.viewmodel.CompoundViewModel
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantDetailScreen(
     plantId: Int,
@@ -69,70 +64,40 @@ fun PlantDetailScreen(
 
     val allPlants by viewModel.allPlants.observeAsState(initial = emptyList())
     val selectedPlant by viewModel.selectedPlantData.collectAsState()
-    val contextPlants by viewModel.detailNavigationPlantsData.collectAsState()
+    var activePlantId by remember(plantId) { mutableIntStateOf(plantId) }
+    var showMoreMenu by remember { mutableStateOf(false) }
+    var markerNote by remember { mutableStateOf("") }
+    var showMarkerDialog by remember { mutableStateOf(false) }
 
-    // Permite moverse entre fichas sin volver a la lista. Si se abrió desde una
-    // lista filtrada/búsqueda/familia, las flechas recorren ese contexto; si no,
-    // recorren el catálogo completo.
-    var currentPlantId by rememberSaveable(plantId) { mutableIntStateOf(plantId) }
-    val navigationPlants = remember(allPlants, contextPlants, currentPlantId) {
-        if (contextPlants.any { it.id == currentPlantId }) contextPlants else allPlants
+    val sortedPlants = remember(allPlants) {
+        allPlants.sortedBy { (it.commonName.ifBlank { it.scientificName }).lowercase() }
     }
-    val currentIndex = remember(navigationPlants, currentPlantId) {
-        navigationPlants.indexOfFirst { it.id == currentPlantId }
+    val plant = remember(sortedPlants, activePlantId, selectedPlant) {
+        sortedPlants.firstOrNull { it.id == activePlantId }
+            ?: selectedPlant?.takeIf { it.id == activePlantId }
     }
-    val previousPlant = remember(navigationPlants, currentIndex) {
-        if (currentIndex > 0) navigationPlants[currentIndex - 1] else null
-    }
-    val nextPlant = remember(navigationPlants, currentIndex) {
-        if (currentIndex >= 0 && currentIndex < navigationPlants.lastIndex) navigationPlants[currentIndex + 1] else null
-    }
-    val plant = remember(allPlants, currentPlantId, selectedPlant) {
-        allPlants.firstOrNull { it.id == currentPlantId }
-            ?: selectedPlant?.takeIf { it.id == currentPlantId }
-    }
-    val detailScrollState = rememberScrollState()
+    val currentIdx = remember(plant?.id, sortedPlants) { sortedPlants.indexOfFirst { it.id == plant?.id } }
+    val prevPlant = remember(currentIdx, sortedPlants) { if (currentIdx > 0) sortedPlants.getOrNull(currentIdx - 1) else null }
+    val nextPlant = remember(currentIdx, sortedPlants) { if (currentIdx != -1 && currentIdx < sortedPlants.size - 1) sortedPlants.getOrNull(currentIdx + 1) else null }
 
-    fun goToPlant(target: PlantEntity?) {
-        if (target == null) return
-
-        // Guardamos SIEMPRE el ID actual en estado saveable. Así, si salimos a
-        // Wiki/Commons y Android recrea la pantalla, vuelve a esta ficha y no
-        // a la primera con la que se abrió el detalle.
-        currentPlantId = target.id
-        viewModel.selectPlant(target)
-
-        // Si existe callback de navegación, también actualiza la ruta real.
-        onNavigateToPlant?.invoke(target.id)
+    val navigateTo: (Int) -> Unit = { targetId ->
+        if (onNavigateToPlant != null) {
+            onNavigateToPlant(targetId)
+        } else {
+            activePlantId = targetId
+            val nextP = sortedPlants.firstOrNull { it.id == targetId }
+            if (nextP != null) viewModel.selectPlant(nextP)
+        }
     }
 
     // Sembrar datos fenológicos si faltan
     LaunchedEffect(Unit) { viewModel.seedPhenologyIfNeeded() }
-    LaunchedEffect(currentPlantId) {
-        detailScrollState.scrollTo(0)
-        RecentPlantStore.add(context, currentPlantId)
-    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            plant?.commonName ?: "Detalle",
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        if (currentIndex >= 0 && navigationPlants.isNotEmpty()) {
-                            Text(
-                                "${currentIndex + 1} de ${navigationPlants.size}",
-                                fontSize = 11.sp,
-                                color = Color.White.copy(alpha = 0.82f),
-                                maxLines = 1
-                            )
-                        }
-                    }
+                    Text(plant?.commonName ?: "Detalle", fontWeight = FontWeight.Bold)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -146,27 +111,6 @@ fun PlantDetailScreen(
                 ),
                 actions = {
                     plant?.let { p ->
-                        // Navegación directa entre fichas sin volver a la lista.
-                        IconButton(
-                            enabled = previousPlant != null,
-                            onClick = { goToPlant(previousPlant) }
-                        ) {
-                            Icon(
-                                Icons.Default.KeyboardArrowLeft,
-                                contentDescription = "Planta anterior",
-                                tint = if (previousPlant != null) Color.White else Color.White.copy(alpha = 0.35f)
-                            )
-                        }
-                        IconButton(
-                            enabled = nextPlant != null,
-                            onClick = { goToPlant(nextPlant) }
-                        ) {
-                            Icon(
-                                Icons.Default.KeyboardArrowRight,
-                                contentDescription = "Planta siguiente",
-                                tint = if (nextPlant != null) Color.White else Color.White.copy(alpha = 0.35f)
-                            )
-                        }
                         // Botón de ubicación
                         IconButton(onClick = { onNavigateToLocation?.invoke(p.id) }) {
                             Icon(
@@ -191,27 +135,117 @@ fun PlantDetailScreen(
                                 Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Color.White)
                             }
                         }
+                        // Desplegable de marcadores y más
+                        Box {
+                            IconButton(onClick = { showMoreMenu = true }) {
+                                Icon(Icons.Default.MoreVert, contentDescription = "Marcadores y Más", tint = Color.White)
+                            }
+                            DropdownMenu(
+                                expanded = showMoreMenu,
+                                onDismissRequest = { showMoreMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("🚩 Marcadores / Añadir nota de marcador") },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        markerNote = p.notes ?: ""
+                                        showMarkerDialog = true
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("🌐 Buscar en Wikipedia") },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://es.wikipedia.org/wiki/${Uri.encode(p.scientificName)}")))
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("🌐 Buscar en Google Botánica") },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=${Uri.encode("${p.scientificName} ${p.commonName} planta tóxica botánica")}")))
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("🌐 Buscar en GBIF") },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.gbif.org/species/search?q=${Uri.encode(p.scientificName)}")))
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("📋 Copiar nombre científico") },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(p.scientificName))
+                                        Toast.makeText(context, "Copiado: ${p.scientificName}", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("📤 Compartir información") },
+                                    onClick = {
+                                        showMoreMenu = false
+                                        val shareIntent = Intent().apply {
+                                            action = Intent.ACTION_SEND
+                                            putExtra(Intent.EXTRA_TEXT, "🌿 ${p.commonName} (${p.scientificName})\n☠️ Toxicidad: ${p.toxicityLevel}\n📝 Síntomas: ${p.symptoms}")
+                                            type = "text/plain"
+                                        }
+                                        context.startActivity(Intent.createChooser(shareIntent, "Compartir planta"))
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             )
         }
     ) { paddingValues ->
 
+        if (showMarkerDialog && plant != null) {
+            AlertDialog(
+                onDismissRequest = { showMarkerDialog = false },
+                title = { Text("🚩 Marcadores de planta") },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Añade una nota o marcador para catalogar esta planta en tus revisiones:", fontSize = 13.sp, color = Color.Gray)
+                        OutlinedTextField(
+                            value = markerNote,
+                            onValueChange = { markerNote = it },
+                            label = { Text("Marcador / Nota") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 3
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(onClick = { markerNote = "🚩 [REVISAR] " + markerNote }) { Text("🚩 Revisar") }
+                            OutlinedButton(onClick = { markerNote = "⚠️ [PELIGRO] " + markerNote }) { Text("⚠️ Peligro") }
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        showMarkerDialog = false
+                        aiScope.launch {
+                            viewModel.insertPlantSync(plant.copy(notes = markerNote))
+                            Toast.makeText(context, "Marcador guardado", Toast.LENGTH_SHORT).show()
+                        }
+                    }) { Text("Guardar marcador") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showMarkerDialog = false }) { Text("Cancelar") }
+                }
+            )
+        }
+
         if (plant == null) {
+            // ── Planta no encontrada ────────────────────────────────────
             Box(
                 modifier = Modifier.fillMaxSize().carbonEffectSubtle().padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (allPlants.isEmpty()) {
-                        CircularProgressIndicator(color = Color(0xFF2E7D32))
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text("Cargando planta…", color = Color.Gray)
-                    } else {
-                        Text("❌", fontSize = 48.sp)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text("Planta no encontrada", color = Color.Gray)
-                    }
+                    Text("❌", fontSize = 48.sp)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Planta no encontrada", color = Color.Gray)
                 }
             }
 
@@ -222,37 +256,15 @@ fun PlantDetailScreen(
             // ── Estado de imagen ────────────────────────────────────────
             var loadAttempts  by remember(p.id) { mutableIntStateOf(0) }
 
-            // ── Saltos rápidos dentro de la ficha ─────────────────────
-            val imageSectionRequester = remember { BringIntoViewRequester() }
-            val notesSectionRequester = remember { BringIntoViewRequester() }
-            val markersSectionRequester = remember { BringIntoViewRequester() }
-            val descriptionSectionRequester = remember { BringIntoViewRequester() }
-            val symptomsSectionRequester = remember { BringIntoViewRequester() }
-            val firstAidSectionRequester = remember { BringIntoViewRequester() }
-            val compoundsSectionRequester = remember { BringIntoViewRequester() }
-            val calendarSectionRequester = remember { BringIntoViewRequester() }
-            val infoSectionRequester = remember { BringIntoViewRequester() }
-
             // ── Estado de generación de IA ──────────────────────────
             var isGeneratingAiImg by remember { mutableStateOf(false) }
 
             // ── Estado del diálogo de URL manual / cambio de imagen ─────
             var showUrlDialog by remember { mutableStateOf(false) }
             var showChangeImageDialog by remember { mutableStateOf(false) }
-            var showNotesDialog by remember { mutableStateOf(false) }
-            var manualUrl     by remember { mutableStateOf("") }
-            var isSavingUrl   by remember { mutableStateOf(false) }
-            var noteDraft by remember(p.id, p.notes) { mutableStateOf(p.notes.orEmpty()) }
-            var selectedMarkers by remember(p.id) { mutableStateOf(PlantMarkerStore.load(context, p.id)) }
-            var availableMarkers by remember(p.id) { mutableStateOf(PlantMarkerStore.allAvailableMarkers(context)) }
-            var showNewMarkerDialog by remember { mutableStateOf(false) }
-            var newMarkerText by remember { mutableStateOf("") }
-            var compactView by remember(p.id) { mutableStateOf(true) }
-            var compactSymptomsExpanded by remember(p.id) { mutableStateOf(false) }
-            var quickIndexExpanded by remember(p.id) { mutableStateOf(false) }
-            var notesExpanded by remember(p.id) { mutableStateOf(false) }
-            var markersExpanded by remember(p.id) { mutableStateOf(false) }
-            var wikiExpanded by remember(p.id) { mutableStateOf(false) }
+            var manualUrl          by remember { mutableStateOf("") }
+            var isSavingUrl        by remember { mutableStateOf(false) }
+            var isAddingExtraPhoto by remember { mutableStateOf(false) }
 
             val galleryLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
@@ -260,14 +272,26 @@ fun PlantDetailScreen(
                 if (uri != null) {
                     scope.launch {
                         isSavingUrl = true
-                        val saved = LocalImageCache.saveFromUri(context, p.id, uri)
-                        if (saved) {
-                            val localPath = "file://${LocalImageCache.getLocalImagePath(context, p.id)}"
-                            viewModel.insertPlantSync(p.copy(imageUrl = localPath))
-                            loadAttempts++
-                            Toast.makeText(context, "Imagen guardada", Toast.LENGTH_SHORT).show()
+                        if (isAddingExtraPhoto) {
+                            val newPath = LocalImageCache.saveAdditionalFromUri(context, p.id, uri)
+                            if (newPath != null) {
+                                val updatedUrl = if (p.imageUrl.isBlank()) newPath else "${p.imageUrl.trim()} | $newPath"
+                                viewModel.insertPlantSync(p.copy(imageUrl = updatedUrl))
+                                loadAttempts++
+                                Toast.makeText(context, "Foto añadida a la galería", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "No se pudo guardar la foto", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
-                            Toast.makeText(context, "No se pudo guardar la imagen", Toast.LENGTH_SHORT).show()
+                            val saved = LocalImageCache.saveFromUri(context, p.id, uri)
+                            if (saved) {
+                                val localPath = "file://${LocalImageCache.getLocalImagePath(context, p.id)}"
+                                viewModel.insertPlantSync(p.copy(imageUrl = localPath))
+                                loadAttempts++
+                                Toast.makeText(context, "Imagen reemplazada", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "No se pudo guardar la imagen", Toast.LENGTH_SHORT).show()
+                            }
                         }
                         isSavingUrl = false
                     }
@@ -277,11 +301,12 @@ fun PlantDetailScreen(
             // La carga visual la gestiona PlantImageCard. El contador loadAttempts fuerza
             // que se recargue después de cambiar, borrar o guardar una foto.
 
-            // ── Diálogo principal: cambiar imagen ────────────────────────
+            // ── Diálogo principal: cambiar imagen o gestionar galería ────────────────────────
             if (showChangeImageDialog) {
+                val currentUrls = remember(p.imageUrl) { PlantImageHelper.parseImageUrls(p.imageUrl) }
                 AlertDialog(
                     onDismissRequest = { showChangeImageDialog = false },
-                    title = { Text("Cambiar imagen") },
+                    title = { Text(if (currentUrls.size > 1) "Galería de fotos (${currentUrls.size})" else "Fotos de la planta") },
                     text = {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(
@@ -290,32 +315,71 @@ fun PlantDetailScreen(
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+
+                            if (currentUrls.isNotEmpty()) {
+                                Text("Fotos en la ficha:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color(0xFFA5D6A7))
+                                currentUrls.forEachIndexed { idx, url ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        val label = when (idx) {
+                                            0 -> "1. Principal / Hoja"
+                                            1 -> "2. Flor / Fruto"
+                                            2 -> "3. Fruto / Detalle"
+                                            else -> "${idx + 1}. Detalle"
+                                        }
+                                        Text(label, fontSize = 12.sp, color = Color.White)
+                                        TextButton(
+                                            onClick = {
+                                                val newList = currentUrls.toMutableList().apply { removeAt(idx) }
+                                                val newUrlString = newList.joinToString(" | ")
+                                                scope.launch {
+                                                    if (url.startsWith("file://")) {
+                                                        val file = File(url.removePrefix("file://"))
+                                                        if (file.exists()) file.delete()
+                                                    }
+                                                    viewModel.insertPlantSync(p.copy(imageUrl = newUrlString))
+                                                    loadAttempts++
+                                                    Toast.makeText(context, "Foto ${idx + 1} eliminada", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        ) {
+                                            Text("🗑️ Borrar", color = Color(0xFFFF8A80), fontSize = 11.sp)
+                                        }
+                                    }
+                                }
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = Color.DarkGray)
+                            }
+
                             Button(
                                 onClick = {
                                     showChangeImageDialog = false
-                                    scope.launch {
-                                        LocalImageCache.deleteLocalImage(context, p.id)
-                                        loadAttempts++
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text("🔍 Buscar otra online") }
-
-                            OutlinedButton(
-                                onClick = {
-                                    showChangeImageDialog = false
+                                    isAddingExtraPhoto = true
                                     galleryLauncher.launch("image/*")
                                 },
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text("🖼️ Elegir foto del móvil") }
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
+                            ) { Text("➕ Añadir foto del móvil (Hoja, Flor, Fruto...)") }
 
                             OutlinedButton(
                                 onClick = {
                                     showChangeImageDialog = false
+                                    isAddingExtraPhoto = true
                                     showUrlDialog = true
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("🔗 Pegar URL de imagen") }
+                            ) { Text("🔗 Añadir URL externa a la galería") }
+
+                            OutlinedButton(
+                                onClick = {
+                                    showChangeImageDialog = false
+                                    isAddingExtraPhoto = false
+                                    galleryLauncher.launch("image/*")
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("⭐ Reemplazar por 1 foto del móvil") }
 
                             OutlinedButton(
                                 onClick = {
@@ -336,10 +400,10 @@ fun PlantDetailScreen(
                                     LocalImageCache.deleteLocalImage(context, p.id)
                                     loadAttempts++
                                     showChangeImageDialog = false
-                                    Toast.makeText(context, "Buscando otra imagen", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Buscando otra imagen online", Toast.LENGTH_SHORT).show()
                                 },
                                 modifier = Modifier.fillMaxWidth()
-                            ) { Text("🗑️ Borrar y buscar de nuevo") }
+                            ) { Text("🗑️ Borrar todo y buscar online de nuevo") }
                         }
                     },
                     confirmButton = {},
@@ -388,16 +452,25 @@ fun PlantDetailScreen(
                                     isSavingUrl   = true
                                     showUrlDialog = false
                                     scope.launch {
-                                        val saved = LocalImageCache.downloadAndSave(
-                                            context, p.id, manualUrl
-                                        )
-                                        if (saved) {
-                                            val localPath = "file://${LocalImageCache.getLocalImagePath(context, p.id)}"
-                                            viewModel.insertPlantSync(p.copy(imageUrl = localPath))
+                                        if (isAddingExtraPhoto) {
+                                            val newPath = LocalImageCache.downloadAndSaveAdditional(context, p.id, manualUrl)
+                                                ?: manualUrl.trim()
+                                            val updatedUrl = if (p.imageUrl.isBlank()) newPath else "${p.imageUrl.trim()} | $newPath"
+                                            viewModel.insertPlantSync(p.copy(imageUrl = updatedUrl))
                                             loadAttempts++
-                                            Toast.makeText(context, "Imagen descargada", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, "URL añadida a la galería", Toast.LENGTH_SHORT).show()
                                         } else {
-                                            Toast.makeText(context, "No se pudo descargar la imagen", Toast.LENGTH_SHORT).show()
+                                            val saved = LocalImageCache.downloadAndSave(
+                                                context, p.id, manualUrl
+                                            )
+                                            if (saved) {
+                                                val localPath = "file://${LocalImageCache.getLocalImagePath(context, p.id)}"
+                                                viewModel.insertPlantSync(p.copy(imageUrl = localPath))
+                                                loadAttempts++
+                                                Toast.makeText(context, "Imagen descargada", Toast.LENGTH_SHORT).show()
+                                            } else {
+                                                Toast.makeText(context, "No se pudo descargar la imagen", Toast.LENGTH_SHORT).show()
+                                            }
                                         }
                                         manualUrl   = ""
                                         isSavingUrl = false
@@ -419,194 +492,41 @@ fun PlantDetailScreen(
                 )
             }
 
-            // ── Diálogo: nueva etiqueta personalizada ────────────────────
-            if (showNewMarkerDialog) {
-                AlertDialog(
-                    onDismissRequest = { showNewMarkerDialog = false },
-                    title = { Text("Nueva etiqueta") },
-                    text = {
-                        Column {
-                            Text(
-                                "Crea una etiqueta personal para reutilizarla en otras plantas.",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            OutlinedTextField(
-                                value = newMarkerText,
-                                onValueChange = { newMarkerText = it },
-                                label = { Text("Etiqueta") },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        Button(
-                            enabled = newMarkerText.isNotBlank(),
-                            onClick = {
-                                val marker = PlantMarkerStore.addCustomMarker(context, newMarkerText)
-                                if (marker != null) {
-                                    availableMarkers = PlantMarkerStore.allAvailableMarkers(context)
-                                    selectedMarkers = PlantMarkerStore.toggle(context, p.id, marker)
-                                }
-                                newMarkerText = ""
-                                showNewMarkerDialog = false
-                            }
-                        ) { Text("Crear y marcar") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showNewMarkerDialog = false }) { Text("Cancelar") }
-                    }
-                )
-            }
-
-            // ── Diálogo: notas rápidas de usuario ───────────────────────
-            if (showNotesDialog) {
-                AlertDialog(
-                    onDismissRequest = { showNotesDialog = false },
-                    title = { Text("📝 Mis notas") },
-                    text = {
-                        Column {
-                            Text(
-                                "Notas privadas para esta ficha. Útil para marcar dudas, tareas pendientes o información local.",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            OutlinedTextField(
-                                value = noteDraft,
-                                onValueChange = { noteDraft = it },
-                                label = { Text("Nota") },
-                                modifier = Modifier.fillMaxWidth(),
-                                minLines = 4
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        Button(onClick = {
-                            viewModel.updatePlantNotes(p.id, noteDraft)
-                            showNotesDialog = false
-                            Toast.makeText(context, "Nota guardada", Toast.LENGTH_SHORT).show()
-                        }) { Text("Guardar") }
-                    },
-                    dismissButton = {
-                        Row {
-                            if (!p.notes.isNullOrBlank()) {
-                                TextButton(onClick = {
-                                    noteDraft = ""
-                                    viewModel.updatePlantNotes(p.id, null)
-                                    showNotesDialog = false
-                                    Toast.makeText(context, "Nota borrada", Toast.LENGTH_SHORT).show()
-                                }) { Text("Borrar", color = MaterialTheme.colorScheme.error) }
-                            }
-                            TextButton(onClick = { showNotesDialog = false }) { Text("Cancelar") }
-                        }
-                    }
-                )
-            }
-
             // ── Contenido principal ──────────────────────────────────────
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .verticalScroll(detailScrollState)
+                    .verticalScroll(rememberScrollState())
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
-                // Selector simple de vista compacta / completa
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    OutlinedButton(onClick = { compactView = !compactView }) {
-                        Text(if (compactView) "Vista completa" else "Vista compacta", fontSize = 12.sp)
-                    }
-                }
-
-                if (compactView) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth().bringIntoViewRequester(imageSectionRequester),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        PlantImageCard(
-                            plant = p,
-                            height = 260.dp,
-                            showReload = true,
-                            reloadKey = loadAttempts,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    Card(
+                // ── Barra rápida para pasar de ficha sin retroceder (Arriba) ──
+                if (prevPlant != null || nextPlant != null) {
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = getToxicityColor(p.toxicityLevel).copy(alpha = 0.1f)
-                        )
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(p.commonName, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                            Text(
-                                p.scientificName,
-                                fontSize = 16.sp,
-                                fontStyle = FontStyle.Italic,
-                                color = Color.Gray
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Surface(
-                                color = getToxicityColor(p.toxicityLevel),
-                                shape = MaterialTheme.shapes.small
-                            ) {
-                                Text(
-                                    "Toxicidad: ${p.toxicityLevel}",
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                        OutlinedButton(
+                            onClick = { prevPlant?.let { navigateTo(it.id) } },
+                            enabled = prevPlant != null,
+                            modifier = Modifier.weight(1f).padding(end = 4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7)),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Text("⬅️ ${prevPlant?.commonName?.ifBlank { prevPlant.scientificName } ?: "Anterior"}", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
                         }
-                    }
 
-                    ExpandableSectionCard(
-                        title = "Síntomas",
-                        expanded = compactSymptomsExpanded,
-                        onExpandedChange = { compactSymptomsExpanded = it },
-                        modifier = Modifier.bringIntoViewRequester(symptomsSectionRequester)
-                    ) {
-                        com.toxicplants.database.ui.components.GlossaryText(
-                            text = p.symptoms,
-                            fontSize = 14.sp
-                        )
-                    }
-                    DetailSection(
-                        title = "Partes Tóxicas",
-                        content = p.toxicParts
-                    )
-                } else {
-
-                // ══════════════════════════════════════════════════════════
-                // ÍNDICE RÁPIDO DE SECCIONES
-                // ══════════════════════════════════════════════════════════
-                ExpandableSectionCard(
-                    title = "Ir a sección",
-                    expanded = quickIndexExpanded,
-                    onExpandedChange = { quickIndexExpanded = it }
-                ) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        AssistChip(onClick = { scope.launch { imageSectionRequester.bringIntoView() } }, label = { Text("🖼️ Foto", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { notesSectionRequester.bringIntoView() } }, label = { Text("📝 Notas", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { markersSectionRequester.bringIntoView() } }, label = { Text("🏷️ Marcadores", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { descriptionSectionRequester.bringIntoView() } }, label = { Text("Descripción", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { symptomsSectionRequester.bringIntoView() } }, label = { Text("Síntomas", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { firstAidSectionRequester.bringIntoView() } }, label = { Text("Auxilios", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { compoundsSectionRequester.bringIntoView() } }, label = { Text("Compuestos", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { calendarSectionRequester.bringIntoView() } }, label = { Text("Calendario", fontSize = 12.sp) })
-                        AssistChip(onClick = { scope.launch { infoSectionRequester.bringIntoView() } }, label = { Text("Info", fontSize = 12.sp) })
+                        OutlinedButton(
+                            onClick = { nextPlant?.let { navigateTo(it.id) } },
+                            enabled = nextPlant != null,
+                            modifier = Modifier.weight(1f).padding(start = 4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7)),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Text("${nextPlant?.commonName?.ifBlank { nextPlant.scientificName } ?: "Siguiente"} ➡️", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                        }
                     }
                 }
 
@@ -614,7 +534,7 @@ fun PlantDetailScreen(
                 // TARJETA DE IMAGEN  — usa PlantImageCard + PlantImageHelper
                 // ══════════════════════════════════════════════════════════
                 Card(
-                    modifier  = Modifier.fillMaxWidth().bringIntoViewRequester(imageSectionRequester),
+                    modifier  = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     // Imagen principal (280dp de alto)
@@ -626,6 +546,7 @@ fun PlantDetailScreen(
                         modifier   = Modifier.fillMaxWidth()
                     )
 
+                    val galleryPhotos = remember(p.imageUrl) { PlantImageHelper.parseImageUrls(p.imageUrl) }
                     Button(
                         onClick = { showChangeImageDialog = true },
                         modifier = Modifier
@@ -633,7 +554,10 @@ fun PlantDetailScreen(
                             .padding(horizontal = 8.dp, vertical = 8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
                     ) {
-                        Text("🖼️ Cambiar imagen", fontSize = 13.sp)
+                        Text(
+                            text = if (galleryPhotos.size > 1) "🖼️ Gestionar galería (${galleryPhotos.size} fotos)" else "🖼️ Añadir / Cambiar fotos",
+                            fontSize = 13.sp
+                        )
                     }
 
                     // Barra inferior con accesos rápidos
@@ -755,84 +679,6 @@ fun PlantDetailScreen(
                 }
 
                 // ══════════════════════════════════════════════════════════
-                // NOTAS RÁPIDAS DEL USUARIO
-                // ══════════════════════════════════════════════════════════
-                ExpandableSectionCard(
-                    title = "📝 Mis notas" + if (!p.notes.isNullOrBlank()) " · con nota" else "",
-                    expanded = notesExpanded,
-                    onExpandedChange = { notesExpanded = it },
-                    modifier = Modifier.bringIntoViewRequester(notesSectionRequester)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            if (p.notes.isNullOrBlank()) "Sin notas personales para esta ficha." else p.notes.orEmpty(),
-                            fontSize = 14.sp,
-                            color = if (p.notes.isNullOrBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
-                            lineHeight = 20.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        TextButton(onClick = {
-                            noteDraft = p.notes.orEmpty()
-                            showNotesDialog = true
-                        }) {
-                            Text(if (p.notes.isNullOrBlank()) "Añadir" else "Editar")
-                        }
-                    }
-                }
-
-                // ══════════════════════════════════════════════════════════
-                // MARCADORES PERSONALES
-                // ══════════════════════════════════════════════════════════
-                ExpandableSectionCard(
-                    title = "🏷️ Marcadores personales" + if (selectedMarkers.isNotEmpty()) " · ${selectedMarkers.size}" else "",
-                    expanded = markersExpanded,
-                    onExpandedChange = { markersExpanded = it },
-                    modifier = Modifier.bringIntoViewRequester(markersSectionRequester)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            "Marca tareas o estados de revisión para esta ficha.",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.weight(1f)
-                        )
-                        if (selectedMarkers.isNotEmpty()) {
-                            TextButton(onClick = {
-                                selectedMarkers = emptySet()
-                                PlantMarkerStore.clear(context, p.id)
-                            }) { Text("Limpiar", color = MaterialTheme.colorScheme.error) }
-                        }
-                    }
-                    Spacer(Modifier.height(10.dp))
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        availableMarkers.forEach { marker ->
-                            val selected = marker in selectedMarkers
-                            FilterChip(
-                                selected = selected,
-                                onClick = { selectedMarkers = PlantMarkerStore.toggle(context, p.id, marker) },
-                                label = { Text(marker, fontSize = 12.sp) },
-                                leadingIcon = if (selected) { { Text("✓", fontSize = 12.sp) } } else null,
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = Color(0xFF2E7D32),
-                                    selectedLabelColor = Color.White
-                                )
-                            )
-                        }
-                        Spacer(Modifier.height(10.dp))
-                        OutlinedButton(
-                            onClick = {
-                                newMarkerText = ""
-                                showNewMarkerDialog = true
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) { Text("+ Nueva etiqueta", fontSize = 13.sp) }
-                    }
-                }
-
-                // ══════════════════════════════════════════════════════════
                 // TARJETA DE NOMBRE Y TOXICIDAD
                 // ══════════════════════════════════════════════════════════
                 Card(
@@ -926,152 +772,152 @@ fun PlantDetailScreen(
                 // ══════════════════════════════════════════════════════════
                 // BOTONES DE WIKIPEDIA
                 // ══════════════════════════════════════════════════════════
-                ExpandableSectionCard(
-                    title = "Wikipedia y Wikimedia Commons",
-                    expanded = wikiExpanded,
-                    onExpandedChange = { wikiExpanded = it }
-                ) {
-                    val wikiUrl = "https://es.wikipedia.org/wiki/" +
-                            Uri.encode(p.scientificName.takeIf { it.isNotBlank() } ?: p.commonName)
-                    val commonsScientificUrl = "https://commons.wikimedia.org/w/index.php" +
-                            "?search=${Uri.encode(p.scientificName.ifBlank { p.commonName })}" +
-                            "&title=Special:MediaSearch&type=image"
-                    val commonsCommonUrl = "https://commons.wikimedia.org/w/index.php" +
-                            "?search=${Uri.encode(p.commonName.ifBlank { p.scientificName })}" +
-                            "&title=Special:MediaSearch&type=image"
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Ver en Wikipedia", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val wikiUrl = "https://es.wikipedia.org/wiki/" +
+                                    Uri.encode(
+                                        p.scientificName.takeIf { it.isNotBlank() } ?: p.commonName
+                                    )
+                            val commonsUrl = "https://commons.wikimedia.org/w/index.php" +
+                                    "?search=${Uri.encode(p.scientificName)}" +
+                                    "&title=Special:MediaSearch&type=image"
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(wikiUrl))) },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
-                        ) { Text("Artículo", fontSize = 12.sp) }
+                            Button(
+                                onClick = {
+                                    context.startActivity(
+                                        Intent(Intent.ACTION_VIEW, Uri.parse(wikiUrl))
+                                    )
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors   = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF1565C0)
+                                )
+                            ) { Text("Artículo", fontSize = 12.sp) }
 
-                        Button(
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsScientificUrl))) },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32))
-                        ) { Text("Commons científico", fontSize = 11.sp) }
+                            Button(
+                                onClick = {
+                                    context.startActivity(
+                                        Intent(Intent.ACTION_VIEW, Uri.parse(commonsUrl))
+                                    )
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors   = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF2E7D32)
+                                )
+                            ) { Text("Fotos", fontSize = 12.sp) }
+                        }
                     }
+                }
 
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(commonsCommonUrl))) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) { Text("Buscar fotos por nombre común en Commons", fontSize = 12.sp) }
-
-                    Spacer(Modifier.height(10.dp))
-                    HorizontalDivider()
-                    Spacer(Modifier.height(8.dp))
-
-                    Text("Búsqueda toxicológica externa", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(Modifier.height(6.dp))
-
-                    val toxicologyQuery = "componentes y síntomas tóxicos de " +
-                            (p.scientificName.ifBlank { p.commonName })
-                    val toxicologyQueryWithCommon = toxicologyQuery +
-                            if (p.commonName.isNotBlank()) " (${p.commonName})" else ""
-                    val googleToxicologyUrl = "https://www.google.com/search?q=" +
-                            Uri.encode(toxicologyQueryWithCommon)
-                    val scholarUrl = "https://scholar.google.com/scholar?q=" +
-                            Uri.encode("${p.scientificName.ifBlank { p.commonName }} toxicity toxic compounds symptoms")
-                    val pubMedUrl = "https://pubmed.ncbi.nlm.nih.gov/?term=" +
-                            Uri.encode("${p.scientificName.ifBlank { p.commonName }} toxicity toxic compounds symptoms")
-
+                // ── Barra rápida para pasar de ficha sin retroceder ──
+                if (prevPlant != null || nextPlant != null) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(googleToxicologyUrl))) },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4285F4))
-                        ) { Text("Google toxicología", fontSize = 11.sp) }
-
-                        OutlinedButton(
-                            onClick = {
-                                clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(toxicologyQueryWithCommon))
-                                Toast.makeText(context, "Consulta copiada", Toast.LENGTH_SHORT).show()
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) { Text("Copiar consulta", fontSize = 11.sp) }
-                    }
-
-                    Spacer(Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         OutlinedButton(
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(scholarUrl))) },
-                            modifier = Modifier.weight(1f)
-                        ) { Text("Scholar", fontSize = 11.sp) }
+                            onClick = { prevPlant?.let { navigateTo(it.id) } },
+                            enabled = prevPlant != null,
+                            modifier = Modifier.weight(1f).padding(end = 4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7)),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Text("⬅️ ${prevPlant?.commonName?.ifBlank { prevPlant.scientificName } ?: "Anterior"}", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                        }
 
                         OutlinedButton(
-                            onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pubMedUrl))) },
-                            modifier = Modifier.weight(1f)
-                        ) { Text("PubMed", fontSize = 11.sp) }
+                            onClick = { nextPlant?.let { navigateTo(it.id) } },
+                            enabled = nextPlant != null,
+                            modifier = Modifier.weight(1f).padding(start = 4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7)),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Text("${nextPlant?.commonName?.ifBlank { nextPlant.scientificName } ?: "Siguiente"} ➡️", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                        }
                     }
                 }
 
                 // ══════════════════════════════════════════════════════════
                 // SECCIONES DE INFORMACIÓN
                 // ══════════════════════════════════════════════════════════
-                DetailSection(title = "Descripción",    content = p.description, modifier = Modifier.bringIntoViewRequester(descriptionSectionRequester))
+                DetailSection(title = "Descripción",    content = p.description)
                 AiFillButton(
-                    label = "🤖 Generar descripción con IA",
+                    label = "🤖 Rellenar Descripción con IA interna",
                     plant = p,
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.DESCRIPTION,
                     viewModel = viewModel
                 )
                 OutlinedButton(
                     onClick = {
-                        val query = "descripción botánica características hábitat de " +
-                                (p.scientificName.ifBlank { p.commonName }) +
-                                if (p.commonName.isNotBlank()) " (${p.commonName})" else ""
-                        val url = "https://www.google.com/search?q=${Uri.encode(query)}"
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        val q = Uri.encode("${p.scientificName} ${p.commonName} planta tóxica descripción botánica y características")
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=$q")))
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF80CBC4))
                 ) {
-                    Text("🔎 Google descripción", fontSize = 13.sp)
+                    Text("🌐 Abrir navegador: Google IA (Descripción)", fontSize = 12.sp)
                 }
-                DetailSection(title = "Síntomas",       content = p.symptoms, modifier = Modifier.bringIntoViewRequester(symptomsSectionRequester))
+
+                DetailSection(title = "Síntomas",       content = p.symptoms)
                 AiFillButton(
-                    label = "🤖 Generar síntomas de intoxicación con IA",
+                    label = "🤖 Rellenar Síntomas con IA interna",
                     plant = p,
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.SYMPTOMS,
                     viewModel = viewModel
                 )
                 OutlinedButton(
                     onClick = {
-                        val query = "componentes y síntomas tóxicos de " +
-                                (p.scientificName.ifBlank { p.commonName }) +
-                                if (p.commonName.isNotBlank()) " (${p.commonName})" else ""
-                        val url = "https://www.google.com/search?q=${Uri.encode(query)}"
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        val q = Uri.encode("${p.scientificName} ${p.commonName} planta tóxica síntomas de intoxicación en humanos y animales")
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=$q")))
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF80CBC4))
                 ) {
-                    Text("🔎 Google toxicología", fontSize = 13.sp)
+                    Text("🌐 Abrir navegador: Google IA (Síntomas)", fontSize = 12.sp)
                 }
-                DetailSection(title = "Primeros Auxilios", content = p.firstAid, modifier = Modifier.bringIntoViewRequester(firstAidSectionRequester))
+
+                DetailSection(title = "Primeros Auxilios", content = p.firstAid)
                 AiFillButton(
-                    label = "🤖 Generar primeros auxilios con IA",
+                    label = "🤖 Rellenar Primeros Auxilios con IA interna",
                     plant = p,
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.FIRST_AID,
                     viewModel = viewModel
                 )
+                OutlinedButton(
+                    onClick = {
+                        val q = Uri.encode("${p.scientificName} ${p.commonName} primeros auxilios tratamiento intoxicación planta tóxica")
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=$q")))
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF80CBC4))
+                ) {
+                    Text("🌐 Abrir navegador: Google IA (Primeros Auxilios)", fontSize = 12.sp)
+                }
+
                 DetailSection(title = "Partes Tóxicas", content = p.toxicParts)
                 AiFillButton(
-                    label = "🤖 Generar partes tóxicas con IA",
+                    label = "🤖 Rellenar Partes Tóxicas con IA interna",
                     plant = p,
                     fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.TOXIC_PARTS,
                     viewModel = viewModel
                 )
+                OutlinedButton(
+                    onClick = {
+                        val q = Uri.encode("${p.scientificName} ${p.commonName} partes tóxicas hojas flor fruto planta tóxica")
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=$q")))
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF80CBC4))
+                ) {
+                    Text("🌐 Abrir navegador: Google IA (Partes Tóxicas)", fontSize = 12.sp)
+                }
 
                 // ══════════════════════════════════════════════════════════
                 // COMPUESTOS TÓXICOS QUE CONTIENE
@@ -1091,7 +937,7 @@ fun PlantDetailScreen(
                         }
                     }
                     if (relatedCompounds.isNotEmpty()) {
-                        Card(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(compoundsSectionRequester)) {
+                        Card(modifier = Modifier.fillMaxWidth()) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
                                     "🧪 Compuestos tóxicos (${relatedCompounds.size})",
@@ -1181,12 +1027,6 @@ fun PlantDetailScreen(
                     }
                 }
                 DetailSection(title = "Hábitat",        content = p.habitat)
-                AiFillButton(
-                    label = "🤖 Generar hábitat con IA",
-                    plant = p,
-                    fieldType = com.toxicplants.database.ui.GeminiNameHelper.FieldType.HABITAT,
-                    viewModel = viewModel
-                )
                 DetailSection(title = "Distribución",   content = p.geographicDistribution)
                 AiFillButton(
                     label = "🤖 Clasificar región / distribución con IA",
@@ -1199,7 +1039,7 @@ fun PlantDetailScreen(
                 // CALENDARIO FENOLÓGICO
                 // ══════════════════════════════════════════════════════════
                 if (p.floweringMonths.isNotBlank() || p.fruitingMonths.isNotBlank() || p.maxToxicityMonths.isNotBlank()) {
-                    Card(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(calendarSectionRequester)) {
+                    Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 "📅 Calendario fenológico",
@@ -1234,7 +1074,7 @@ fun PlantDetailScreen(
                                         fontSize = 10.sp,
                                         color = Color.Gray,
                                         fontWeight = FontWeight.Medium,
-                                        textAlign = TextAlign.Center,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                                         modifier = Modifier.weight(1f)
                                     )
                                 }
@@ -1389,9 +1229,9 @@ fun PlantDetailScreen(
                 // ══════════════════════════════════════════════════════════
                 // INFORMACIÓN ADICIONAL
                 // ══════════════════════════════════════════════════════════
-                Card(modifier = Modifier.fillMaxWidth().bringIntoViewRequester(infoSectionRequester)) {
+                Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Información adicional", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = detailSectionTitleColor("Información adicional"))
+                        Text("Información adicional", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                         InfoRow("Categoría", p.category)
                         InfoRow("Familia",   p.family)
@@ -1399,7 +1239,33 @@ fun PlantDetailScreen(
                     }
                 }
 
-                } // fin vista completa
+                if (prevPlant != null || nextPlant != null) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedButton(
+                            onClick = { prevPlant?.let { navigateTo(it.id) } },
+                            enabled = prevPlant != null,
+                            modifier = Modifier.weight(1f).padding(end = 4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7)),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Text("⬅️ ${prevPlant?.commonName?.ifBlank { prevPlant.scientificName } ?: "Anterior"}", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                        }
+
+                        OutlinedButton(
+                            onClick = { nextPlant?.let { navigateTo(it.id) } },
+                            enabled = nextPlant != null,
+                            modifier = Modifier.weight(1f).padding(start = 4.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFA5D6A7)),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Text("${nextPlant?.commonName?.ifBlank { nextPlant.scientificName } ?: "Siguiente"} ➡️", maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp)
+                        }
+                    }
+                }
 
             } // fin Column
         } // fin else (plant != null)
@@ -1408,56 +1274,11 @@ fun PlantDetailScreen(
 
 // ── Composables auxiliares ────────────────────────────────────────────────
 
-
 @Composable
-private fun ExpandableSectionCard(
-    title: String,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Card(modifier = modifier.fillMaxWidth()) {
+fun DetailSection(title: String, content: String) {
+    Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onExpandedChange(!expanded) },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = Color(0xFF2E7D32),
-                    modifier = Modifier.weight(1f)
-                )
-                Text(if (expanded) "▲" else "▼", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            if (expanded) {
-                Spacer(Modifier.height(10.dp))
-                content()
-            }
-        }
-    }
-}
-
-private fun detailSectionTitleColor(title: String): Color = when (title.lowercase()) {
-    "descripción" -> Color(0xFF1565C0)
-    "síntomas" -> Color(0xFFE65100)
-    "primeros auxilios" -> Color(0xFF2E7D32)
-    "partes tóxicas" -> Color(0xFFC62828)
-    "hábitat" -> Color(0xFF00796B)
-    "distribución" -> Color(0xFF5E35B1)
-    "información adicional" -> Color(0xFF6A1B9A)
-    else -> Color(0xFF2E7D32)
-}
-
-@Composable
-fun DetailSection(title: String, content: String, modifier: Modifier = Modifier) {
-    Card(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = detailSectionTitleColor(title))
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(8.dp))
             // Texto con detección automática de términos botánicos:
             // las palabras del glosario (umbela, palmeada, látex…) se subrayan
@@ -1540,19 +1361,14 @@ fun AiFillButton(
                     )
                     when (result) {
                         is com.toxicplants.database.ui.GeminiNameHelper.TextResult.Success -> {
-                            val updated = when (fieldType) {
-                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.DESCRIPTION ->
-                                    plant.copy(description = result.text)
-                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.SYMPTOMS ->
-                                    plant.copy(symptoms = result.text)
-                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.REGION ->
-                                    plant.copy(geographicDistribution = result.text)
-                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.HABITAT ->
-                                    plant.copy(habitat = result.text)
-                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.TOXIC_PARTS ->
-                                    plant.copy(toxicParts = result.text)
-                                com.toxicplants.database.ui.GeminiNameHelper.FieldType.FIRST_AID ->
-                                    plant.copy(firstAid = result.text)
+                            val updated = when (fieldType.name) {
+                                "DESCRIPTION" -> plant.copy(description = result.text)
+                                "SYMPTOMS" -> plant.copy(symptoms = result.text)
+                                "REGION" -> plant.copy(geographicDistribution = result.text)
+                                "HABITAT" -> plant.copy(habitat = result.text)
+                                "TOXIC_PARTS" -> plant.copy(toxicParts = result.text)
+                                "FIRST_AID" -> plant.copy(firstAid = result.text)
+                                else -> plant
                             }
                             viewModel.insertPlant(updated)
                             message = "✅ Generado y guardado."

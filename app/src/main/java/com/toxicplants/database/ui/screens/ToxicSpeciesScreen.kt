@@ -43,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -427,16 +428,23 @@ fun ToxicSpeciesScreen(
                     editMode = editMode,
                     onGenusClick = { genus: PoisonousFamilyGenusEntity ->
                         selectedGenusId = genus.id
-                    }
+                    },
+                    onPlantClick = onPlantClick
                 )
 
                 else -> ToxicSpeciesFamilies(
                     families = families,
+                    allGenera = allGenera,
+                    allPlants = allPlants,
                     listState = familyListState,
                     onFamilyClick = { familyName: String ->
                         selectedFamily = familyName
                         selectedGenusId = null
-                    }
+                    },
+                    onGenusClick = { genus: PoisonousFamilyGenusEntity ->
+                        selectedGenusId = genus.id
+                    },
+                    onPlantClick = onPlantClick
                 )
             }
         }
@@ -446,9 +454,36 @@ fun ToxicSpeciesScreen(
 @Composable
 private fun ToxicSpeciesFamilies(
     families: Map<String, Pair<Int, Int>>,
+    allGenera: List<PoisonousFamilyGenusEntity>,
+    allPlants: List<PlantEntity>,
     listState: LazyListState,
     onFamilyClick: (String) -> Unit,
+    onGenusClick: (PoisonousFamilyGenusEntity) -> Unit,
+    onPlantClick: (PlantEntity) -> Unit,
 ) {
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+
+    val matchingFamilies = remember(searchQuery, families) {
+        if (searchQuery.isBlank()) emptyList()
+        else families.entries.filter { it.key.contains(searchQuery, ignoreCase = true) }
+    }
+    val matchingGenera = remember(searchQuery, allGenera) {
+        if (searchQuery.isBlank()) emptyList()
+        else allGenera.filter {
+            it.genusName.contains(searchQuery, ignoreCase = true) ||
+            it.familyName.contains(searchQuery, ignoreCase = true) ||
+            it.toxins.contains(searchQuery, ignoreCase = true)
+        }.distinctBy { it.genusName.lowercase() }.sortedBy { it.genusName.lowercase() }
+    }
+    val matchingPlants = remember(searchQuery, allPlants) {
+        if (searchQuery.isBlank()) emptyList()
+        else allPlants.filter {
+            it.scientificName.contains(searchQuery, ignoreCase = true) ||
+            it.commonName.contains(searchQuery, ignoreCase = true) || it.commonNames.contains(searchQuery, ignoreCase = true) ||
+            it.family.contains(searchQuery, ignoreCase = true)
+        }.sortedBy { it.scientificName.lowercase() }
+    }
+
     LazyColumn(
         state = listState,
         contentPadding = PaddingValues(16.dp),
@@ -476,33 +511,222 @@ private fun ToxicSpeciesFamilies(
             }
         }
 
-        items(families.entries.toList(), key = { entry -> entry.key }) { entry ->
-            val (generaCount, speciesCount) = entry.value
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onFamilyClick(entry.key) },
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+        item {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Buscar familia, género o especie...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.White) },
+                trailingIcon = {
+                    if (searchQuery.isNotBlank()) {
+                        IconButton(onClick = { searchQuery = "" }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Limpiar", tint = Color.White)
+                        }
+                    }
+                },
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA5D6A7),
+                    unfocusedBorderColor = Color(0xFF2E7D32)
+                ),
+                shape = RoundedCornerShape(14.dp)
+            )
+        }
+
+        if (searchQuery.isBlank()) {
+            items(families.entries.toList(), key = { entry -> "fam_all_" + entry.key }) { entry ->
+                val (generaCount, speciesCount) = entry.value
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onFamilyClick(entry.key) },
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("🧬", fontSize = 26.sp)
-                    Spacer(Modifier.size(10.dp))
-                    Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("🧬", fontSize = 26.sp)
+                        Spacer(Modifier.size(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                entry.key,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                            Text(
+                                "$generaCount géneros · $speciesCount especies/registros",
+                                color = Color(0xFFA5D6A7),
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            if (matchingFamilies.isEmpty() && matchingGenera.isEmpty() && matchingPlants.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Text(
-                            entry.key,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            text = "No se encontraron resultados para: $searchQuery",
+                            color = Color.LightGray,
+                            modifier = Modifier.padding(16.dp),
+                            fontSize = 14.sp
                         )
-                        Text(
-                            "$generaCount géneros · $speciesCount especies/registros",
-                            color = Color(0xFFA5D6A7),
-                            fontSize = 13.sp
-                        )
+                    }
+                }
+            }
+
+            if (matchingFamilies.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Familias (${matchingFamilies.size})",
+                        color = Color(0xFFA5D6A7),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 2.dp)
+                    )
+                }
+                items(matchingFamilies, key = { entry -> "fam_s_" + entry.key }) { entry ->
+                    val (generaCount, speciesCount) = entry.value
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onFamilyClick(entry.key) },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("🧬", fontSize = 26.sp)
+                            Spacer(Modifier.size(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    entry.key,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                Text(
+                                    "$generaCount géneros · $speciesCount especies/registros",
+                                    color = Color(0xFFA5D6A7),
+                                    fontSize = 13.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (matchingGenera.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Géneros (${matchingGenera.size})",
+                        color = Color(0xFFA5D6A7),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+                    )
+                }
+                items(matchingGenera, key = { genus -> "gen_s_" + genus.id + "_" + genus.genusName }) { genus ->
+                    val localCount = allPlants.count { plant ->
+                        localGenusName(plant.scientificName).equals(genus.genusName, ignoreCase = true)
+                    }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onGenusClick(genus) },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("🌿", fontSize = 26.sp)
+                            Spacer(Modifier.size(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    genus.genusName,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                Text(
+                                    "Familia: ${genus.familyName} · ${genus.genusSpeciesCount.coerceAtLeast(0)} esp. · $localCount en BD",
+                                    color = Color(0xFFA5D6A7),
+                                    fontSize = 13.sp
+                                )
+                                if (genus.toxins.isNotBlank()) {
+                                    Text(
+                                        genus.toxins,
+                                        color = Color.LightGray,
+                                        fontSize = 12.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (matchingPlants.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Especies en tu BD (${matchingPlants.size})",
+                        color = Color(0xFFA5D6A7),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+                    )
+                }
+                items(matchingPlants, key = { plant -> "plt_s_" + plant.id }) { plant ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onPlantClick(plant) },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("🌱", fontSize = 26.sp)
+                            Spacer(Modifier.size(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    plant.scientificName,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                val commons = listOf(plant.commonName, plant.commonNames).filter { it.isNotBlank() }.joinToString(", ")
+                                if (commons.isNotBlank()) {
+                                    Text(
+                                        commons,
+                                        color = Color(0xFFA5D6A7),
+                                        fontSize = 13.sp
+                                    )
+                                }
+                                Text(
+                                    "Familia: ${plant.family} · Género: ${localGenusName(plant.scientificName)}",
+                                    color = Color.LightGray,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -519,8 +743,11 @@ private fun ToxicGeneraByFamily(
     poisonousFamilyViewModel: PoisonousFamilyViewModel,
     editMode: Boolean,
     onGenusClick: (PoisonousFamilyGenusEntity) -> Unit,
+    onPlantClick: (PlantEntity) -> Unit,
 ) {
     val context = LocalContext.current
+
+    var genusSearchQuery by rememberSaveable { mutableStateOf("") }
 
     var genusToDelete by remember { mutableStateOf<PoisonousFamilyGenusEntity?>(null) }
     var genusToEdit by remember { mutableStateOf<PoisonousFamilyGenusEntity?>(null) }
@@ -536,6 +763,14 @@ private fun ToxicGeneraByFamily(
             .sortedBy { genus: PoisonousFamilyGenusEntity ->
                 genus.genusName.lowercase()
             }
+    }
+
+    val displayedGenera = remember(genusSearchQuery, genera) {
+        if (genusSearchQuery.isBlank()) genera
+        else genera.filter {
+            it.genusName.contains(genusSearchQuery, ignoreCase = true) ||
+            it.toxins.contains(genusSearchQuery, ignoreCase = true)
+        }
     }
 
     if (genusToDelete != null) {
@@ -596,7 +831,30 @@ private fun ToxicGeneraByFamily(
             }
         }
 
-        items(genera, key = { genus -> genus.id.toString() + "_" + genus.genusName }) { genus ->
+        item {
+            OutlinedTextField(
+                value = genusSearchQuery,
+                onValueChange = { genusSearchQuery = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Buscar género o especie en $familyName...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.White) },
+                trailingIcon = {
+                    if (genusSearchQuery.isNotBlank()) {
+                        IconButton(onClick = { genusSearchQuery = "" }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Limpiar", tint = Color.White)
+                        }
+                    }
+                },
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA5D6A7),
+                    unfocusedBorderColor = Color(0xFF2E7D32)
+                ),
+                shape = RoundedCornerShape(14.dp)
+            )
+        }
+
+        items(displayedGenera, key = { genus -> genus.id.toString() + "_" + genus.genusName }) { genus ->
             val localCount = allPlants.count { plant: PlantEntity ->
                 localGenusName(plant.scientificName).equals(genus.genusName, ignoreCase = true)
             }
@@ -698,6 +956,64 @@ private fun ToxicGeneraByFamily(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Abrir género")
+                    }
+                }
+            }
+        }
+
+        if (genusSearchQuery.isNotBlank()) {
+            val matchingFamilyPlants = allPlants.filter { plant ->
+                plant.family.equals(familyName, ignoreCase = true) &&
+                (plant.scientificName.contains(genusSearchQuery, ignoreCase = true) ||
+                 (plant.commonName.contains(genusSearchQuery, ignoreCase = true) || plant.commonNames.contains(genusSearchQuery, ignoreCase = true)))
+            }.sortedBy { it.scientificName.lowercase() }
+
+            if (matchingFamilyPlants.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Especies de $familyName en BD (${matchingFamilyPlants.size})",
+                        color = Color(0xFFA5D6A7),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+                    )
+                }
+                items(matchingFamilyPlants, key = { plant -> "fam_plt_" + plant.id }) { plant ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onPlantClick(plant) },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF162019)),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("🌱", fontSize = 26.sp)
+                            Spacer(Modifier.size(10.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    plant.scientificName,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                val commons = listOf(plant.commonName, plant.commonNames).filter { it.isNotBlank() }.joinToString(", ")
+                                if (commons.isNotBlank()) {
+                                    Text(
+                                        commons,
+                                        color = Color(0xFFA5D6A7),
+                                        fontSize = 13.sp
+                                    )
+                                }
+                                Text(
+                                    "Familia: ${plant.family} · Género: ${localGenusName(plant.scientificName)}",
+                                    color = Color.LightGray,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -816,7 +1132,11 @@ private fun ToxicSpeciesByGenus(
             base
         } else {
             base.filter { item ->
-                item.scientificName.contains(query, ignoreCase = true)
+                item.scientificName.contains(query, ignoreCase = true) ||
+                item.localPlant?.commonName?.contains(query, ignoreCase = true) == true ||
+                item.localPlant?.commonNames?.contains(query, ignoreCase = true) == true ||
+                item.localPlant?.symptoms?.contains(query, ignoreCase = true) == true ||
+                item.localPlant?.toxicParts?.contains(query, ignoreCase = true) == true
             }
         }
     }
@@ -1062,15 +1382,19 @@ private fun ToxicSpeciesByGenus(
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Buscar especie en esta pestaña…") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.White) },
                 trailingIcon = {
                     if (query.isNotBlank()) {
                         IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Limpiar")
+                            Icon(Icons.Default.Clear, contentDescription = "Limpiar", tint = Color.White)
                         }
                     }
                 },
                 singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA5D6A7),
+                    unfocusedBorderColor = Color(0xFF2E7D32)
+                ),
                 shape = RoundedCornerShape(14.dp)
             )
         }

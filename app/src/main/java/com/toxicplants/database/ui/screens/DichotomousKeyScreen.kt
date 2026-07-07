@@ -382,6 +382,7 @@ private fun ResultView(
 
 @Composable
 private fun ResultPlantCard(plant: PlantEntity, onClick: () -> Unit) {
+    val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
     val toxColor = when (plant.toxicityLevel.lowercase()) {
         "mortal" -> Color(0xFFB71C1C)
@@ -408,9 +409,11 @@ private fun ResultPlantCard(plant: PlantEntity, onClick: () -> Unit) {
                     .background(colors.primary.copy(alpha = 0.08f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                if (plant.imageUrl.isNotBlank()) {
+                val firstImg = remember(plant.imageUrl) { plant.imageUrl.split("|").map { it.trim() }.firstOrNull { it.isNotBlank() } ?: "" }
+                if (firstImg.isNotBlank()) {
+                    val model: Any = remember(firstImg, context) { com.toxicplants.database.ui.PlantImageHelper.getModelForUrl(context, firstImg) }
                     AsyncImage(
-                        model = plant.imageUrl,
+                        model = model,
                         contentDescription = plant.commonName,
                         modifier = Modifier.fillMaxSize()
                     )

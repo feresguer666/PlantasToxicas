@@ -15,12 +15,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.toxicplants.database.PlantEntity
-import com.toxicplants.database.PlantMarkerStore
 import com.toxicplants.database.ui.viewmodel.PlantViewModel
 
 /**
@@ -82,13 +80,13 @@ fun PlantListScreen(
     onPlantClick: (PlantEntity) -> Unit,
     onBack: () -> Unit
 ) {
-    val context = LocalContext.current
     val plants by viewModel.allPlants.observeAsState(emptyList())
     var plantToDelete by remember { mutableStateOf<PlantEntity?>(null) }
     var selectedRegion by remember { mutableStateOf(REGIONS.first()) }
-    var showOnlyWithNotes by remember { mutableStateOf(false) }
-    var showOnlyWithMarkers by remember { mutableStateOf(false) }
-    val markerMap = if (showOnlyWithMarkers) PlantMarkerStore.loadAll(context) else emptyMap()
+    var selectionMode by remember { mutableStateOf(false) }
+    val selectedPlantIds = remember { mutableStateListOf<Int>() }
+    var showBulkDeleteDialog by remember { mutableStateOf(false) }
+    var showBulkEditDialog by remember { mutableStateOf(false) }
 
     // ── NUEVOS FILTROS ──────────────────────────────────────
     var nameMode by remember { mutableStateOf(NameMode.All) }
@@ -101,15 +99,8 @@ fun PlantListScreen(
     }
 
     // Filtrado alfabético + ordenamiento
-    val filtered = remember(regionFiltered, alphabetFilter, nameMode, showOnlyWithNotes, showOnlyWithMarkers, markerMap) {
+    val filtered = remember(regionFiltered, alphabetFilter, nameMode) {
         var result = regionFiltered
-
-        if (showOnlyWithNotes) {
-            result = result.filter { !it.notes.isNullOrBlank() }
-        }
-        if (showOnlyWithMarkers) {
-            result = result.filter { markerMap[it.id].orEmpty().isNotEmpty() }
-        }
 
         // Filtrar por letra
         if (alphabetFilter != AlphabetFilter.All) {
@@ -134,17 +125,27 @@ fun PlantListScreen(
         result
     }
 
+    val selectedPlants = remember(plants, selectedPlantIds.toList()) {
+        plants.filter { it.id in selectedPlantIds }
+    }
+
+    LaunchedEffect(plants) {
+        val existingIds = plants.map { it.id }.toSet()
+        selectedPlantIds.removeAll { it !in existingIds }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Column {
-                        Text("📋 Plantas (${filtered.size}/${plants.size})", fontWeight = FontWeight.Bold)
+                        Text(
+                            if (selectionMode) "${selectedPlantIds.size} seleccionadas" else "📋 Plantas (${filtered.size}/${plants.size})",
+                            fontWeight = FontWeight.Bold
+                        )
                         val subTitle = buildString {
                             if (alphabetFilter != AlphabetFilter.All) append("${alphabetFilter.label} · ")
                             if (nameMode != NameMode.All) append("${nameMode.label} · ")
-                            if (showOnlyWithNotes) append("Con notas · ")
-                            if (showOnlyWithMarkers) append("Con marcadores · ")
                             if (selectedRegion.keywords.isNotEmpty()) append(selectedRegion.label)
                         }.trimEnd(' ', '·')
                         if (subTitle.isNotEmpty()) {
@@ -153,8 +154,40 @@ fun PlantListScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Volver")
+                    IconButton(onClick = {
+                        if (selectionMode) {
+                            selectionMode = false
+                            selectedPlantIds.clear()
+                        } else {
+                            onBack()
+                        }
+                    }) {
+                        Icon(Icons.Default.ArrowBack, if (selectionMode) "Cancelar selección" else "Volver")
+                    }
+                },
+                actions = {
+                    if (selectionMode) {
+                        TextButton(onClick = {
+                            val filteredIds = filtered.map { it.id }
+                            val allFilteredSelected = filteredIds.isNotEmpty() && filteredIds.all { it in selectedPlantIds }
+                            if (allFilteredSelected) {
+                                selectedPlantIds.removeAll(filteredIds.toSet())
+                            } else {
+                                filteredIds.forEach { id -> if (id !in selectedPlantIds) selectedPlantIds.add(id) }
+                            }
+                        }) { Text("Todas", color = Color.White, fontSize = 12.sp) }
+                        TextButton(
+                            enabled = selectedPlantIds.isNotEmpty(),
+                            onClick = { showBulkEditDialog = true }
+                        ) { Text("Editar", color = if (selectedPlantIds.isNotEmpty()) Color.White else Color.White.copy(alpha = 0.4f), fontSize = 12.sp) }
+                        TextButton(
+                            enabled = selectedPlantIds.isNotEmpty(),
+                            onClick = { showBulkDeleteDialog = true }
+                        ) { Text("Eliminar", color = if (selectedPlantIds.isNotEmpty()) Color.White else Color.White.copy(alpha = 0.4f), fontSize = 12.sp) }
+                    } else {
+                        TextButton(onClick = { selectionMode = true }) {
+                            Text("Seleccionar", color = Color.White, fontSize = 12.sp)
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -245,41 +278,6 @@ fun PlantListScreen(
                 onSelect = { selectedRegion = it }
             )
 
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    item { Text("Filtros rápidos:", fontSize = 12.sp, fontWeight = FontWeight.Medium) }
-                    item {
-                        FilterChip(
-                            selected = showOnlyWithNotes,
-                            onClick = { showOnlyWithNotes = !showOnlyWithNotes },
-                            label = { Text("📝 Con notas", fontSize = 12.sp) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Color(0xFF2E7D32),
-                                selectedLabelColor = Color.White
-                            )
-                        )
-                    }
-                    item {
-                        FilterChip(
-                            selected = showOnlyWithMarkers,
-                            onClick = { showOnlyWithMarkers = !showOnlyWithMarkers },
-                            label = { Text("🏷️ Con marcadores", fontSize = 12.sp) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = Color(0xFF2E7D32),
-                                selectedLabelColor = Color.White
-                            )
-                        )
-                    }
-                }
-            }
-
             if (plants.isEmpty()) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Color(0xFF2E7D32))
@@ -308,8 +306,6 @@ fun PlantListScreen(
                         "📋 ${filtered.size} plantas" +
                                 (if (alphabetFilter != AlphabetFilter.All) " · $alphabetFilter" else "") +
                                 (if (nameMode != NameMode.All) " · ordenar por ${nameMode.label}" else "") +
-                                (if (showOnlyWithNotes) " · con notas" else "") +
-                                (if (showOnlyWithMarkers) " · con marcadores" else "") +
                                 (if (selectedRegion.keywords.isNotEmpty()) " · ${selectedRegion.label}" else ""),
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
                         fontSize = 13.sp,
@@ -348,8 +344,17 @@ fun PlantListScreen(
                             items(plantsInGroup) { plant ->
                                 PlantCard(
                                     plant = plant,
-                                    onClick = { viewModel.setDetailNavigationPlants(filtered); onPlantClick(plant) },
-                                    onDeleteClick = { plantToDelete = plant }
+                                    onClick = { onPlantClick(plant) },
+                                    onDeleteClick = { plantToDelete = plant },
+                                    selectionMode = selectionMode,
+                                    selected = plant.id in selectedPlantIds,
+                                    onSelectionChange = { checked ->
+                                        if (checked) {
+                                            if (plant.id !in selectedPlantIds) selectedPlantIds.add(plant.id)
+                                        } else {
+                                            selectedPlantIds.remove(plant.id)
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -364,8 +369,17 @@ fun PlantListScreen(
                         items(filtered) { plant ->
                             PlantCard(
                                 plant = plant,
-                                onClick = { viewModel.setDetailNavigationPlants(filtered); onPlantClick(plant) },
-                                onDeleteClick = { plantToDelete = plant }
+                                onClick = { onPlantClick(plant) },
+                                onDeleteClick = { plantToDelete = plant },
+                                selectionMode = selectionMode,
+                                selected = plant.id in selectedPlantIds,
+                                onSelectionChange = { checked ->
+                                    if (checked) {
+                                        if (plant.id !in selectedPlantIds) selectedPlantIds.add(plant.id)
+                                    } else {
+                                        selectedPlantIds.remove(plant.id)
+                                    }
+                                }
                             )
                         }
                     }
@@ -388,6 +402,38 @@ fun PlantListScreen(
             },
             dismissButton = {
                 TextButton(onClick = { plantToDelete = null }) { Text("Cancelar") }
+            }
+        )
+    }
+
+    if (showBulkDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showBulkDeleteDialog = false },
+            title = { Text("¿Eliminar ${selectedPlantIds.size} plantas?") },
+            text = { Text("Se eliminarán todas las fichas marcadas. Esta acción no se puede deshacer.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deletePlants(selectedPlants)
+                    selectedPlantIds.clear()
+                    selectionMode = false
+                    showBulkDeleteDialog = false
+                }) { Text("Eliminar", color = Color.Red) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBulkDeleteDialog = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
+    if (showBulkEditDialog) {
+        BulkEditPlantsDialog(
+            selectedCount = selectedPlantIds.size,
+            onDismiss = { showBulkEditDialog = false },
+            onConfirm = { field, value, append ->
+                viewModel.bulkUpdatePlants(selectedPlants, field.id, value, append)
+                selectedPlantIds.clear()
+                selectionMode = false
+                showBulkEditDialog = false
             }
         )
     }
@@ -418,4 +464,112 @@ private fun RegionFilterBar(
             )
         }
     }
+}
+private data class BulkEditField(val id: String, val label: String, val hint: String)
+
+private val BULK_EDIT_FIELDS = listOf(
+    BulkEditField("commonNames", "Otros nombres comunes", "Ej: belladona, tabaco borde"),
+    BulkEditField("family", "Familia", "Ej: Solanaceae"),
+    BulkEditField("toxicityLevel", "Nivel de toxicidad", "Ej: Alto, Mortal..."),
+    BulkEditField("toxicParts", "Partes tóxicas", "Ej: hojas; semillas; raíz"),
+    BulkEditField("symptoms", "Síntomas", "Ej: náuseas, vómitos, arritmias"),
+    BulkEditField("description", "Descripción", "Descripción común para las fichas"),
+    BulkEditField("category", "Categoría", "Ej: Ornamental"),
+    BulkEditField("habitat", "Hábitat", "Ej: bosques húmedos"),
+    BulkEditField("geographicDistribution", "Distribución", "Ej: Mediterráneo"),
+    BulkEditField("firstAid", "Primeros auxilios", "Texto de primeros auxilios"),
+    BulkEditField("floweringMonths", "Meses de floración", "Ej: 3,4,5,6"),
+    BulkEditField("fruitingMonths", "Meses de fructificación", "Ej: 8,9,10"),
+    BulkEditField("maxToxicityMonths", "Meses máxima toxicidad", "Ej: 6,7,8"),
+    BulkEditField("notes", "Notas", "Nota común para las fichas"),
+    BulkEditField("mythsAndLegends", "Mitos y curiosidades", "Texto cultural común")
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BulkEditPlantsDialog(
+    selectedCount: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (BulkEditField, String, Boolean) -> Unit
+) {
+    var selectedField by remember { mutableStateOf(BULK_EDIT_FIELDS.first()) }
+    var value by remember { mutableStateOf("") }
+    var append by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar $selectedCount fichas") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    "Elige el campo y el dato que quieres aplicar a todas las plantas marcadas.",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = selectedField.label,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Campo") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        BULK_EDIT_FIELDS.forEach { field ->
+                            DropdownMenuItem(
+                                text = { Text(field.label) },
+                                onClick = {
+                                    selectedField = field
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { value = it },
+                    label = { Text("Dato a aplicar") },
+                    placeholder = { Text(selectedField.hint) },
+                    minLines = 2,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Añadir sin borrar lo anterior", fontWeight = FontWeight.Medium)
+                        Text(
+                            if (append) "Se agrega al final si no existe" else "Se reemplaza el campo completo",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(checked = append, onCheckedChange = { append = it })
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = value.isNotBlank(),
+                onClick = { onConfirm(selectedField, value.trim(), append) }
+            ) { Text("Aplicar") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancelar") }
+        }
+    )
 }

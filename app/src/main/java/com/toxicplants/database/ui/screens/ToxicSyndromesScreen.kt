@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -300,8 +299,12 @@ fun ToxicSyndromesScreen(onBack: () -> Unit) {
         derivedStateOf {
             val q = query.trim()
             toxicSyndromes.filter { syndrome ->
-                val matchesSource = selectedSource == "Todos" || syndrome.source.contains(selectedSource, ignoreCase = true)
-                val haystack = "${syndrome.name} ${syndrome.source} ${syndrome.keySymptoms} ${syndrome.causes} ${syndrome.mechanism} ${syndrome.severity}"
+                val matchesSource = selectedSource == "Todos" || syndrome.source.contains(
+                    selectedSource,
+                    ignoreCase = true
+                )
+                val haystack =
+                    "${syndrome.name} ${syndrome.source} ${syndrome.keySymptoms} ${syndrome.causes} ${syndrome.mechanism} ${syndrome.severity}"
                 val matchesQuery = q.isBlank() || haystack.contains(q, ignoreCase = true)
                 matchesSource && matchesQuery
             }
@@ -321,7 +324,11 @@ fun ToxicSyndromesScreen(onBack: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBack, modifier = Modifier.size(40.dp)) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = colors.onError)
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = colors.onError
+                    )
                 }
                 Text(
                     text = "📚 Síndromes toxicológicos",
@@ -344,7 +351,7 @@ fun ToxicSyndromesScreen(onBack: () -> Unit) {
                 value = query,
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Buscar síndrome, síntoma, toxina o especie…") },
+                placeholder = { Text("Buscar síndrome") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
@@ -354,22 +361,36 @@ fun ToxicSyndromesScreen(onBack: () -> Unit) {
                     }
                 },
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = colors.error, cursorColor = colors.error),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = colors.error,
+                    cursorColor = colors.error
+                ),
                 shape = RoundedCornerShape(14.dp)
             )
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
                 sources.forEach { source ->
                     AssistChip(
                         onClick = { selectedSource = source },
-                        label = { Text(source, fontWeight = if (source == selectedSource) FontWeight.Bold else FontWeight.Normal) },
+                        label = {
+                            Text(
+                                source,
+                                fontWeight = if (source == selectedSource) FontWeight.Bold else FontWeight.Normal
+                            )
+                        },
                         leadingIcon = { Text(text = sourceIcon(source)) }
                     )
                 }
             }
         }
 
-        Surface(modifier = Modifier.fillMaxWidth(), color = colors.surfaceVariant.copy(alpha = 0.5f)) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = colors.surfaceVariant.copy(alpha = 0.5f)
+        ) {
             Text(
                 "${filtered.size} síndromes encontrados",
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
@@ -386,7 +407,7 @@ fun ToxicSyndromesScreen(onBack: () -> Unit) {
         ) {
             item {
                 Text(
-                    "⚠️ Información orientativa. En una intoxicación real, llama a emergencias o a un centro toxicológico.",
+                    "",
                     color = colors.error,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
@@ -409,9 +430,15 @@ private fun SyndromeCard(syndrome: ToxicSyndromeInfo) {
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(9.dp)
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(color = syndrome.color.copy(alpha = 0.15f), shape = RoundedCornerShape(14.dp)) {
+                Surface(
+                    color = syndrome.color.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
                     Text(syndrome.icon, fontSize = 28.sp, modifier = Modifier.padding(10.dp))
                 }
                 Spacer(Modifier.width(12.dp))
@@ -424,7 +451,10 @@ private fun SyndromeCard(syndrome: ToxicSyndromeInfo) {
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         MiniTag(syndrome.source, syndrome.color)
                         MiniTag(syndrome.severity, severityColor(syndrome.severity))
                     }
@@ -474,8 +504,16 @@ private fun InfoLine(icon: String, label: String, value: String, emphasize: Bool
 }
 
 private fun sourceIcon(source: String): String = when {
-    source.contains("Plantas", ignoreCase = true) && source.contains("Líquenes", ignoreCase = true) -> "🌿"
-    source.contains("Setas", ignoreCase = true) && source.contains("Plantas", ignoreCase = true) -> "☠️"
+    source.contains("Plantas", ignoreCase = true) && source.contains(
+        "Líquenes",
+        ignoreCase = true
+    ) -> "🌿"
+
+    source.contains("Setas", ignoreCase = true) && source.contains(
+        "Plantas",
+        ignoreCase = true
+    ) -> "☠️"
+
     source.contains("Plantas", ignoreCase = true) -> "🌿"
     source.contains("Setas", ignoreCase = true) -> "🍄"
     source.contains("Líquenes", ignoreCase = true) -> "🪨"

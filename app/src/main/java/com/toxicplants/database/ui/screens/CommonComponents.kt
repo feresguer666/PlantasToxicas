@@ -35,7 +35,14 @@ import java.io.File
 
 // ==================== PLANT CARD ====================
 @Composable
-fun PlantCard(plant: PlantEntity, onClick: () -> Unit, onDeleteClick: () -> Unit) {
+fun PlantCard(
+    plant: PlantEntity,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    selectionMode: Boolean = false,
+    selected: Boolean = false,
+    onSelectionChange: (Boolean) -> Unit = {}
+) {
     val toxicityColor = when (plant.toxicityLevel) {
         "Mortal" -> Color(0xFFB71C1C)
         "Muy alto" -> Color(0xFFFF5722)
@@ -46,10 +53,29 @@ fun PlantCard(plant: PlantEntity, onClick: () -> Unit, onDeleteClick: () -> Unit
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth().carbonEffectSubtle().clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .carbonEffectSubtle()
+            .clickable {
+                if (selectionMode) onSelectionChange(!selected) else onClick()
+            },
+        elevation = CardDefaults.cardElevation(defaultElevation = if (selected) 8.dp else 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (selected) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
+        )
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (selectionMode) {
+                Checkbox(
+                    checked = selected,
+                    onCheckedChange = { onSelectionChange(it) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             PlantThumbnail(
                 plant = plant,
                 toxicityColor = toxicityColor,
@@ -84,10 +110,19 @@ fun PlantCard(plant: PlantEntity, onClick: () -> Unit, onDeleteClick: () -> Unit
                     }
                 }
             }
-            IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red)
+            if (selectionMode) {
+                Text(
+                    if (selected) "✓" else "",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                IconButton(onClick = onDeleteClick) {
+                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red)
+                }
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
         }
     }
 }
@@ -99,12 +134,14 @@ fun PlantThumbnail(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val localFile = remember(plant.id) {
-        if (LocalImageCache.hasLocalImage(context, plant.id)) {
-            File(LocalImageCache.getLocalImagePath(context, plant.id))
+    val imageModel: Any? = remember(plant.id, plant.imageUrl, context) {
+        val firstUrl = plant.imageUrl.split("|").map { it.trim() }.firstOrNull { it.isNotBlank() }
+        if (firstUrl != null) {
+            com.toxicplants.database.ui.PlantImageHelper.getModelForUrl(context, firstUrl)
+        } else if (LocalImageCache.hasLocalImage(context, plant.id)) {
+            android.net.Uri.fromFile(File(LocalImageCache.getLocalImagePath(context, plant.id)))
         } else null
     }
-    val imageModel: Any? = localFile ?: plant.imageUrl.takeIf { it.isNotBlank() }
     var imageFailed by remember(plant.id, imageModel) { mutableStateOf(false) }
 
     Box(

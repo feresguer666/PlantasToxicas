@@ -73,11 +73,13 @@ fun PlantImageCard(
     val context = LocalContext.current
     val scope   = rememberCoroutineScope()
 
-    // Estado de la imagen
-    var imageUrl      by remember(plant) { mutableStateOf("") }
-    var isLoading     by remember(plant) { mutableStateOf(true) }
-    var hasError      by remember(plant) { mutableStateOf(false) }
-    var loadAttempts  by remember(plant) { mutableIntStateOf(0) }
+    // Estado de la imagen (soporte para galería de varias fotos)
+    var imageList      by remember(plant) { mutableStateOf<List<String>>(emptyList()) }
+    var currentIndex   by remember(plant) { mutableIntStateOf(0) }
+    val imageUrl       = imageList.getOrNull(currentIndex) ?: ""
+    var isLoading      by remember(plant) { mutableStateOf(true) }
+    var hasError       by remember(plant) { mutableStateOf(false) }
+    var loadAttempts   by remember(plant) { mutableIntStateOf(0) }
     var showFullScreen by remember(plant) { mutableStateOf(false) }
 
     // Cargador HTTP con cabeceras de navegador (evita bloqueos de Wikimedia)
@@ -105,15 +107,16 @@ fun PlantImageCard(
             .build()
     }
 
-    // Función para buscar / recargar imagen
+    // Función para buscar / recargar imagen o galería
     fun loadImage() {
         isLoading = true
         hasError  = false
         scope.launch {
-            val url = PlantImageHelper.resolveImageUrl(context, plant)
-            imageUrl  = url
+            val list = PlantImageHelper.resolveAllImageUrls(context, plant)
+            imageList = list
+            if (currentIndex >= list.size) currentIndex = 0
             isLoading = false
-            hasError  = url.isBlank()
+            hasError  = list.isEmpty() || list.getOrNull(currentIndex)?.isBlank() == true
         }
     }
 
@@ -174,10 +177,8 @@ fun PlantImageCard(
 
             // ── Imagen encontrada ────────────────────────────────────────
             else -> {
-                val model: Any = if (imageUrl.startsWith("file://")) {
-                    File(imageUrl.removePrefix("file://"))
-                } else {
-                    imageUrl
+                val model: Any = remember(imageUrl, context) {
+                    com.toxicplants.database.ui.PlantImageHelper.getModelForUrl(context, imageUrl)
                 }
 
                 AsyncImage(
@@ -198,21 +199,58 @@ fun PlantImageCard(
                     }
                 )
 
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(8.dp),
-                    color = Color.Black.copy(alpha = 0.55f),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Text(
-                        "🔍 Tocar para ampliar",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        color = Color.White,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                // ── Flechas de navegación para galería de varias fotos ──
+                if (imageList.size > 1) {
+                    IconButton(
+                        onClick = {
+                            currentIndex = (currentIndex - 1 + imageList.size) % imageList.size
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 6.dp)
+                            .size(36.dp)
+                            .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(50))
+                    ) {
+                        Text("◀", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    IconButton(
+                        onClick = {
+                            currentIndex = (currentIndex + 1) % imageList.size
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 6.dp)
+                            .size(36.dp)
+                            .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(50))
+                    ) {
+                        Text("▶", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        color = Color.Black.copy(alpha = 0.65f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        val typeLabel = when (currentIndex) {
+                            0 -> "Principal"
+                            1 -> "Hoja / Flor"
+                            2 -> "Flor / Fruto"
+                            else -> "Detalle"
+                        }
+                        Text(
+                            text = "📷 ${currentIndex + 1} / ${imageList.size} · $typeLabel",
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
+
+
 
                 // Botón de recarga flotante (esquina superior derecha)
                 if (showReload) {
@@ -240,7 +278,8 @@ fun PlantImageCard(
 
     if (showFullScreen && imageUrl.isNotBlank() && !hasError) {
         FullScreenPlantImage(
-            imageUrl = imageUrl,
+            imageList = if (imageList.isNotEmpty()) imageList else listOf(imageUrl),
+            initialIndex = currentIndex,
             title = plant.commonName.ifBlank { plant.scientificName },
             onDismiss = { showFullScreen = false }
         )
@@ -249,18 +288,21 @@ fun PlantImageCard(
 
 @Composable
 private fun FullScreenPlantImage(
-    imageUrl: String,
+    imageList: List<String>,
+    initialIndex: Int = 0,
     title: String,
     onDismiss: () -> Unit
 ) {
-    val model: Any = if (imageUrl.startsWith("file://")) {
-        File(imageUrl.removePrefix("file://"))
-    } else {
-        imageUrl
+    var index by remember(imageList, initialIndex) { mutableIntStateOf(initialIndex.coerceIn(0, (imageList.size - 1).coerceAtLeast(0))) }
+    val imageUrl = imageList.getOrNull(index) ?: ""
+    val context = LocalContext.current
+
+    val model: Any = remember(imageUrl, context) {
+        com.toxicplants.database.ui.PlantImageHelper.getModelForUrl(context, imageUrl)
     }
 
-    var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+    var scale by remember(index) { mutableStateOf(1f) }
+    var offset by remember(index) { mutableStateOf(Offset.Zero) }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -293,6 +335,46 @@ private fun FullScreenPlantImage(
                 contentScale = ContentScale.Fit
             )
 
+            if (imageList.size > 1) {
+                IconButton(
+                    onClick = { index = (index - 1 + imageList.size) % imageList.size },
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = 12.dp)
+                        .size(48.dp)
+                        .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(50))
+                ) {
+                    Text("◀", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                }
+
+                IconButton(
+                    onClick = { index = (index + 1) % imageList.size },
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 12.dp)
+                        .size(48.dp)
+                        .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(50))
+                ) {
+                    Text("▶", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(14.dp),
+                    color = Color.Black.copy(alpha = 0.65f),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Text(
+                        text = "Foto ${index + 1} de ${imageList.size}",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
             IconButton(
                 onClick = onDismiss,
                 modifier = Modifier
@@ -317,11 +399,7 @@ private fun FullScreenPlantImage(
                         color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = "Pellizca para ampliar · arrastra para mover",
-                        color = Color.White.copy(alpha = 0.75f),
-                        fontSize = 11.sp
-                    )
+
                 }
             }
         }

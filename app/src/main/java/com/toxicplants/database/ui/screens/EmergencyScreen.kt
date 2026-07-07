@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -42,7 +43,8 @@ private val CardPink = Color(0xFFFFEBEE)
 fun EmergencyScreen(
     viewModel: PlantViewModel,
     onPlantClick: (PlantEntity) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToEmergencyMap: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val mortalPlants by viewModel.mortalPlantsData.collectAsState()
@@ -80,10 +82,18 @@ fun EmergencyScreen(
             // ───────── BOTÓN SOS 112 (lo primero, enorme) ─────────
             item { SosButton(onClick = { dial("112") }) }
 
+            // ───────── RADAR DE URGENCIAS Y ANTÍDOTOS (Hospitales / Veterinarios 24h) ─────────
+            item {
+                EmergencyMapNavButton(onClick = onNavigateToEmergencyMap)
+            }
+
             // ───────── Llamada directa a Toxicología ─────────
             item {
                 ToxicologyButton(onClick = { dial("915620420") })
             }
+
+            // ───────── ASISTENTE SOS INTERACTIVO (Algoritmo de Primeros Auxilios) ─────────
+            item { SosAssistantCard() }
 
             // ───────── Pasos inmediatos (siempre visibles) ─────────
             item { ImmediateStepsCard() }
@@ -408,6 +418,285 @@ fun EmergencyCallCard(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text("Llamar")
             }
+        }
+    }
+}
+
+@Composable
+private fun SosAssistantCard() {
+    var step1 by remember { mutableStateOf<String?>(null) }
+    var step2 by remember { mutableStateOf<String?>(null) }
+    var step3 by remember { mutableStateOf<String?>(null) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B263B)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("🩺", fontSize = 28.sp)
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text("Asistente SOS de Emergencia", fontWeight = FontWeight.Black, fontSize = 18.sp, color = Color(0xFFFF8A80))
+                    Text("Algoritmo interactivo de primeros auxilios", fontSize = 12.sp, color = Color.LightGray)
+                }
+                if (step1 != null) {
+                    TextButton(onClick = { step1 = null; step2 = null; step3 = null }) {
+                        Text("🔄 Reiniciar", color = Color(0xFF80CBC4), fontSize = 12.sp)
+                    }
+                }
+            }
+
+            HorizontalDivider(color = Color.White.copy(alpha = 0.15f))
+
+            Text("1. ¿Qué tipo de exposición o incidente ha ocurrido?", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 14.sp)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SosOptionChip(
+                    label = "👄 Ingestión / Tragar",
+                    selected = step1 == "ingestion",
+                    onClick = { step1 = "ingestion"; if (step2 == null) step2 = "conscious" },
+                    modifier = Modifier.weight(1f)
+                )
+                SosOptionChip(
+                    label = "👁️ Piel / Ojos",
+                    selected = step1 == "skin",
+                    onClick = { step1 = "skin"; step2 = "conscious" },
+                    modifier = Modifier.weight(1f)
+                )
+                SosOptionChip(
+                    label = "🍄 Seta / Hongo",
+                    selected = step1 == "mushroom",
+                    onClick = { step1 = "mushroom"; if (step2 == null) step2 = "conscious" },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            if (step1 != null) {
+                if (step1 != "skin") {
+                    Text("2. ¿La persona está consciente y respirando bien?", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 14.sp)
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        SosOptionChip(
+                            label = "✅ Sí, consciente",
+                            selected = step2 == "conscious",
+                            onClick = { step2 = "conscious" },
+                            modifier = Modifier.weight(1f)
+                        )
+                        SosOptionChip(
+                            label = "❌ Inconsciente / Ahogo",
+                            selected = step2 == "unconscious",
+                            onClick = { step2 = "unconscious" },
+                            modifier = Modifier.weight(1f),
+                            color = Color(0xFFC62828)
+                        )
+                    }
+                }
+
+                Text("3. ¿Cuánto tiempo hace que sucedió?", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 14.sp)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SosOptionChip(
+                        label = "⏱️ < 1 hora",
+                        selected = step3 == "less1h",
+                        onClick = { step3 = "less1h" },
+                        modifier = Modifier.weight(1f)
+                    )
+                    SosOptionChip(
+                        label = "⏱️ > 1 hora",
+                        selected = step3 == "more1h",
+                        onClick = { step3 = "more1h" },
+                        modifier = Modifier.weight(1f)
+                    )
+                    SosOptionChip(
+                        label = "❓ No se sabe",
+                        selected = step3 == "unknown",
+                        onClick = { step3 = "unknown" },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(Modifier.height(4.dp))
+                SosAlgorithmResult(step1 = step1!!, step2 = step2 ?: "conscious", step3 = step3 ?: "unknown")
+            } else {
+                Surface(color = Color.White.copy(alpha = 0.05f), shape = RoundedCornerShape(10.dp), modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        "👆 Selecciona una opción arriba para generar el protocolo de actuación inmediata paso a paso.",
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SosOptionChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = Color(0xFF1976D2)
+) {
+    val bgColor = if (selected) color else Color.White.copy(alpha = 0.08f)
+    val textColor = if (selected) Color.White else Color.LightGray
+    val borderCol = if (selected) Color.White else Color.Transparent
+
+    Surface(
+        modifier = modifier
+            .height(44.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() },
+        color = bgColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, borderCol)
+    ) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 4.dp)) {
+            Text(label, color = textColor, fontSize = 12.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+private fun SosAlgorithmResult(step1: String, step2: String, step3: String) {
+    val title: String
+    val color: Color
+    val instructions: List<String>
+    val warnings: List<String>
+
+    if (step2 == "unconscious") {
+        title = "🚨 URGENCIA VITAL EXTREMA (112 YA)"
+        color = Color(0xFFD32F2F)
+        instructions = listOf(
+            "PULSA EL BOTÓN ROJO SUPERIOR Y LLAMA AL 112 AHORA MISMO.",
+            "Coloca a la persona de lado en Posición Lateral de Seguridad (para evitar que se ahogue si vomita).",
+            "Afloja ropa ajustada alrededor del cuello o pecho.",
+            "Si no respira o no tiene pulso, inicia maniobras de RCP de inmediato (30 compresiones torácicas / 2 ventilaciones)."
+        )
+        warnings = listOf(
+            "NO INTENTES DAR DE BEBER AGUA NI NINGÚN LÍQUIDO.",
+            "NO PROVOQUES EL VÓMITO BAJO NINGÚN CONCEPTO.",
+            "NO METAS NADA EN LA BOCA SI TIENE CONVULSIONES."
+        )
+    } else when (step1) {
+        "ingestion" -> {
+            title = "🌿 PROTOCOLO POR INGESTIÓN DE PLANTA"
+            color = Color(0xFFE65100)
+            instructions = listOf(
+                "Retira con los dedos limpios o un paño cualquier resto de planta o fruto de la boca.",
+                "Enjuaga la boca con agua abundante varias veces y haz que ESCUPA todo el agua (que no la trague).",
+                "Guarda un trozo de la planta, hoja, fruto o hazle varias fotos claras con el móvil para que el médico o toxicólogo la identifique.",
+                "Llama de inmediato al 91 562 04 20 (Información Toxicológica 24h) o al 112 indicando nombre de planta o descripción y hora exacta."
+            )
+            warnings = listOf(
+                "NO INDUZCAS EL VÓMITO: si la planta contiene oxalatos corrosivos (ej. Dieffenbachia, Adelfa o Arum), vomitar quemará el esófago por segunda vez.",
+                "NO DES LECHE, ACEITE NI SAL: la leche facilita la absorción intestinal de toxinas liposolubles.",
+                "NO ESPERES a ver si aparecen síntomas graves; consulta siempre con Toxicología."
+            )
+        }
+        "skin" -> {
+            title = "👁️ PROTOCOLO POR CONTACTO PIEL / OJOS"
+            color = Color(0xFF0097A7)
+            instructions = listOf(
+                "EN OJOS: Lava con un chorro continuo de agua templada o suero fisiológico durante mínimo 15-20 minutos manteniendo los párpados abiertos.",
+                "EN PIEL: Quita la ropa manchada o expuesta. Lava la piel con abundante agua y jabón neutro.",
+                "Lava suavemente sin frotar con fuerza (frotar puede extender resinas o jugos tóxicos como el látex de Euphorbia o hiedras).",
+                "EVITA LA LUZ SOLAR: muchas plantas causan fitofotodermatitis graves (ampollas severas) al reaccionar el jugo con el sol (ej. Higuera del diablo, Heracleum o Ruda)."
+            )
+            warnings = listOf(
+                "NO FROTES NI RASQUES LOS OJOS NI LA PIEL.",
+                "NO APLIQUES POMADAS, ALCOHOL NI REMEDIOS CASEROS SIN ORDEN MÉDICA.",
+                "Si hay alteración de la visión, ampollas extensas o ardor insoportable, acude de inmediato a urgencias."
+            )
+        }
+        "mushroom" -> {
+            title = "🍄 PROTOCOLO DE URGENCIA POR SETAS"
+            color = Color(0xFF8E24AA)
+            instructions = listOf(
+                "PELIGRO LATENTE: Las setas más letales (Amanita phalloides, Lepiota) tardan entre 6 y 24 horas en dar síntomas graves. NO ESPERES a ver cómo evoluciona.",
+                "CONSERVA MUESTRAS: Guarda en el frigorífico (envueltas en papel o paño, NUNCA en plástico) restos de la seta cruda, cocinada o del vómito/diarrea. Son esenciales para el hospital.",
+                "AVISA A TODOS: Si varias personas comieron del mismo plato, DEBEN IR A URGENCIAS TODAS, incluso aquellas que se sientan perfectamente bien.",
+                "Si hay vómitos o diarrea intensos, mantén la hidratación con suero de reanimación oral a pequeños sorbos."
+            )
+            warnings = listOf(
+                "NO TOMES ANTIDIARRÉICOS NI MEDICAMENTOS PARA CORTAR EL VÓMITO SIN RECETA MÉDICA (retrasan la eliminación de la toxina).",
+                "NO TE FÍES SI LOS SÍNTOMAS PARECEN DESAPARECER TRAS UNAS HORAS (fase de falsa mejoría previa al fallo hepático).",
+                "Llama al 112 o acude directamente a urgencias hospitalarias con las muestras."
+            )
+        }
+        else -> {
+            title = "📋 PROTOCOLO GENERAL"
+            color = Color.Gray
+            instructions = emptyList()
+            warnings = emptyList()
+        }
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.15f)),
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, color)
+    ) {
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(title, fontWeight = FontWeight.Black, color = Color.White, fontSize = 15.sp)
+
+            Text("⚡ QUÉ HACER INMEDIATAMENTE:", fontWeight = FontWeight.Bold, color = Color(0xFFA5D6A7), fontSize = 13.sp)
+            instructions.forEachIndexed { idx, ins ->
+                Row(Modifier.padding(vertical = 1.dp)) {
+                    Text("${idx + 1}.", fontWeight = FontWeight.Bold, color = Color(0xFFA5D6A7), fontSize = 13.sp)
+                    Spacer(Modifier.width(6.dp))
+                    Text(ins, color = Color.White, fontSize = 13.sp)
+                }
+            }
+
+            if (warnings.isNotEmpty()) {
+                HorizontalDivider(color = Color.White.copy(alpha = 0.15f), modifier = Modifier.padding(vertical = 4.dp))
+                Text("🚫 QUÉ NO HACER JAMÁS:", fontWeight = FontWeight.Bold, color = Color(0xFFFF8A80), fontSize = 13.sp)
+                warnings.forEach { warn ->
+                    Row(Modifier.padding(vertical = 1.dp)) {
+                        Text("•", fontWeight = FontWeight.Bold, color = Color(0xFFFF8A80), fontSize = 13.sp)
+                        Spacer(Modifier.width(6.dp))
+                        Text(warn, color = Color(0xFFFFEBEE), fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+            }
+
+            if (step3 == "more1h") {
+                Surface(color = Color(0xFFD32F2F).copy(alpha = 0.3f), shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                    Text(
+                        "⏳ AVISO DE TIEMPO (> 1 hora): Como ha pasado más de 1 hora, la absorción del tóxico ya puede estar en marcha. Es vital contactar urgentemente con un médico o toxicología sin demora.",
+                        color = Color(0xFFFFCDD2),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmergencyMapNavButton(onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF006064)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Row(
+            Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("🏥", fontSize = 34.sp)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text("Radar Urgencias 24h y Guía Antídotos", color = Color.White, fontWeight = FontWeight.Black, fontSize = 16.sp)
+                Text("Navega con 1 clic al Hospital o Veterinario más cercano y consulta dosis clínicas", color = Color(0xFFE0F7FA), fontSize = 12.sp, lineHeight = 15.sp)
+            }
+            Icon(Icons.Default.Navigation, contentDescription = "Abrir", tint = Color.Yellow, modifier = Modifier.size(24.dp))
         }
     }
 }

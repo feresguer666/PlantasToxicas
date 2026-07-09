@@ -79,19 +79,36 @@ fun GlobalSearchScreen(
         }
 
         isSearching = true
-        delay(250)
+        delay(180) // Reducido de 250ms a 180ms para mayor fluidez
         val plantsSnapshot = allPlants
         val compoundsSnapshot = allCompounds
 
         val result = withContext(Dispatchers.Default) {
-            val exactPlantMatches = plantsSnapshot
+            // === PREFILTRO RÁPIDO GLOBAL (gran mejora de velocidad) ===
+            val q = searchQuery.normalized
+            val qPrefix = q.take(3)
+
+            val prefilteredPlants = plantsSnapshot.filter { plant ->
+                plant.commonName.contains(qPrefix, ignoreCase = true) ||
+                plant.scientificName.contains(qPrefix, ignoreCase = true) ||
+                plant.family.contains(qPrefix, ignoreCase = true) ||
+                plant.commonNames.contains(qPrefix, ignoreCase = true)
+            }
+
+            val exactPlantMatches = prefilteredPlants
                 .mapNotNull { plant ->
                     currentCoroutineContext().ensureActive()
                     val score = plantGlobalExactSearchScore(plant, searchQuery, nameSearchMode)
                     if (score > 0) score to plant else null
                 }
 
-            val exactCompoundMatches = compoundsSnapshot
+            // Prefiltro rápido para compuestos
+            val prefilteredCompounds = compoundsSnapshot.filter { compound ->
+                compound.commonName.contains(qPrefix, ignoreCase = true) ||
+                compound.groupName.contains(qPrefix, ignoreCase = true)
+            }
+
+            val exactCompoundMatches = prefilteredCompounds
                 .mapNotNull { compound ->
                     currentCoroutineContext().ensureActive()
                     val score = compoundGlobalExactSearchScore(compound, searchQuery)
@@ -697,11 +714,13 @@ private fun plantGlobalExactSearchScore(
     score = maxOf(score, exactFieldScore(plant.family, q, 7_000))
     score = maxOf(score, exactFieldScore(plant.category, q, 5_000))
 
-    val nameText =
-        listOf(plant.commonName, plant.commonNames, plant.scientificName).joinToString(" ")
-            .normalizeForSearch()
-    if (score == 0 && allTokensMatchCheap(nameText, query.tokens)) {
-        score = 9_000 + query.tokens.size * 200
+    if (score == 0) {
+        val nameText =
+            listOf(plant.commonName, plant.commonNames, plant.scientificName).joinToString(" ")
+                .normalizeForSearch()
+        if (allTokensMatchCheap(nameText, query.tokens)) {
+            score = 9_000 + query.tokens.size * 200
+        }
     }
 
     score = maxOf(score, exactFieldScore(plant.symptoms, q, 3_500))
@@ -782,6 +801,22 @@ private fun familyGlobalFuzzyFallbackScore(family: String, query: SearchQuery): 
 
 private fun exactFieldScore(field: String, normalizedQuery: String, base: Int): Int {
     if (field.isBlank()) return 0
+
+    // === PREFILTRO RÁPIDO (optimización clave) ===
+    val qLen = normalizedQuery.length
+    if (qLen >= 2) {
+        // Rechazo ultra-rápido: si los primeros 3 caracteres no coinciden, descartamos
+        val prefix = normalizedQuery.take(3)
+        if (!field.contains(prefix, ignoreCase = true)) {
+            // Segunda oportunidad: si la query es larga, comprobamos si contiene la query completa
+            if (qLen > 4 && !field.contains(normalizedQuery, ignoreCase = true)) {
+                return 0
+            }
+        }
+    }
+
+    if (field.length < qLen) return 0
+
     val normalizedField = field.normalizeForSearch()
     if (normalizedField.isBlank()) return 0
 
